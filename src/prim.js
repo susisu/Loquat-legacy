@@ -162,7 +162,7 @@ function show (value) {
         return "\"" + value + "\"";
     }
     else {
-        return value.toString();
+        return String(value);
     }
 }
 
