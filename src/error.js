@@ -111,9 +111,7 @@ Object.defineProperties(ParseError, {
 
     "equals": { "value": function (errorA, errorB) {
         return lq.pos.SourcePos.equals(errorA.position, errorB.position)
-            && errorA.messages.length === errorB.messages.length
-            && lq.array.zipWith(ErrorMessage.equals, errorA.messages, errorB.messages)
-                .every(function (x) { return x; });
+            && lq.array.arrayEquals(errorA.messages, errorB.messages, ErrorMessage.equals);
     }},
 
     "merge": { "value": function (errorA, errorB) {

@@ -7,14 +7,15 @@
 
 function end () {
     module.exports = Object.freeze({
-        "head"     : head,
-        "tail"     : tail,
-        "init"     : init,
-        "last"     : last,
-        "cons"     : cons,
-        "nub"      : nub,
-        "replicate": replicate,
-        "zipWith"  : zipWith
+        "arrayEquals": arrayEquals,
+        "head"       : head,
+        "tail"       : tail,
+        "init"       : init,
+        "last"       : last,
+        "cons"       : cons,
+        "nub"        : nub,
+        "replicate"  : replicate,
+        "zipWith"    : zipWith
     });
 }
 
@@ -30,6 +31,21 @@ Object.defineProperty(Array.prototype, "uncons", {
     }
 });
 
+
+function arrayEquals (arrayA, arrayB, elementEquals) {
+    if (arrayA.length !== arrayB.length) {
+        return false;
+    }
+    else {
+        if (elementEquals === undefined) {
+            return zipWith(function (x, y) { return x === y; }, arrayA, arrayB)
+                .every(function (x) { return x; });
+        }
+        else {
+            return zipWith(elementEquals, arrayA, arrayB).every(function (x) { return x; });
+        }
+    }
+}
 
 function head (array) {
     return array[0];
