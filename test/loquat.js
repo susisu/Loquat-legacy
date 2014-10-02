@@ -4,13 +4,13 @@
  */
 
 var lq = Object.freeze({
-    // "array"     : require("./array"),
+    "array"     : require("./array"),
     "error"     : require("./error"),
     // "char"      : require("./char"),
     // "combinator": require("./combinator"),
     // "monad"     : require("./monad"),
     "pos"       : require("./pos"),
     // "prim"      : require("./prim"),
-    // "string"    : require("./string"),
+     "string"    : require("./string"),
     // "sugar"     : require("./sugar")
 });
