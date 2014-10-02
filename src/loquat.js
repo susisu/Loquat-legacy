@@ -37,7 +37,12 @@ function mergeObjects (objects) {
     var merged = {};
     objects.forEach(function (object) {
         for (var key in object) {
-            merged[key] = object[key];
+            if (merged.hasOwnProperty(key)){
+                throw new Error("names conflicted: " + String(key));
+            }
+            else {
+                merged[key] = object[key];
+            }
         }
     });
     return merged;
