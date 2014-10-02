@@ -1,4 +1,4 @@
-# Loquant
+# Loquat
 JavaScript parser combinator inspired by [Parsec](https://github.com/aslatter/parsec)
 
 ## Requirements
