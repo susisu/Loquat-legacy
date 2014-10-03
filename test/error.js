@@ -6,6 +6,7 @@
 var should = require("should");
 
 var lq = Object.freeze({
+    "array": require("../src/array"),
     "error": require("../src/error"),
     "pos"  : require("../src/pos")
 });
@@ -14,6 +15,20 @@ describe("error", function () {
     describe("ErrorMessage", function () {
         var ErrorMessage = lq.error.ErrorMessage;
         var ErrorMessageType = lq.error.ErrorMessageType;
+
+        it("should have fields 'type' and 'message'", function () {
+            var mes = new ErrorMessage(ErrorMessageType.MESSAGE, "foo");
+            mes.hasOwnProperty("type").should.be.ok;
+            mes.hasOwnProperty("message").should.be.ok;
+        });
+
+        describe("constructor(type, message)", function () {
+            it("should create a new ErrorMessage object", function () {
+                var mes = new ErrorMessage(ErrorMessageType.MESSAGE, "foo");
+                mes.type.should.equal(ErrorMessageType.MESSAGE);
+                mes.message.should.equal("foo");
+            });
+        });
 
         describe(".equals(messageA, messageB)", function () {
             it("should return true when two messages represent the same message", function () {
@@ -87,6 +102,33 @@ describe("error", function () {
 
         var defaultPos = new SourcePos("test", 1, 2);
         var defaultMessage = new ErrorMessage(ErrorMessageType.MESSAGE, "test");
+
+        it("should have fields 'position' and 'messages'", function () {
+            var error = new ParseError(defaultPos, [defaultMessage]);
+            error.hasOwnProperty("position").should.be.ok;
+            error.hasOwnProperty("messages").should.be.ok;
+        });
+
+        describe("constructor(position, messages)", function () {
+            it("should create a new ParseError object that represents parse error", function () {
+                var error = new ParseError(
+                    new SourcePos("foo", 1, 2),
+                    [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "bar"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "baz")
+                    ]
+                );
+                SourcePos.equals(error.position, new SourcePos("foo", 1, 2)).should.be.ok;
+                lq.array.arrayEquals(
+                    error.messages,
+                    [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "bar"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "baz")
+                    ],
+                    ErrorMessage.equals
+                ).should.be.ok;
+            });
+        });
 
         describe(".unknown(position)", function () {
             it("should return an error that represents unknown error", function () {

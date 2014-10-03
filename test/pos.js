@@ -14,6 +14,22 @@ describe("pos", function () {
     describe("SourcePos", function () {
         var SourcePos = lq.pos.SourcePos;
 
+        it("should have fields 'name', 'line' and 'column'", function () {
+            var pos = new SourcePos("foo", 1, 2);
+            pos.hasOwnProperty("name").should.be.ok;
+            pos.hasOwnProperty("line").should.be.ok;
+            pos.hasOwnProperty("column").should.be.ok;
+        });
+
+        describe("constructor(name, line, column)", function () {
+            it("should create a new SourcePos object that represents a position in source", function () {
+                var pos = new SourcePos("foo", 1, 2);
+                pos.name.should.equal("foo");
+                pos.line.should.equal(1);
+                pos.column.should.equal(2);
+            });
+        })
+
         describe(".init(name)", function () {
             it("should return initial position in source", function () {
                 var init = SourcePos.init("foo");
