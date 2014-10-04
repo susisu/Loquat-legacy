@@ -153,8 +153,8 @@ Object.defineProperties(LazyParser.prototype, {
 function parse (parser, name, input, userState) {
     var result = parser.parse(new State(input, lq.pos.SourcePos.init(name), userState));
     return result.succeeded
-        ? result.value
-        : result.error;
+        ? { "succeeded": true, "value": result.value }
+        : { "succeeded": false, "error": result.error };
 }
 
 function show (value) {
