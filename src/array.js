@@ -9,6 +9,9 @@ function end () {
     module.exports = Object.freeze({});
 }
 
+var lq = Object.freeze({
+    "util": require("./util")
+});
 
 Object.defineProperty(Array.prototype, "uncons", {
     "value": function () {
@@ -16,7 +19,7 @@ Object.defineProperty(Array.prototype, "uncons", {
             return [];
         }
         else {
-            return [head(this), tail(this)];
+            return [lq.util.ArrayUtil.head(this), lq.util.ArrayUtil.tail(this)];
         }
     }
 });

@@ -14,8 +14,8 @@ function end () {
 }
 
 var lq = Object.freeze({
-    "array": require("./array"),
-    "pos"  : require("./pos")
+    "pos" : require("./pos"),
+    "util": require("./util")
 });
 
 
@@ -89,13 +89,11 @@ Object.defineProperties(ErrorMessage, {
 });
 
 
-var ErrorMessageType = {};
-
-Object.defineProperties(ErrorMessageType, {
-    "SYSTEM_UNEXPECT": { "value": "systemUnexpect" },
-    "UNEXPECT": { "value": "unexpect" },
-    "EXPECT": { "value": "expect" },
-    "MESSAGE": { "value": "message" }
+var ErrorMessageType = Object.freeze({
+    "SYSTEM_UNEXPECT": "systemUnexpect",
+    "UNEXPECT": "unexpect",
+    "EXPECT": "expect",
+    "MESSAGE": "message"
 });
 
 
@@ -111,7 +109,7 @@ Object.defineProperties(ParseError, {
 
     "equals": { "value": function (errorA, errorB) {
         return lq.pos.SourcePos.equals(errorA.position, errorB.position)
-            && lq.array.arrayEquals(errorA.messages, errorB.messages, ErrorMessage.equals);
+            && lq.util.ArrayUtil.equals(errorA.messages, errorB.messages, ErrorMessage.equals);
     }},
 
     "merge": { "value": function (errorA, errorB) {

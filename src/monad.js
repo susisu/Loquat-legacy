@@ -39,8 +39,8 @@ function end () {
 }
 
 var lq = Object.freeze({
-    "array": require("./array"),
-    "prim" : require("./prim")
+    "prim": require("./prim"),
+    "util": require("./util")
 });
 
 
@@ -260,11 +260,11 @@ function filterM (test, array) {
 }
 
 function zipWithM (func, parsersA, parsersB) {
-    return sequence(lq.array.zipWith(func, parsersA, parsersB));
+    return sequence(lq.util.ArrayUtil.zipWith(func, parsersA, parsersB));
 }
 
 function zipWithM_ (func, parsersA, parsersB) {
-    return sequence_(lq.array.zipWith(func, parsersA, parsersB));
+    return sequence_(lq.util.ArrayUtil.zipWith(func, parsersA, parsersB));
 }
 
 function foldM (func, initialValue, array) {
@@ -286,11 +286,11 @@ function foldM_ (func, initialValue, array) {
 }
 
 function replicateM (n, parser) {
-    return sequence(lq.array.replicate(n, parser));
+    return sequence(lq.util.ArrayUtil.replicate(n, parser));
 }
 
 function replicateM_ (n, parser) {
-    return sequence_(lq.array.replicate(n, parser));
+    return sequence_(lq.util.ArrayUtil.replicate(n, parser));
 }
 
 function guard (flag) {

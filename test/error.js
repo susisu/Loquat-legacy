@@ -6,9 +6,9 @@
 var should = require("should");
 
 var lq = Object.freeze({
-    "array": require("../src/array"),
     "error": require("../src/error"),
-    "pos"  : require("../src/pos")
+    "pos"  : require("../src/pos"),
+    "util" : require("../src/util")
 });
 
 describe("error", function () {
@@ -119,7 +119,7 @@ describe("error", function () {
                     ]
                 );
                 SourcePos.equals(error.position, new SourcePos("foo", 1, 2)).should.be.ok;
-                lq.array.arrayEquals(
+                lq.util.ArrayUtil.equals(
                     error.messages,
                     [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "bar"),

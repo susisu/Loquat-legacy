@@ -16,7 +16,8 @@ function end () {
         lq.pos,
         lq.prim,
         lq.string,
-        lq.sugar
+        lq.sugar,
+        lq.util
     ]));
 }
 
@@ -29,7 +30,8 @@ var lq = Object.freeze({
     "pos"       : require("./pos"),
     "prim"      : require("./prim"),
     "string"    : require("./string"),
-    "sugar"     : require("./sugar")
+    "sugar"     : require("./sugar"),
+    "util"      : require("./util")
 });
 
 

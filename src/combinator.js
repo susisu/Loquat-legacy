@@ -33,9 +33,9 @@ function end () {
 }
 
 var lq = Object.freeze({
-    "array": require("./array"),
     "monad": require("./monad"),
-    "prim" : require("./prim")
+    "prim" : require("./prim"),
+    "util" : require("./util")
 });
 
 
@@ -166,7 +166,7 @@ function count (n, parser) {
         return lq.prim.pure([]);
     }
     else {
-        return lq.monad.sequence(lq.array.replicate(n, parser));
+        return lq.monad.sequence(lq.util.ArrayUtil.replicate(n, parser));
     }
 }
 

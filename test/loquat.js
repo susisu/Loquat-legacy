@@ -10,7 +10,8 @@ var lq = Object.freeze({
     // "combinator": require("./combinator"),
     // "monad"     : require("./monad"),
     "pos"       : require("./pos"),
-    // "prim"      : require("./prim"),
-     "string"    : require("./string"),
-    // "sugar"     : require("./sugar")
+    "prim"      : require("./prim"),
+    "string"    : require("./string"),
+    // "sugar"     : require("./sugar"),
+    "util"      : require("./util")
 });
