@@ -2,21 +2,11 @@
  * Loquat / array.js
  * copyright (c) 2014 Susisu
  *
- * instance declaration and array manipulating functions
+ * instance declaration
  */
 
 function end () {
-    module.exports = Object.freeze({
-        "arrayEquals": arrayEquals,
-        "head"       : head,
-        "tail"       : tail,
-        "init"       : init,
-        "last"       : last,
-        "cons"       : cons,
-        "nub"        : nub,
-        "replicate"  : replicate,
-        "zipWith"    : zipWith
-    });
+    module.exports = Object.freeze({});
 }
 
 
@@ -30,63 +20,6 @@ Object.defineProperty(Array.prototype, "uncons", {
         }
     }
 });
-
-
-function arrayEquals (arrayA, arrayB, elementEquals) {
-    if (arrayA.length !== arrayB.length) {
-        return false;
-    }
-    else {
-        if (elementEquals === undefined) {
-            return zipWith(function (x, y) { return x === y; }, arrayA, arrayB)
-                .every(function (x) { return x; });
-        }
-        else {
-            return zipWith(elementEquals, arrayA, arrayB).every(function (x) { return x; });
-        }
-    }
-}
-
-function head (array) {
-    return array[0];
-}
-
-function tail (array) {
-    return array.slice(1);
-}
-
-function init (array) {
-    return array.slice(0, array.length - 1);
-}
-
-function last (array) {
-    return array[array.length - 1];
-}
-
-function cons (head, tail) {
-    return [head].concat(tail);
-}
-
-function nub (array) {
-    return array.filter(function (element, index, array) { return array.indexOf(element) === index; });
-}
-
-function replicate (n, element) {
-    var array = [];
-    for (var i = 0; i < n; i ++) {
-        array.push(element);
-    }
-    return array;
-}
-
-function zipWith (func, arrayA, arrayB) {
-    var array = [];
-    var length = Math.min(arrayA.length, arrayB.length);
-    for (var i = 0; i < length; i ++) {
-        array.push(func(arrayA[i], arrayB[i]));
-    }
-    return array;
-}
 
 
 end();
