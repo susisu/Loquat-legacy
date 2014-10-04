@@ -13,7 +13,7 @@ var lq = Object.freeze({
 describe("string", function () {
     describe("String", function () {
         describe("#uncons()", function () {
-            it("should return an empty array when the length of the string is 0", function () {
+            it("should return an empty array when the string is empty", function () {
                 "".uncons().length.should.equal(0);
             });
 

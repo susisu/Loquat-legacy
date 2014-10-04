@@ -14,7 +14,7 @@ var lq = Object.freeze({
 describe("array", function () {
     describe("Array", function () {
         describe("#uncons()", function () {
-            it("should return an empty array when the length of the array is 0", function () {
+            it("should return an empty array when the array is empty", function () {
                 [].uncons().length.should.equal(0);
             });
 
