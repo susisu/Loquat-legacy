@@ -558,14 +558,7 @@ function updateState (func) {
     });
 }
 
-function getInput () {
-    return bind(
-        getState(),
-        function (state) {
-            return pure(state.input);
-        }
-    );
-}
+var getInput = bind(getState(), function (state) { return pure(state.input); });
 
 function setInput (input) {
     return then(
@@ -574,14 +567,8 @@ function setInput (input) {
     );
 }
 
-function getPosition () {
-    return bind(
-        getState(),
-        function (state) {
-            return pure(state.position);
-        }
-    );
-}
+var getPosition = bind(getState(), function (state) { return pure(state.position); });
+
 
 function setPosition (position) {
     return then(
@@ -590,14 +577,7 @@ function setPosition (position) {
     );
 }
 
-function getUserState () {
-    return bind(
-        getState(),
-        function (state) {
-            return pure(state.userState);
-        }
-    );
-}
+var getUserState = bind(getState(), function (state) { return pure(state.userState); });
 
 function setUserState (userState) {
     return then(
