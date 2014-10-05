@@ -7,7 +7,9 @@
 
 function end () {
     module.exports = Object.freeze({
-        "ArrayUtil": ArrayUtil
+        "ArrayUtil" : ArrayUtil,
+        "CharUtil"  : CharUtil,
+        "StringUtil": StringUtil
     });
 }
 
@@ -67,6 +69,82 @@ var ArrayUtil = Object.freeze({
             array.push(func(arrayA[i], arrayB[i]));
         }
         return array;
+    }
+});
+
+var CharUtil = Object.freeze({
+    "isSpace": function (char) {
+        return char.length === 1
+            && " \t\n\r\f\v".indexOf(char) >= 0;
+    },
+
+    "isUpper": function (char) {
+        return char.length === 1
+            && "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(char) >= 0;
+    },
+
+    "isLower": function (char) {
+        return char.length === 1
+            && "abcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
+    },
+
+    "isAlphaNum": function (char) {
+        return char.length === 1
+            && "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
+    },
+
+    "isAlpha": function (char) {
+        return char.length === 1
+            && "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
+    },
+
+    "isDigit": function (char) {
+        return char.length === 1
+            && "0123456789".indexOf(char) >= 0;
+    },
+
+    "isHexDigit": function (char) {
+        return char.length === 1
+            && "0123456789ABCDEFabcdef".indexOf(char) >= 0;
+    },
+
+    "isOctDigit": function (char) {
+        return char.length === 1
+            && "01234567".indexOf(char) >= 0;
+    }
+});
+
+var StringUtil = Object.freeze({
+    "isSpaceAt": function (str, index) {
+        return CharUtil.isSpace(str.charAt(index));
+    },
+
+    "isUpperAt": function (str, index) {
+        return CharUtil.isUpper(str.charAt(index));
+    },
+
+    "isLowerAt": function (str, index) {
+        return CharUtil.isLower(str.charAt(index));
+    },
+
+    "isAlphaNumAt": function (str, index) {
+        return CharUtil.isAlphaNum(str.charAt(index));
+    },
+
+    "isAlphaAt": function (str, index) {
+        return CharUtil.isAlpha(str.charAt(index));
+    },
+
+    "isDigitAt": function (str, index) {
+        return CharUtil.isDigit(str.charAt(index));
+    },
+
+    "isHexDigitAt": function (str, index) {
+        return CharUtil.isHexDigit(str.charAt(index));
+    },
+
+    "isOctDigitAt": function (str, index) {
+        return CharUtil.isOctDigit(str.charAt(index));
     }
 });
 
