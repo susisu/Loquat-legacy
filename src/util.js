@@ -7,9 +7,8 @@
 
 function end () {
     module.exports = Object.freeze({
-        "ArrayUtil" : ArrayUtil,
-        "CharUtil"  : CharUtil,
-        "StringUtil": StringUtil
+        "ArrayUtil": ArrayUtil,
+        "CharUtil" : CharUtil
     });
 }
 
@@ -111,40 +110,6 @@ var CharUtil = Object.freeze({
     "isOctDigit": function (char) {
         return char.length === 1
             && "01234567".indexOf(char) >= 0;
-    }
-});
-
-var StringUtil = Object.freeze({
-    "isSpaceAt": function (str, index) {
-        return CharUtil.isSpace(str.charAt(index));
-    },
-
-    "isUpperAt": function (str, index) {
-        return CharUtil.isUpper(str.charAt(index));
-    },
-
-    "isLowerAt": function (str, index) {
-        return CharUtil.isLower(str.charAt(index));
-    },
-
-    "isAlphaNumAt": function (str, index) {
-        return CharUtil.isAlphaNum(str.charAt(index));
-    },
-
-    "isAlphaAt": function (str, index) {
-        return CharUtil.isAlpha(str.charAt(index));
-    },
-
-    "isDigitAt": function (str, index) {
-        return CharUtil.isDigit(str.charAt(index));
-    },
-
-    "isHexDigitAt": function (str, index) {
-        return CharUtil.isHexDigit(str.charAt(index));
-    },
-
-    "isOctDigitAt": function (str, index) {
-        return CharUtil.isOctDigit(str.charAt(index));
     }
 });
 
