@@ -89,4 +89,65 @@ describe("util", function () {
             });
         });
     });
+
+    describe("CharUtil", function () {
+        describe(".isSpace(char)", function () {
+            it("it should return true when '\\t', '\\n', '\\r', '\\f', '\\v' or space is given", function () {
+                " \t\n\r\f\v".split("").every(lq.util.CharUtil.isSpace).should.be.ok;
+                "Aa1!".split("").some(lq.util.CharUtil.isSpace).should.not.be.ok;
+                lq.util.CharUtil.isSpace(" \t").should.not.be.ok;
+            });
+        });
+
+        describe(".isUpper(char)", function () {
+            it("it should return true when upper case character (A to Z) is given", function () {
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").every(lq.util.CharUtil.isUpper).should.be.ok;
+                " a1!".split("").some(lq.util.CharUtil.isUpper).should.not.be.ok;
+            });
+        });
+
+        describe(".isLower(char)", function () {
+            it("it should return true when lower case character (a to z) is given", function () {
+                "abcdefghijklmnopqrstuvwxyz".split("").every(lq.util.CharUtil.isLower).should.be.ok;
+                " A1!".split("").some(lq.util.CharUtil.isLower).should.not.be.ok;
+            });
+        });
+
+        describe(".isAlphaNum(char)", function () {
+            it("it should return true when letter (A to Z or a to z) or digit (0 to 9) is given", function () {
+                "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split("")
+                    .every(lq.util.CharUtil.isAlphaNum).should.be.ok;
+                " !".split("").some(lq.util.CharUtil.isAlphaNum).should.not.be.ok;
+            });
+        });
+
+        describe(".isAlpha(char)", function () {
+            it("it should return true when letter (A to Z or a to z) is given", function () {
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split("")
+                    .every(lq.util.CharUtil.isAlpha).should.be.ok;
+                " 1!".split("").some(lq.util.CharUtil.isAlpha).should.not.be.ok;
+            });
+        });
+
+        describe(".isDigit(char)", function () {
+            it("it should return true when digit (0 to 9) is given", function () {
+                "0123456789".split("").every(lq.util.CharUtil.isDigit).should.be.ok;
+                " Aa!".split("").some(lq.util.CharUtil.isDigit).should.not.be.ok;
+            });
+        });
+
+        describe(".isHexDigit(char)", function () {
+            it("it should return true when hexadecimal digit (0 to 9, A to Z or a to z) is given", function () {
+                "0123456789ABCDEFabcdef".split("").every(lq.util.CharUtil.isHexDigit).should.be.ok;
+                " Gg!".split("").some(lq.util.CharUtil.isHexDigit).should.not.be.ok;
+            });
+        });
+
+        describe(".isOctDigit(char)", function () {
+            it("it should return true when octal digit (0 to 7) is given", function () {
+                "01234567".split("").every(lq.util.CharUtil.isOctDigit).should.be.ok;
+                " Aa8!".split("").some(lq.util.CharUtil.isOctDigit).should.not.be.ok;
+            });
+        });
+    });
 });
