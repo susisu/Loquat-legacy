@@ -7,18 +7,23 @@
 
 function end () {
     module.exports = Object.freeze({
-        "string" : string,
-        "satisfy": satisfy,
-        "oneOf"  : oneOf,
-        "noneOf" : noneOf,
-        "space"  : space,
-        "spaces" : spaces,
-        "newline": newline,
-        "tab"    : tab,
-        "upper"  : upper,
-        "lower"  : lower,
-        "char"   : char,
-        "anyChar": anyChar
+        "string"  : string,
+        "satisfy" : satisfy,
+        "oneOf"   : oneOf,
+        "noneOf"  : noneOf,
+        "space"   : space,
+        "spaces"  : spaces,
+        "newline" : newline,
+        "tab"     : tab,
+        "upper"   : upper,
+        "lower"   : lower,
+        "alphaNum": alphaNum,
+        "letter"  : letter,
+        "digit"   : digit,
+        "hexDigit": hexDigit,
+        "octDigit": octDigit,
+        "char"    : char,
+        "anyChar" : anyChar
     });
 }
 
@@ -65,6 +70,16 @@ var tab = lq.prim.label(char("\t"), "tab");
 var upper = lq.prim.label(satisfy(lq.util.CharUtil.isUpper), "uppercase letter");
 
 var lower = lq.prim.label(satisfy(lq.util.CharUtil.isLower), "lowercase letter");
+
+var alphaNum = lq.prim.label(satisfy(lq.util.CharUtil.isAlphaNum), "letter or digit");
+
+var letter = lq.prim.label(satisfy(lq.util.CharUtil.isAlpha), "letter");
+
+var digit = lq.prim.label(satisfy(lq.util.CharUtil.isDigit), "digit");
+
+var hexDigit = lq.prim.label(satisfy(lq.util.CharUtil.isHexDigit), "hexadecimal digit");
+
+var octDigit = lq.prim.label(satisfy(lq.util.CharUtil.isOctDigit), "octal digit");
 
 function char (expectedChar) {
     return satisfy(function (char) { return char === expectedChar; });
