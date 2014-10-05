@@ -46,11 +46,11 @@ function satisfy (verify) {
 }
 
 function oneOf (str) {
-    return satisfy(function (char) { return str.indexOf(char) >= 0; });
+    return satisfy(function (char) { return char.length === 1 && str.indexOf(char) >= 0; });
 }
 
 function noneOf (str) {
-    return satisfy(function (char) { return str.indexOf(char) < 0; });
+    return satisfy(function (char) { return char.length === 1 && str.indexOf(char) < 0; });
 }
 
 var space = lq.prim.label(
