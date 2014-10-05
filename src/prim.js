@@ -72,6 +72,18 @@ function State (input, position, userState) {
     this.userState = userState;
 }
 
+Object.defineProperties(State, {
+    "equals": { "value": function (stateA, stateB, inputEquals, userStateEquals) {
+        return (inputEquals === undefined
+                ? stateA.input === stateB.input
+                : inputEquals(stateA.input, stateB.input))
+            && lq.pos.SourcePos.equals(stateA.position, stateB.position)
+            && (userStateEquals === undefined
+                ? stateA.userState === stateB.userState
+                : userStateEquals(stateA.userState, stateB.userState));
+    }}
+});
+
 Object.defineProperties(State.prototype, {
     "setInput": { "value": function (input) {
         return new State(input, this.position, this.userState);
@@ -94,6 +106,17 @@ function Result (consumed, succeeded, value, state, error) {
     this.error     = error;
 }
 
+Object.defineProperties(Result, {
+    "equals": { "value": function (resultA, resultB, valueEquals, inputEquals, userStateEquals) {
+        return resultA.consumed === resultB.consumed
+            && resultA.succeeded === resultB.succeeded
+            && (valueEquals === undefined
+                ? resultA.value === resultB.value
+                : valueEquals(resultA.value, resultB.value))
+            && State.equals(resultA.state, resultB.state, inputEquals, userStateEquals)
+            && lq.error.ParseError.equals(resultA.error, resultB.error);
+    }}
+});
 
 function Parser (parserFunc) {
     this.parserFunc = parserFunc;
