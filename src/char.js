@@ -23,7 +23,8 @@ function end () {
 }
 
 var lq = Object.freeze({
-    "prim": require("./prim")
+    "prim": require("./prim"),
+    "util": require("./util")
 });
 
 
@@ -53,29 +54,17 @@ function noneOf (str) {
     return satisfy(function (char) { return char.length === 1 && str.indexOf(char) < 0; });
 }
 
-var space = lq.prim.label(
-    satisfy(function (char) { return " \t\n\r\f\v".indexOf(char) >= 0; }),
-    "space"
-);
+var space = lq.prim.label(satisfy(lq.util.CharUtil.isSpace), "space");
 
-var spaces = lq.prim.label(
-    lq.prim.skipMany(space),
-    "white space"
-);
+var spaces = lq.prim.label(lq.prim.skipMany(space), "white space");
 
-var upper = lq.prim.label(
-    satisfy(function (char) { return char.toLowerCase() !== char; }),
-    "uppercase letter"
-);
-
-var lower = lq.prim.label(
-    satisfy(function (char) { return char.toUpperCase() !== char; }),
-    "lowercase letter"
-);
 var newline = lq.prim.label(char("\n"), "new-line");
 
 var tab = lq.prim.label(char("\t"), "tab");
 
+var upper = lq.prim.label(satisfy(lq.util.CharUtil.isUpper), "uppercase letter");
+
+var lower = lq.prim.label(satisfy(lq.util.CharUtil.isLower), "lowercase letter");
 
 function char (expectedChar) {
     return satisfy(function (char) { return char === expectedChar; });
