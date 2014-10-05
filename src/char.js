@@ -63,16 +63,6 @@ var spaces = lq.prim.label(
     "white space"
 );
 
-var newline = lq.prim.label(
-    satisfy(function (char) { return char === "\n"; }),
-    "new-line"
-);
-
-var tab = lq.prim.label(
-    satisfy(function (char) { return char === "\t"; }),
-    "tab"
-);
-
 var upper = lq.prim.label(
     satisfy(function (char) { return char.toLowerCase() !== char; }),
     "uppercase letter"
@@ -82,6 +72,10 @@ var lower = lq.prim.label(
     satisfy(function (char) { return char.toUpperCase() !== char; }),
     "lowercase letter"
 );
+var newline = lq.prim.label(char("\n"), "new-line");
+
+var tab = lq.prim.label(char("\t"), "tab");
+
 
 function char (expectedChar) {
     return satisfy(function (char) { return char === expectedChar; });
