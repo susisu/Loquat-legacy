@@ -150,4 +150,19 @@ describe("util", function () {
             });
         });
     });
+
+    describe("show(value)", function () {
+        it("should return quoted string when 'value' is a string", function () {
+            lq.util.show("foo").should.equal("\"foo\"");
+            lq.util.show(new String("bar")).should.equal("\"bar\"");
+        });
+
+        it("should return the string representation of 'value' when it is not a string", function () {
+            lq.util.show(1).should.equal("1");
+            lq.util.show(true).should.equal("true");
+            lq.util.show(["a", "b", "c"]).should.equal("a,b,c");
+            lq.util.show(null).should.equal("null");
+            lq.util.show(undefined).should.equal("undefined");
+        });
+    });
 });
