@@ -41,13 +41,13 @@ var lq = Object.freeze({
 
 function choice (parsers) {
     return parsers.reduceRight(
-        function (accum, parser) { return lq.prim.plus(parser, accum); },
-        lq.prim.zero
+        function (accum, parser) { return lq.prim.mplus(parser, accum); },
+        lq.prim.mzero
     );
 }
 
 function option (value, parser) {
-    return lq.prim.plus(parser, lq.prim.pure(value));
+    return lq.prim.mplus(parser, lq.prim.pure(value));
 }
 
 function optionMaybe (parser) {
@@ -55,7 +55,7 @@ function optionMaybe (parser) {
 }
 
 function optional (parser) {
-    return lq.prim.plus(
+    return lq.prim.mplus(
         lq.prim.then(parser, lq.prim.pure(undefined)),
         lq.prim.pure(undefined)
     );
@@ -92,14 +92,14 @@ function skipMany1 (parser) {
 }
 
 function sepBy (parser, separator) {
-    return lq.prim.plus(sepBy1(parser, separator), lq.prim.pure([]));
+    return lq.prim.mplus(sepBy1(parser, separator), lq.prim.pure([]));
 }
 
 function sepBy1 (parser, separator) {
     return lq.prim.bind(
         parser,
         function (head) {
-            return lq.prim.plus(
+            return lq.prim.mplus(
                 lq.prim.then(
                     separator,
                     lq.prim.bind(
@@ -116,14 +116,14 @@ function sepBy1 (parser, separator) {
 }
 
 function sepEndBy (parser, separator) {
-    return lq.prim.plus(sepEndBy1(parser, separator), lq.prim.pure([]));
+    return lq.prim.mplus(sepEndBy1(parser, separator), lq.prim.pure([]));
 }
 
 function sepEndBy1 (parser, separator) {
     return lq.prim.bind(
         parser,
         function (head) {
-            return lq.prim.plus(
+            return lq.prim.mplus(
                 lq.prim.then(
                     separator,
                     lq.prim.bind(
@@ -171,7 +171,7 @@ function count (n, parser) {
 }
 
 function chainl (parser, operator, initialValue) {
-    return lq.prim.plus(chainl1(parser, operator), lq.prim.pure(initialValue));
+    return lq.prim.mplus(chainl1(parser, operator), lq.prim.pure(initialValue));
 }
 
 function chainl1 (parser, operator) {
@@ -183,7 +183,7 @@ function chainl1 (parser, operator) {
     );
 
     function rest (x) {
-        return lq.prim.plus(
+        return lq.prim.mplus(
             lq.prim.bind(
                 operator,
                 function (func) {
@@ -201,7 +201,7 @@ function chainl1 (parser, operator) {
 }
 
 function chainr (parser, operator, initialValue) {
-    return lq.prim.plus(chainr1(parser, operator), lq.prim.pure(initialValue));
+    return lq.prim.mplus(chainr1(parser, operator), lq.prim.pure(initialValue));
 }
 
 function chainr1 (parser, operator) {
@@ -215,7 +215,7 @@ function chainr1 (parser, operator) {
     return scan;
 
     function rest (x) {
-        return lq.prim.plus(
+        return lq.prim.mplus(
             lq.prim.bind(
                 operator,
                 function (func) {
@@ -242,7 +242,7 @@ var eof = lq.prim.label(notFollowedBy(anyToken), "end of input");
 
 function notFollowedBy (parser) {
     return lq.prim.attempt(
-        lq.prim.plus(
+        lq.prim.mplus(
             lq.prim.bind(
                 lq.prim.attempt(parser),
                 function (value) {
@@ -255,7 +255,7 @@ function notFollowedBy (parser) {
 }
 
 function manyTill (parser, end) {
-    var scan = lq.prim.plus(
+    var scan = lq.prim.mplus(
         lq.prim.then(end, lq.prim.pure([])),
         lq.prim.bind(
             parser,

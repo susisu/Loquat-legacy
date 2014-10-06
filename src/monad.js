@@ -298,14 +298,14 @@ function guard (flag) {
         return lq.prim.pure(undefined);
     }
     else {
-        return lq.prim.zero;
+        return lq.prim.mzero;
     }
 }
 
 function msum (parsers) {
     return parsers.reduceRight(
-        function (accum, parser) { return lq.prim.plus(parser, accum); },
-        lq.prim.zero
+        function (accum, parser) { return lq.prim.mplus(parser, accum); },
+        lq.prim.mzero
     );
 }
 
@@ -317,7 +317,7 @@ function mfilter (test, parser) {
                 return lq.prim.pure(value);
             }
             else {
-                return lq.prim.zero;
+                return lq.prim.mzero;
             }
         }
     );

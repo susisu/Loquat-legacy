@@ -33,7 +33,7 @@ var lq = Object.freeze({
         }},
 
         "or": { "value": function (parser) {
-            return lq.prim.plus(this, parser);
+            return lq.prim.mplus(this, parser);
         }},
 
         "label": { "value": function (message) {

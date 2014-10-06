@@ -32,8 +32,8 @@ function end () {
         "fail": fail,
 
         /* monad plus */
-        "zero": zero,
-        "plus": plus,
+        "mzero": mzero,
+        "mplus": mplus,
 
         "label"     : label,
         "labels"    : labels,
@@ -299,11 +299,11 @@ function fail (message) {
     });
 }
 
-var zero = new Parser(function (state, csuc, cerr, esuc, eerr) {
+var mzero = new Parser(function (state, csuc, cerr, esuc, eerr) {
     return eerr(lq.error.ParseError.unknown(state.position));
 });
 
-function plus (parserA, parserB) {
+function mplus (parserA, parserB) {
     return new Parser(function (state, csuc, cerr, esuc, eerr) {
         return parserA.run(
             state,

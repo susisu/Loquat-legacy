@@ -175,11 +175,11 @@ describe("prim", function () {
 
     });
 
-    describe("zero", function () {
+    describe("mzero", function () {
 
     });
 
-    describe("plus", function () {
+    describe("mplus", function () {
 
     });
 
