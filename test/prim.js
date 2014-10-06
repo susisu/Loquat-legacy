@@ -6,15 +6,20 @@
 var should = require("should");
 
 var lq = Object.freeze({
-    "pos" : require("../src/pos"),
-    "prim": require("../src/prim"),
-    "util": require("../src/util")
+    "error": require("../src/error"),
+    "pos"  : require("../src/pos"),
+    "prim" : require("../src/prim"),
+    "util" : require("../src/util")
 });
 
 
 describe("prim", function () {
+    var ErrorMessage = lq.error.ErrorMessage;
+    var ErrorMessageType = lq.error.ErrorMessageType;
+    var ParseError = lq.error.ParseError;
     var SourcePos = lq.pos.SourcePos;
     var State = lq.prim.State;
+    var Result = lq.prim.Result;
 
     describe("State", function () {
         it("should have fields 'input', 'position' and 'userState'", function () {
@@ -98,16 +103,175 @@ describe("prim", function () {
     });
 
     describe("Result", function () {
-        it("should have fields 'consumed', 'succeeded', 'value', 'state' and 'error'");
+        it("should have fields 'consumed', 'succeeded', 'value', 'state' and 'error'", function () {
+            var pos = new SourcePos("test", 1, 2);
+            var res = new Result(true, true, "foo",
+                new State("some", pos, {}),
+                new ParseError(pos, [
+                    new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                    new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                ])
+            );
+            res.hasOwnProperty("consumed").should.be.ok;
+            res.hasOwnProperty("succeeded").should.be.ok;
+            res.hasOwnProperty("value").should.be.ok;
+            res.hasOwnProperty("state").should.be.ok;
+            res.hasOwnProperty("error").should.be.ok;
+        });
 
         describe("coustructor(consumed, succeeded, value, state, error)", function () {
-            it("should create a new Result object that represents result of parsing");
+            it("should create a new Result object that represents result of parsing", function () {
+                var pos = new SourcePos("test", 1, 2);
+                var res = new Result(true, true, "foo",
+                    new State("some", pos, "none"),
+                    new ParseError(pos, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                res.consumed.should.equal(true);
+                res.succeeded.should.equal(true);
+                res.value.should.equal("foo");
+                State.equals(res.state, new State("some", pos, "none")).should.be.ok;
+                ParseError.equals(res.error,
+                    new ParseError(pos, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                ).should.be.ok;
+            });
         });
 
         describe(".equals(resultA, resultB, valueEquals, inputEquals, userStateEquals)", function () {
-            it("should return true when 'resultA' and 'resultB' represent the same result");
+            it("should return true when 'resultA' and 'resultB' represent the same result", function () {
+                var posA = new SourcePos("test", 1, 2);
+                var resA = new Result(true, true, "foo",
+                    new State("some", posA, "none"),
+                    new ParseError(posA, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                var posB = new SourcePos("test", 1, 2);
+                var resB = new Result(true, true, "foo",
+                    new State("some", posB, "none"),
+                    new ParseError(posB, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                Result.equals(resA, resB).should.be.ok;
 
-            it("should return false when 'resultA' and 'resultB' represent different results");
+                var posC = new SourcePos("test", 1, 2);
+                var resC = new Result(true, true, ["f", "o", "o"],
+                    new State("some", posC, "none"),
+                    new ParseError(posC, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                var posD = new SourcePos("test", 1, 2);
+                var resD = new Result(true, true, ["f", "o", "o"],
+                    new State("some", posD, "none"),
+                    new ParseError(posD, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                Result.equals(resC, resD, lq.util.ArrayUtil.equals).should.be.ok;
+            });
+
+            it("should return false when 'resultA' and 'resultB' represent different results", function () {
+                var posA = new SourcePos("test", 1, 2);
+                var resA = new Result(true, true, "foo",
+                    new State("some", posA, "none"),
+                    new ParseError(posA, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                var posB = new SourcePos("test", 3, 4);
+                var resB = new Result(true, true, "foo",
+                    new State("some", posB, "none"),
+                    new ParseError(posB, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                Result.equals(resA, resB).should.not.be.ok;
+
+                var posC = new SourcePos("test", 1, 2);
+                var resC = new Result(true, true, "foo",
+                    new State("some", posC, "none"),
+                    new ParseError(posC, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                var posD = new SourcePos("test", 1, 2);
+                var resD = new Result(false, true, "foo",
+                    new State("some", posD, "none"),
+                    new ParseError(posD, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                Result.equals(resC, resD).should.not.be.ok;
+
+                var posE = new SourcePos("test", 1, 2);
+                var resE = new Result(true, true, "foo",
+                    new State("some", posE, "none"),
+                    new ParseError(posE, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                var posF = new SourcePos("test", 1, 2);
+                var resF = new Result(true, false, "foo",
+                    new State("some", posF, "none"),
+                    new ParseError(posF, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                Result.equals(resE, resF).should.not.be.ok;
+
+                var posG = new SourcePos("test", 1, 2);
+                var resG = new Result(true, true, "foo",
+                    new State("some", posG, "none"),
+                    new ParseError(posG, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                var posH = new SourcePos("test", 1, 2);
+                var resH = new Result(true, true, "bar",
+                    new State("some", posH, "none"),
+                    new ParseError(posH, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                Result.equals(resG, resH).should.not.be.ok;
+
+                var posI = new SourcePos("test", 1, 2);
+                var resI = new Result(true, true, "foo",
+                    new State("some", posI, "none"),
+                    new ParseError(posI, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                var posJ = new SourcePos("test", 1, 2);
+                var resJ = new Result(true, true, "foo",
+                    new State("some", posJ, "some"),
+                    new ParseError(posJ, [
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                    ])
+                );
+                Result.equals(resI, resJ).should.not.be.ok;
+            });
         });
     });
 
