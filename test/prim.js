@@ -276,34 +276,38 @@ describe("prim", function () {
     });
 
     describe("Parser", function () {
-        describe("run", function () {
+        describe("constructor(parserFunc)", function () {
 
         });
 
-        describe("parse", function () {
+        describe("run(state, consumedSucceeded, consumedError, emptySucceeded, emptyError)", function () {
+
+        });
+
+        describe("parse(state)", function () {
 
         });
     });
 
     describe("LazyParser", function () {
-        describe("init", function () {
+        describe("constructor(generator)", function () {
 
         });
 
-        describe("run", function () {
+        describe("init()", function () {
 
         });
 
-        describe("parse", function () {
+        describe("run(state, consumedSucceeded, consumedError, emptySucceeded, emptyError)", function () {
+
+        });
+
+        describe("parse(state)", function () {
 
         });
     });
 
-    describe("parse", function () {
-
-    });
-
-    describe("show", function () {
+    describe("parse(parser, name, input, userState)", function () {
 
     });
 

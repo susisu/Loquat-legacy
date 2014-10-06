@@ -233,7 +233,7 @@ function chainr1 (parser, operator) {
 }
 
 var anyToken = lq.prim.tokenPrim(
-    function (token) { return lq.prim.show(token); },
+    function (token) { return lq.util.show(token); },
     function (token) { return [token]; },
     function (position, token, rest) { return position; }
 );
@@ -246,7 +246,7 @@ function notFollowedBy (parser) {
             lq.prim.bind(
                 lq.prim.attempt(parser),
                 function (value) {
-                    return lq.prim.unexpected(lq.prim.show(value));
+                    return lq.prim.unexpected(lq.util.show(value));
                 }
             ),
             lq.prim.pure(undefined)

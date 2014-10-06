@@ -36,7 +36,7 @@ var lq = Object.freeze({
 function string (str) {
     return lq.prim.fmap(function (chars) { return chars.join(""); })(
         lq.prim.tokens(
-            function (chars) { return lq.prim.show(chars.join("")); },
+            function (chars) { return lq.util.show(chars.join("")); },
             function (position, chars) { return position.addString(chars.join("")); },
             str.split("")
         )
@@ -45,7 +45,7 @@ function string (str) {
 
 function satisfy (verify) {
     return lq.prim.tokenPrim(
-        lq.prim.show,
+        lq.util.show,
         function (char) { return verify(char) ? [char] : [] ; },
         function (position, char, rest) { return position.addChar(char); }
     );

@@ -8,7 +8,8 @@
 function end () {
     module.exports = Object.freeze({
         "ArrayUtil": ArrayUtil,
-        "CharUtil" : CharUtil
+        "CharUtil" : CharUtil,
+        "show"     : show
     });
 }
 
@@ -112,6 +113,15 @@ var CharUtil = Object.freeze({
             && "01234567".indexOf(char) >= 0;
     }
 });
+
+function show (value) {
+    if (typeof value === "string" || value instanceof String) {
+        return "\"" + value + "\"";
+    }
+    else {
+        return String(value);
+    }
+}
 
 
 end();

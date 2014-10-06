@@ -15,7 +15,6 @@ function end () {
 
         /* utility functions */
         "parse": parse,
-        "show" : show,
 
         /* functor */
         "fmap": fmap,
@@ -178,15 +177,6 @@ function parse (parser, name, input, userState) {
     return result.succeeded
         ? { "succeeded": true, "value": result.value }
         : { "succeeded": false, "error": result.error };
-}
-
-function show (value) {
-    if (typeof value === "string" || value instanceof String) {
-        return "\"" + value + "\"";
-    }
-    else {
-        return String(value);
-    }
 }
 
 
