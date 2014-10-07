@@ -6,9 +6,9 @@
 var should = require("should");
 
 var lq = Object.freeze({
-    "error": require("../src/error"),
-    "pos"  : require("../src/pos"),
-    "util" : require("../src/util")
+    "error": require("../lib/error"),
+    "pos"  : require("../lib/pos"),
+    "util" : require("../lib/util")
 });
 
 describe("error", function () {

@@ -6,7 +6,7 @@
 var should = require("should");
 
 var lq = Object.freeze({
-    "string": require("../src/string")
+    "string": require("../lib/string")
 });
 
 

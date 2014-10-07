@@ -6,10 +6,10 @@
 var should = require("should");
 
 var lq = Object.freeze({
-    "error": require("../src/error"),
-    "pos"  : require("../src/pos"),
-    "prim" : require("../src/prim"),
-    "util" : require("../src/util")
+    "error": require("../lib/error"),
+    "pos"  : require("../lib/pos"),
+    "prim" : require("../lib/prim"),
+    "util" : require("../lib/util")
 });
 
 

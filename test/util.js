@@ -6,7 +6,7 @@
 var should = require("should");
 
 var lq = Object.freeze({
-    "util": require("../src/util")
+    "util": require("../lib/util")
 });
 
 describe("util", function () {

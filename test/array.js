@@ -6,8 +6,8 @@
 var should = require("should");
 
 var lq = Object.freeze({
-    "array": require("../src/array"),
-    "util" : require("../src/util")
+    "array": require("../lib/array"),
+    "util" : require("../lib/util")
 });
 
 

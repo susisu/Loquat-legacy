@@ -6,7 +6,7 @@
 var should = require("should");
 
 var lq = Object.freeze({
-    "pos": require("../src/pos")
+    "pos": require("../lib/pos")
 });
 
 
