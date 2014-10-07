@@ -556,11 +556,9 @@ function tokenPrim (tokenToString, calcValue, calcNextPos, calcNextUserState) {
     }
 }
 
-function getState () {
-    return new Parser (function (state, csuc, cerr, esuc, eerr) {
-        return esuc(state, state, lq.error.ParseError.unknown(state.position));
-    });
-}
+var getState = new Parser (function (state, csuc, cerr, esuc, eerr) {
+    return esuc(state, state, lq.error.ParseError.unknown(state.position));
+});
 
 function setState (state) {
     return updateState(function(any) { return state; });
@@ -573,7 +571,7 @@ function updateState (func) {
     });
 }
 
-var getInput = bind(getState(), function (state) { return pure(state.input); });
+var getInput = bind(getState, function (state) { return pure(state.input); });
 
 function setInput (input) {
     return then(
@@ -582,7 +580,7 @@ function setInput (input) {
     );
 }
 
-var getPosition = bind(getState(), function (state) { return pure(state.position); });
+var getPosition = bind(getState, function (state) { return pure(state.position); });
 
 
 function setPosition (position) {
@@ -592,7 +590,7 @@ function setPosition (position) {
     );
 }
 
-var getUserState = bind(getState(), function (state) { return pure(state.userState); });
+var getUserState = bind(getState, function (state) { return pure(state.userState); });
 
 function setUserState (userState) {
     return then(
