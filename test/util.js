@@ -11,7 +11,7 @@ var lq = Object.freeze({
 
 describe("util", function () {
     describe("ArrayUtil", function () {
-        describe(".equals(arrayA, arrayB[, elementEquals])", function () {
+        describe(".equals(arrayA, arrayB, elementEquals)", function () {
             it("should return true when each elements of two arrays are equal", function () {
                 lq.util.ArrayUtil.equals([], []).should.be.ok;
                 lq.util.ArrayUtil.equals([1, 2, 3], [1, 2, 3]).should.be.ok;
