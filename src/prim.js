@@ -112,7 +112,9 @@ Object.defineProperties(Result, {
             && (valueEquals === undefined
                 ? resultA.value === resultB.value
                 : valueEquals(resultA.value, resultB.value))
-            && State.equals(resultA.state, resultB.state, inputEquals, userStateEquals)
+            && (resultA.state === undefined || resultB.state === undefined
+                ? resultA.state === resultB.state
+                : State.equals(resultA.state, resultB.state, inputEquals, userStateEquals))
             && lq.error.ParseError.equals(resultA.error, resultB.error);
     }}
 });
