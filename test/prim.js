@@ -551,38 +551,57 @@ describe("prim", function () {
     });
 
     describe("parse(parser, name, input, userState)", function () {
+        it("should parse 'input' from the head and return the result of parsing", function () {
+            var suc = new Parser(function (state, csuc, cerr, esuc, eerr) {
+                State.equals(state, new State("abc", new SourcePos("test", 1, 1), "none"));
+                return esuc("foo", state, ParseError.unknown(state.position));
+            });
+            var resSuc = lq.prim.parse(suc, "test", "abc", "none");
+            resSuc.succeeded.should.be.ok;
+            resSuc.value.should.equal("foo");
+
+            var err = new Parser(function (state, csuc, cerr, esuc, eerr) {
+                State.equals(state, new State("abc", new SourcePos("test", 1, 1), "none"));
+                return eerr(new ParseError(state.position, [new ErrorMessage(ErrorMessageType.UNEXPECT, "bar")]));
+            });
+            var resErr = lq.prim.parse(err, "test", "abc", "none");
+            resErr.succeeded.should.not.be.ok;
+            ParseError.equals(
+                resErr.error,
+                new ParseError(new SourcePos("test", 1, 1), [new ErrorMessage(ErrorMessageType.UNEXPECT, "bar")])
+            ).should.be.ok;
+        });
+    });
+
+    describe("fmap(func)", function () {
 
     });
 
-    describe("fmap", function () {
+    describe("pure(value)", function () {
 
     });
 
-    describe("pure", function () {
+    describe("apply(parserA, parserB)", function () {
 
     });
 
-    describe("apply", function () {
+    describe("left(parserA, parserB)", function () {
 
     });
 
-    describe("left", function () {
+    describe("right(parserA, parserB)", function () {
 
     });
 
-    describe("right", function () {
+    describe("bind(parserA, func)", function () {
 
     });
 
-    describe("bind", function () {
+    describe("then(parserA, parserB)", function () {
 
     });
 
-    describe("then", function () {
-
-    });
-
-    describe("fail", function () {
+    describe("fail(message)", function () {
 
     });
 
@@ -590,51 +609,51 @@ describe("prim", function () {
 
     });
 
-    describe("mplus", function () {
+    describe("mplus(parserA, parserB)", function () {
 
     });
 
-    describe("label", function () {
+    describe("label(parser, message)", function () {
 
     });
 
-    describe("labels", function () {
+    describe("labels(parser, messages)", function () {
 
     });
 
-    describe("unexpected", function () {
+    describe("unexpected(message)", function () {
 
     });
 
-    describe("attempt", function () {
+    describe("attempt(parser)", function () {
 
     });
 
-    describe("lookAhead", function () {
+    describe("lookAhead(parser)", function () {
 
     });
 
-    describe("manyAccum", function () {
+    describe("manyAccum(accumulate, parser)", function () {
 
     });
 
-    describe("many", function () {
+    describe("many(parser)", function () {
 
     });
 
-    describe("skipMany", function () {
+    describe("skipMany(parser)", function () {
 
     });
 
-    describe("tokens", function () {
+    describe("tokens(tokensToString, calcNextPos, expectedTokens)", function () {
 
     });
 
-    describe("token", function () {
+    describe("token(tokenToString, calcValue, calcPos)", function () {
 
     });
 
-    describe("tokenPrim", function () {
+    describe("tokenPrim(tokenToString, calcValue, calcNextPos[, calcNextUserState])", function () {
 
     });
 
@@ -642,11 +661,11 @@ describe("prim", function () {
 
     });
 
-    describe("setState", function () {
+    describe("setState(state)", function () {
 
     });
 
-    describe("updateState", function () {
+    describe("updateState(func)", function () {
 
     });
 
@@ -654,7 +673,7 @@ describe("prim", function () {
 
     });
 
-    describe("setInput", function () {
+    describe("setInput(input)", function () {
 
     });
 
@@ -662,7 +681,7 @@ describe("prim", function () {
 
     });
 
-    describe("setPosition", function () {
+    describe("setPosition(position)", function () {
 
     });
 
@@ -670,7 +689,7 @@ describe("prim", function () {
 
     });
 
-    describe("setUserState", function () {
+    describe("setUserState(userState)", function () {
 
     });
 });
