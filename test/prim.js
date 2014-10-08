@@ -574,11 +574,73 @@ describe("prim", function () {
     });
 
     describe("fmap(func)", function () {
+        it("should map 'func' that take one argument to a function that take a parser", function () {
+            function toUpperCase (str) { return str.toUpperCase(); }
 
+            var pos = new SourcePos("test", 1, 2);
+            var stateA = new State("abc", pos, "none");
+            var stateB = new State("def", pos, "none");
+
+            lq.prim.fmap(toUpperCase)(alwaysCSuc("foo", stateA, ParseError.unknown(pos))).run(
+                stateB,
+                function (value, newState, error) {
+                    value.should.equal("FOO");
+                    State.equals(stateA, newState).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(pos)).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.prim.fmap(toUpperCase)(alwaysCErr(ParseError.unknown(pos))).run(
+                stateB,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.unknown(pos)).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.fmap(toUpperCase)(alwaysESuc("foo", stateA, ParseError.unknown(pos))).run(
+                stateB,
+                throwError,
+                throwError,
+                function (value, newState, error) {
+                    value.should.equal("FOO");
+                    State.equals(stateA, newState).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(pos)).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.prim.fmap(toUpperCase)(alwaysEErr(ParseError.unknown(pos))).run(
+                stateB,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.unknown(pos)).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("pure(value)", function () {
-
+        it("should return a parser that always succeeds without consumption, with 'value'", function () {
+            lq.prim.pure("foo").run(
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal("foo");
+                    State.equals(state, new State("abc", new SourcePos("test", 1, 2), "none")).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2))).should.be.ok;
+                },
+                throwError
+            );
+        })
     });
 
     describe("apply(parserA, parserB)", function () {
