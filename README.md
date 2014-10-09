@@ -1,14 +1,54 @@
 # Loquat
 JavaScript parser combinator inspired by [Parsec](https://github.com/aslatter/parsec)
 
-## Requirements
-* [Node.js](http://nodejs.org)
-* [Mocha](http://visionmedia.github.io/mocha/)
-* [should.js](https://github.com/visionmedia/should.js/)
+## Description
+Loquat is a parser combinator library written in JavaScript, available for both Node.js and browsers. It enables you to write parsers easily, without complex regular expressions.
+
+***NOTICE***
+Loquat is under development, so that there may be inefficient functions and bugs.
+
+## Installation and Usage
+### Node.js
+``` shell
+$ npm install git+https://github.com/susisu/Loquat.git
+```
+Here is a simple parsing example:
+``` javascript
+var lq = require("loquat");
+var result = lq.parse(lq.string("foo"), "name", "foobar");
+if (result.succeeded) {
+    console.log(result.value);
+}
+else {
+    console.log(result.error.toString());
+}
+```
+
+### Browsers
+Pack the library for browsers:
+``` shell
+$ git clone https://github.com/susisu/Loquat.git
+$ npm install
+$ grunt
+```
+Then `loquat.{version}.js` and `loquat.{version}.min.js` will be placed in `/build`.
+You can use them as below:
+``` html
+<script type="text/javascript" src="./loquat.{version}.min.js"></script>
+<script type="text/javascript">
+var result = lq.parse(lq.string("foo"), "name", "foobar");
+if (result.succeeded) {
+    console.log(result.value);
+}
+else {
+    console.log(result.error.toString());
+}
+</script>
+```
 
 ## License
 [MIT License](http://opensource.org/licenses/mit-license.php)
 
 ## TODO
 * test
-* optimization (remove recursions, etc.)
+* optimization (remove redundant recursions, etc.)
