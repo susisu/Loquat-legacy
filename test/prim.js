@@ -670,7 +670,7 @@ describe("prim", function () {
             posB,
             [new ErrorMessage(ErrorMessageType.MESSAGE, "BAR")]
         );
-        it("should return a parser that runs 'parserA' then apply the value to 'func' and run the returned parser when 'parserA' succeeded", function () {
+        it("should return a parser that runs 'parserA', then applies the value to 'func' and run the returned parser when 'parserA' succeeded", function () {
             lq.prim.bind(alwaysCSuc(valueA, stateA, errorA), function (value) {
                 value.should.equal(valueA);
                 return alwaysCSuc(valueB, stateB, errorB);
@@ -906,7 +906,7 @@ describe("prim", function () {
             posB,
             [new ErrorMessage(ErrorMessageType.MESSAGE, "BAR")]
         );
-        it("should return a parser that runs 'parserA' then run 'parserB' when 'parserA' succeeded", function () {
+        it("should return a parser that runs 'parserA', then runs 'parserB' when 'parserA' succeeded", function () {
             lq.prim.then(alwaysCSuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
