@@ -1666,7 +1666,203 @@ describe("prim", function () {
     });
 
     describe("mplus(parserA, parserB)", function () {
+        var valueA = "foo"
+        var posA = new SourcePos("test", 1, 2);
+        var stateA = new State("abc", posA, "none");
+        var errorA = new ParseError(
+            posA,
+            [new ErrorMessage(ErrorMessageType.MESSAGE, "FOO")]
+        );
+        var valueB = "bar"
+        var posB = new SourcePos("test", 3, 4);
+        var stateB = new State("def", posB, "some");
+        var errorB = new ParseError(
+            posB,
+            [new ErrorMessage(ErrorMessageType.MESSAGE, "BAR")]
+        );
+        it("should return a parser that runs 'parserA' and takes the value of it when 'parserA' succeeded", function () {
+            lq.prim.mplus(alwaysCSuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
+                SourcePos.init("test"),
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, stateA).should.be.ok;
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            lq.prim.mplus(alwaysCSuc(valueA, stateA, errorA), alwaysCErr(errorB)).run(
+                SourcePos.init("test"),
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, stateA).should.be.ok;
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.prim.mplus(alwaysCSuc(valueA, stateA, errorA), alwaysESuc(valueB, stateB, errorB)).run(
+                SourcePos.init("test"),
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, stateA).should.be.ok;
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.prim.mplus(alwaysCSuc(valueA, stateA, errorA), alwaysEErr(errorB)).run(
+                SourcePos.init("test"),
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, stateA).should.be.ok;
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.prim.mplus(alwaysESuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
+                SourcePos.init("test"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, stateA).should.be.ok;
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.prim.mplus(alwaysESuc(valueA, stateA, errorA), alwaysCErr(errorB)).run(
+                SourcePos.init("test"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, stateA).should.be.ok;
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.prim.mplus(alwaysESuc(valueA, stateA, errorA), alwaysESuc(valueB, stateB, errorB)).run(
+                SourcePos.init("test"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, stateA).should.be.ok;
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.prim.mplus(alwaysESuc(valueA, stateA, errorA), alwaysEErr(errorB)).run(
+                SourcePos.init("test"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, stateA).should.be.ok;
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError
+            );
+        });
+
+        it("should return a parser that runs 'parserA', then runs 'parserB' and takes the value of it when 'parserA' failed without consumption", function () {
+            lq.prim.mplus(alwaysCErr(errorA), alwaysCSuc(valueB, stateB, errorB)).run(
+                SourcePos.init("test"),
+                throwError,
+                function (error) {
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.mplus(alwaysCErr(errorA), alwaysCErr(errorB)).run(
+                SourcePos.init("test"),
+                throwError,
+                function (error) {
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.mplus(alwaysCErr(errorA), alwaysESuc(valueB, stateB, errorB)).run(
+                SourcePos.init("test"),
+                throwError,
+                function (error) {
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.mplus(alwaysCErr(errorA), alwaysEErr(errorB)).run(
+                SourcePos.init("test"),
+                throwError,
+                function (error) {
+                     ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.mplus(alwaysEErr(errorA), alwaysCSuc(valueB, stateB, errorB)).run(
+                SourcePos.init("test"),
+                function (value, state, error) {
+                    value.should.equal(valueB);
+                    State.equals(state, stateB).should.be.ok;
+                    ParseError.equals(error, errorB).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.prim.mplus(alwaysEErr(errorA), alwaysCErr(errorB)).run(
+                SourcePos.init("test"),
+                throwError,
+                function (error) {
+                    ParseError.equals(error, errorB).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.mplus(alwaysEErr(errorA), alwaysESuc(valueB, stateB, errorB)).run(
+                SourcePos.init("test"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(valueB);
+                    State.equals(state, stateB).should.be.ok;
+                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.prim.mplus(alwaysEErr(errorA), alwaysEErr(errorB)).run(
+                SourcePos.init("test"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("label(parser, message)", function () {
