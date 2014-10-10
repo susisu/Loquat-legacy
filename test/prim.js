@@ -1652,7 +1652,17 @@ describe("prim", function () {
     });
 
     describe("mzero", function () {
-
+        it("should always fail without consumption, with unknown error", function () {
+            lq.prim.mzero.run(
+                new State("foo", new SourcePos("test", 1, 2), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2))).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("mplus(parserA, parserB)", function () {
