@@ -2126,7 +2126,23 @@ describe("prim", function () {
     });
 
     describe("unexpected(message)", function () {
-
+        it("should return a parser that always fails with unexpect error", function () {
+            lq.prim.unexpected("foo").run(
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.UNEXPECT, "foo")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("attempt(parser)", function () {
