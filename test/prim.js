@@ -2146,7 +2146,59 @@ describe("prim", function () {
     });
 
     describe("attempt(parser)", function () {
+        it("should return a parser that always treats any failure from 'parser' as the parser didn't consume", function () {
+            var valueA = "foo"
+            var posA = new SourcePos("test", 1, 2);
+            var stateA = new State("abc", posA, "none");
+            var errorA = new ParseError(
+                posA,
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
+            );
 
+            lq.prim.attempt(alwaysCSuc(valueA, stateA, errorA)).run(
+                new State("def", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, stateA).should.be.ok;
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.prim.attempt(alwaysCErr(errorA)).run(
+                new State("def", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, errorA).should.be.ok;
+                }
+            );
+
+            lq.prim.attempt(alwaysESuc(valueA, stateA, errorA)).run(
+                new State("def", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, stateA).should.be.ok;
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.prim.attempt(alwaysEErr(errorA)).run(
+                new State("def", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, errorA).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("lookAhead(parser)", function () {
