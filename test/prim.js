@@ -2632,26 +2632,134 @@ describe("prim", function () {
     });
 
     describe("getInput", function () {
-
+        it("should take the current input as its value", function () {
+            lq.prim.getInput.run(
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal("abc");
+                    State.equals(
+                        state,
+                        new State("abc", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 1, 2))
+                    ).should.be.ok;
+                },
+                throwError
+            );
+        });
     });
 
     describe("setInput(input)", function () {
-
+        it("should set specified 'input' as the input", function () {
+            lq.prim.setInput("def").run(
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 1, 2))
+                    ).should.be.ok;
+                },
+                throwError
+            );
+        });
     });
 
     describe("getPosition", function () {
-
+        it("should take the current position as its value", function () {
+            lq.prim.getPosition.run(
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    SourcePos.equals(value, new SourcePos("test", 1, 2)).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("abc", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 1, 2))
+                    ).should.be.ok;
+                },
+                throwError
+            );
+        });
     });
 
     describe("setPosition(position)", function () {
-
+        it("should set specified 'position' as the position", function () {
+            lq.prim.setPosition(new SourcePos("test", 3, 4)).run(
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("abc", new SourcePos("test", 3, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 3, 4))
+                    ).should.be.ok;
+                },
+                throwError
+            );
+        });
     });
 
     describe("getUserState", function () {
-
+        it("should take the current user state as its value", function () {
+            lq.prim.getUserState.run(
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal("none");
+                    State.equals(
+                        state,
+                        new State("abc", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 1, 2))
+                    ).should.be.ok;
+                },
+                throwError
+            );
+        });
     });
 
     describe("setUserState(userState)", function () {
-
+        it("should set specified 'userState' as the user state", function () {
+            lq.prim.setUserState("some").run(
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("abc", new SourcePos("test", 1, 2), "some")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 1, 2))
+                    ).should.be.ok;
+                },
+                throwError
+            );
+        });
     });
 });
