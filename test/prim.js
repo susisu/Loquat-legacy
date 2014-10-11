@@ -1866,11 +1866,263 @@ describe("prim", function () {
     });
 
     describe("label(parser, message)", function () {
+        it("should return a parser labeled with 'message'", function () {
+            var valueA = "foo"
+            var posA = new SourcePos("test", 1, 2);
+            var stateA = new State("abc", posA, "none");
+            var errorA = new ParseError(
+                posA,
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
+            );
+            lq.prim.label(alwaysCSuc(valueA, stateA, errorA), "baz").run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, stateA).should.be.ok;
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            lq.prim.label(alwaysCErr(errorA), "baz").run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.label(alwaysESuc(valueA, stateA, errorA), "baz").run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, stateA).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            posA,
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "bar"),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "baz")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.prim.label(alwaysEErr(errorA), "baz").run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            posA,
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "bar"),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "baz")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+            var valueB = "foo"
+            var posB = new SourcePos("test", 1, 2);
+            var stateB = new State("abc", posB, "none");
+            var errorB = ParseError.unknown(posB);
+            lq.prim.label(alwaysCSuc(valueB, stateB, errorB), "baz").run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                function (value, state, error) {
+                    value.should.equal(valueB);
+                    State.equals(state, stateB).should.be.ok;
+                    ParseError.equals(error, errorB).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.prim.label(alwaysCErr(errorB), "baz").run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(error, errorB).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.label(alwaysESuc(valueB, stateB, errorB), "baz").run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(valueB);
+                    State.equals(state, stateB).should.be.ok;
+                    ParseError.equals(error, errorB).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.prim.label(alwaysEErr(errorB), "baz").run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            posB,
+                            [new ErrorMessage(ErrorMessageType.EXPECT, "baz")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("labels(parser, messages)", function () {
+        it("should return a parser labeled with each message of 'messages'", function () {
+            var valueA = "foo"
+            var posA = new SourcePos("test", 1, 2);
+            var stateA = new State("abc", posA, "none");
+            var errorA = new ParseError(
+                posA,
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
+            );
+            lq.prim.labels(alwaysCSuc(valueA, stateA, errorA), ["uno", "dos", "tres"]).run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, stateA).should.be.ok;
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            lq.prim.labels(alwaysCErr(errorA), ["uno", "dos", "tres"]).run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.labels(alwaysESuc(valueA, stateA, errorA), ["uno", "dos", "tres"]).run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, stateA).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            posA,
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "bar"),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "uno"),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "dos"),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "tres")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.prim.labels(alwaysEErr(errorA), ["uno", "dos", "tres"]).run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            posA,
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "bar"),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "uno"),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "dos"),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "tres")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+            var valueB = "foo"
+            var posB = new SourcePos("test", 1, 2);
+            var stateB = new State("abc", posB, "none");
+            var errorB = ParseError.unknown(posB);
+            lq.prim.labels(alwaysCSuc(valueB, stateB, errorB), ["uno", "dos", "tres"]).run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                function (value, state, error) {
+                    value.should.equal(valueB);
+                    State.equals(state, stateB).should.be.ok;
+                    ParseError.equals(error, errorB).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.prim.labels(alwaysCErr(errorB), ["uno", "dos", "tres"]).run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(error, errorB).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.labels(alwaysESuc(valueB, stateB, errorB), ["uno", "dos", "tres"]).run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(valueB);
+                    State.equals(state, stateB).should.be.ok;
+                    ParseError.equals(error, errorB).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.prim.labels(alwaysEErr(errorB), ["uno", "dos", "tres"]).run(
+                new State("def", new SourcePos("test", 3, 4), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            posB,
+                            [
+                                new ErrorMessage(ErrorMessageType.EXPECT, "uno"),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "dos"),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "tres")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("unexpected(message)", function () {
