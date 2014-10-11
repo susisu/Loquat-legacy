@@ -2553,15 +2553,82 @@ describe("prim", function () {
     });
 
     describe("getState", function () {
-
+        it("should take the current state as its value", function () {
+            lq.prim.getState.run(
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    State.equals(
+                        value,
+                        new State("abc", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("abc", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 1, 2))
+                    ).should.be.ok;
+                },
+                throwError
+            );
+        });
     });
 
     describe("setState(state)", function () {
-
+        it("should set specified 'state' as the state and take the new state as its value", function () {
+            lq.prim.setState(new State("def", new SourcePos("test", 3, 4), "some")).run(
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    State.equals(
+                        value,
+                        new State("def", new SourcePos("test", 3, 4), "some")
+                    ).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 3, 4), "some")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 3, 4))
+                    ).should.be.ok;
+                },
+                throwError
+            );
+        });
     });
 
     describe("updateState(func)", function () {
-
+        it("should apply 'func' to the state, set it as the state and take the new state as its value", function () {
+            lq.prim.updateState(function (state){
+                return state.setInput("def")
+                    .setPosition(new SourcePos("test", 3, 4))
+                    .setUserState("some");
+            }).run(
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    State.equals(
+                        value,
+                        new State("def", new SourcePos("test", 3, 4), "some")
+                    ).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 3, 4), "some")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 3, 4))
+                    ).should.be.ok;
+                },
+                throwError
+            );
+        });
     });
 
     describe("getInput", function () {
