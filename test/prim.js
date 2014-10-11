@@ -2202,7 +2202,59 @@ describe("prim", function () {
     });
 
     describe("lookAhead(parser)", function () {
+        it("should return a parser that runs 'parser' but doesn't consume, the state remains intact", function () {
+            var valueA = "foo"
+            var posA = new SourcePos("test", 1, 2);
+            var stateA = new State("abc", posA, "none");
+            var errorA = new ParseError(
+                posA,
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
+            );
+            var origState = new State("def", SourcePos.init("test"), "some");
+            lq.prim.lookAhead(alwaysCSuc(valueA, stateA, errorA)).run(
+                origState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, origState).should.be.ok;
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError
+            );
 
+            lq.prim.lookAhead(alwaysCErr(errorA)).run(
+                origState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.lookAhead(alwaysESuc(valueA, stateA, errorA)).run(
+                origState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(valueA);
+                    State.equals(state, origState).should.be.ok;
+                    ParseError.equals(error, errorA).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.prim.lookAhead(alwaysEErr(errorA)).run(
+                origState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, errorA).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("manyAccum(accumulate, parser)", function () {
