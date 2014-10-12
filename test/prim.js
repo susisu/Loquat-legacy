@@ -2269,8 +2269,229 @@ describe("prim", function () {
 
     });
 
-    describe("tokens(tokensToString, calcNextPos, expectedTokens)", function () {
+    describe("tokens(tokensToString, calcNextPos, expectedTokens, tokenEquals)", function () {
+        it("should return a parser that parses token sequence", function () {
+            var tokensA = [[1, 2, "foo"], [3, 4, "bar"]];
+            var streamA = [[1, 2, "foo"], [3, 4, "bar"], [5, 6, "baz"]];
+            var stateA = new State(streamA, SourcePos.init("test"), "none");
+            lq.prim.tokens(
+                function (tokens) {
+                    return tokens.map(function (token) {
+                        return "line " + token[0].toString()
+                            + ", column " + token[1].toString()
+                            + ": " + token[2];
+                    }).join("; ");
+                },
+                function (position, expectedTokens) {
+                    var last = lq.util.ArrayUtil.last(expectedTokens);
+                    return new SourcePos("test", last[0], last[1]);
+                },
+                tokensA,
+                lq.util.ArrayUtil.equals
+            ).run(
+                stateA,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, tokensA, lq.util.ArrayUtil.equals).should.be.ok;
+                    State.equals(
+                        state,
+                        new State([[5, 6, "baz"]], new SourcePos("test", 3, 4), "none"),
+                        function (inputA, inputB) {
+                            return lq.util.ArrayUtil.equals(inputA, inputB, lq.util.ArrayUtil.equals);
+                        }
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 3, 4))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            var tokensB = [[1, 2, "foo"], [3, 4, "bar"]];
+            var streamB = [[1, 2, "foo"]];
+            var stateB = new State(streamB, SourcePos.init("test"), "none");
+            lq.prim.tokens(
+                function (tokens) {
+                    return tokens.map(function (token) {
+                        return "line " + token[0].toString()
+                            + ", column " + token[1].toString()
+                            + ": " + token[2];
+                    }).join("; ");
+                },
+                function (position, expectedTokens) {
+                    var last = lq.util.ArrayUtil.last(expectedTokens);
+                    return new SourcePos("test", last[0], last[1]);
+                },
+                tokensB,
+                lq.util.ArrayUtil.equals
+            ).run(
+                stateB,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            SourcePos.init("test"),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "line 1, column 2: foo; line 3, column 4: bar")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            var tokensC = [[1, 2, "foo"], [3, 4, "bar"]];
+            var streamC = [[1, 2, "foo"], [5, 6, "baz"]];
+            var stateC = new State(streamC, SourcePos.init("test"), "none");
+            lq.prim.tokens(
+                function (tokens) {
+                    return tokens.map(function (token) {
+                        return "line " + token[0].toString()
+                            + ", column " + token[1].toString()
+                            + ": " + token[2];
+                    }).join("; ");
+                },
+                function (position, expectedTokens) {
+                    var last = lq.util.ArrayUtil.last(expectedTokens);
+                    return new SourcePos("test", last[0], last[1]);
+                },
+                tokensC,
+                lq.util.ArrayUtil.equals
+            ).run(
+                stateC,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            SourcePos.init("test"),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "line 5, column 6: baz"),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "line 1, column 2: foo; line 3, column 4: bar")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            var tokensD = [[1, 2, "foo"], [3, 4, "bar"]];
+            var streamD = [];
+            var stateD = new State(streamD, SourcePos.init("test"), "none");
+            lq.prim.tokens(
+                function (tokens) {
+                    return tokens.map(function (token) {
+                        return "line " + token[0].toString()
+                            + ", column " + token[1].toString()
+                            + ": " + token[2];
+                    }).join("; ");
+                },
+                function (position, expectedTokens) {
+                    var last = lq.util.ArrayUtil.last(expectedTokens);
+                    return new SourcePos("test", last[0], last[1]);
+                },
+                tokensD,
+                lq.util.ArrayUtil.equals
+            ).run(
+                stateD,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            SourcePos.init("test"),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "line 1, column 2: foo; line 3, column 4: bar")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            var tokensE = [[1, 2, "foo"], [3, 4, "bar"]];
+            var streamE = [[5, 6, "baz"]];
+            var stateE = new State(streamE, SourcePos.init("test"), "none");
+            lq.prim.tokens(
+                function (tokens) {
+                    return tokens.map(function (token) {
+                        return "line " + token[0].toString()
+                            + ", column " + token[1].toString()
+                            + ": " + token[2];
+                    }).join("; ");
+                },
+                function (position, expectedTokens) {
+                    var last = lq.util.ArrayUtil.last(expectedTokens);
+                    return new SourcePos("test", last[0], last[1]);
+                },
+                tokensE,
+                lq.util.ArrayUtil.equals
+            ).run(
+                stateE,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            SourcePos.init("test"),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "line 5, column 6: baz"),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "line 1, column 2: foo; line 3, column 4: bar")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            var tokensF = [];
+            var streamF = [[1, 2, "foo"], [3, 4, "bar"], [5, 6, "baz"]];
+            var stateF = new State(streamF, SourcePos.init("test"), "none");
+            lq.prim.tokens(
+                function (tokens) {
+                    return tokens.map(function (token) {
+                        return "line " + token[0].toString()
+                            + ", column " + token[1].toString()
+                            + ": " + token[2];
+                    }).join("; ");
+                },
+                function (position, expectedTokens) {
+                    var last = lq.util.ArrayUtil.last(expectedTokens);
+                    return new SourcePos("test", last[0], last[1]);
+                },
+                tokensF,
+                lq.util.ArrayUtil.equals
+            ).run(
+                stateF,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, [], lq.util.ArrayUtil.equals).should.be.ok;
+                    State.equals(
+                        state,
+                        new State(
+                            [[1, 2, "foo"], [3, 4, "bar"], [5, 6, "baz"]],
+                            SourcePos.init("test"),
+                            "none"
+                        ),
+                        function (inputA, inputB) {
+                            return lq.util.ArrayUtil.equals(inputA, inputB, lq.util.ArrayUtil.equals);
+                        }
+                    ).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                },
+                throwError
+            );
+        });
     });
 
     describe("token(tokenToString, calcValue, calcPos)", function () {
