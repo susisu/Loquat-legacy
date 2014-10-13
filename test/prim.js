@@ -2258,15 +2258,600 @@ describe("prim", function () {
     });
 
     describe("manyAccum(accumulate, parser)", function () {
+        it("should return a parser that runs 'parser' repeatedly and accumulates the results of them by 'accumulate'", function () {
+            lq.prim.manyAccum(
+                function (value, accum) {
+                    return accum.concat(value);
+                },
+                new Parser(function (state, csuc, cerr, esuc, eerr) {
+                    if (state.input[0] === "a") {
+                        var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
+                        return csuc(
+                            "a",
+                            new State(state.input.substr(1), newPosition, state.userState),
+                            ParseError.unknown(newPosition)
+                        );
+                    }
+                    else {
+                        return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.UNEXPECT, state.input[0])]
+                            )
+                        );
+                    }
+                })
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a", "a", "a"]).should.be.ok;
+                    State.equals(state, new State("b", new SourcePos("test", 1, 4), "none")).should.be.ok;
+                    ParseError.equals(
+                        error,
+                         new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            lq.prim.manyAccum(
+                function (value, accum) {
+                    return accum.concat(value);
+                },
+                new Parser(function (state, csuc, cerr, esuc, eerr) {
+                    if (state.input[0] === "a") {
+                        var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
+                        return csuc(
+                            "a",
+                            new State(state.input.substr(1), newPosition, state.userState),
+                            ParseError.unknown(newPosition)
+                        );
+                    }
+                    else {
+                        return cerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.UNEXPECT, state.input[0])]
+                            )
+                        );
+                    }
+                })
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.manyAccum(
+                function (value, accum) {
+                    return accum.concat(value);
+                },
+                alwaysCErr(
+                    new ParseError(
+                        new SourcePos("test", 100, 200),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                    )
+                )
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 100, 200),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.manyAccum(
+                function (value, accum) {
+                    return accum.concat(value);
+                },
+                alwaysEErr(
+                    new ParseError(
+                        new SourcePos("test", 100, 200),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                    )
+                )
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
+                    State.equals(state, new State("aaab", SourcePos.init("test"), "none")).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 100, 200),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            (function () {
+                var errorCaught = false;
+                try {
+                    lq.prim.manyAccum(
+                        function (value, accum) {
+                            return accum.concat(value);
+                        },
+                        new Parser(function (state, csuc, cerr, esuc, eerr) {
+                            if (state.input[0] === "a") {
+                                var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
+                                return csuc(
+                                    "a",
+                                    new State(state.input.substr(1), newPosition, state.userState),
+                                    ParseError.unknown(newPosition)
+                                );
+                            }
+                            else {
+                                return esuc(
+                                    state.input[0],
+                                    state,
+                                    ParseError.unknown(state.position)
+                                );
+                            }
+                        })
+                    ).run(
+                        new State("aaab", SourcePos.init("test"), "none"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    errorCaught = true;
+                }
+                finally {
+                    if (!errorCaught) {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+
+            (function () {
+                var errorCaught = false;
+                try {
+                    lq.prim.manyAccum(
+                        function (value, accum) {
+                            return accum.concat(value);
+                        },
+                        alwaysESuc(
+                            "foo",
+                            new State("def", new SourcePos("test", 100, 200), "some"),
+                            new ParseError(
+                                new SourcePos("test", 100, 200),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                            )
+                        )
+                    ).run(
+                        new State("aaab", SourcePos.init("test"), "none"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    errorCaught = true;
+                }
+                finally {
+                    if (!errorCaught) {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+        });
     });
 
     describe("many(parser)", function () {
+        it("should return a parser that runs 'parser' repeatedly and accumulates the results of them in an array", function () {
+            lq.prim.many(
+                new Parser(function (state, csuc, cerr, esuc, eerr) {
+                    if (state.input[0] === "a") {
+                        var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
+                        return csuc(
+                            "a",
+                            new State(state.input.substr(1), newPosition, state.userState),
+                            ParseError.unknown(newPosition)
+                        );
+                    }
+                    else {
+                        return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.UNEXPECT, state.input[0])]
+                            )
+                        );
+                    }
+                })
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a", "a", "a"]).should.be.ok;
+                    State.equals(state, new State("b", new SourcePos("test", 1, 4), "none")).should.be.ok;
+                    ParseError.equals(
+                        error,
+                         new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            lq.prim.many(
+                new Parser(function (state, csuc, cerr, esuc, eerr) {
+                    if (state.input[0] === "a") {
+                        var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
+                        return csuc(
+                            "a",
+                            new State(state.input.substr(1), newPosition, state.userState),
+                            ParseError.unknown(newPosition)
+                        );
+                    }
+                    else {
+                        return cerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.UNEXPECT, state.input[0])]
+                            )
+                        );
+                    }
+                })
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.many(
+                alwaysCErr(
+                    new ParseError(
+                        new SourcePos("test", 100, 200),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                    )
+                )
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 100, 200),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.many(
+                alwaysEErr(
+                    new ParseError(
+                        new SourcePos("test", 100, 200),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                    )
+                )
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
+                    State.equals(state, new State("aaab", SourcePos.init("test"), "none")).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 100, 200),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            (function () {
+                var errorCaught = false;
+                try {
+                    lq.prim.many(
+                        new Parser(function (state, csuc, cerr, esuc, eerr) {
+                            if (state.input[0] === "a") {
+                                var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
+                                return csuc(
+                                    "a",
+                                    new State(state.input.substr(1), newPosition, state.userState),
+                                    ParseError.unknown(newPosition)
+                                );
+                            }
+                            else {
+                                return esuc(
+                                    state.input[0],
+                                    state,
+                                    ParseError.unknown(state.position)
+                                );
+                            }
+                        })
+                    ).run(
+                        new State("aaab", SourcePos.init("test"), "none"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    errorCaught = true;
+                }
+                finally {
+                    if (!errorCaught) {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+
+            (function () {
+                var errorCaught = false;
+                try {
+                    lq.prim.many(
+                        alwaysESuc(
+                            "foo",
+                            new State("def", new SourcePos("test", 100, 200), "some"),
+                            new ParseError(
+                                new SourcePos("test", 100, 200),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                            )
+                        )
+                    ).run(
+                        new State("aaab", SourcePos.init("test"), "none"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    errorCaught = true;
+                }
+                finally {
+                    if (!errorCaught) {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+        });
     });
 
     describe("skipMany(parser)", function () {
+        it("should return a parser that runs 'parser' repeatedly and ignores all the results of them", function () {
+            lq.prim.skipMany(
+                new Parser(function (state, csuc, cerr, esuc, eerr) {
+                    if (state.input[0] === "a") {
+                        var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
+                        return csuc(
+                            "a",
+                            new State(state.input.substr(1), newPosition, state.userState),
+                            ParseError.unknown(newPosition)
+                        );
+                    }
+                    else {
+                        return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.UNEXPECT, state.input[0])]
+                            )
+                        );
+                    }
+                })
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(state, new State("b", new SourcePos("test", 1, 4), "none")).should.be.ok;
+                    ParseError.equals(
+                        error,
+                         new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            lq.prim.skipMany(
+                new Parser(function (state, csuc, cerr, esuc, eerr) {
+                    if (state.input[0] === "a") {
+                        var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
+                        return csuc(
+                            "a",
+                            new State(state.input.substr(1), newPosition, state.userState),
+                            ParseError.unknown(newPosition)
+                        );
+                    }
+                    else {
+                        return cerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.UNEXPECT, state.input[0])]
+                            )
+                        );
+                    }
+                })
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.skipMany(
+                alwaysCErr(
+                    new ParseError(
+                        new SourcePos("test", 100, 200),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                    )
+                )
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 100, 200),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.prim.skipMany(
+                alwaysEErr(
+                    new ParseError(
+                        new SourcePos("test", 100, 200),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                    )
+                )
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(state, new State("aaab", SourcePos.init("test"), "none")).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 100, 200),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            (function () {
+                var errorCaught = false;
+                try {
+                    lq.prim.skipMany(
+                        new Parser(function (state, csuc, cerr, esuc, eerr) {
+                            if (state.input[0] === "a") {
+                                var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
+                                return csuc(
+                                    "a",
+                                    new State(state.input.substr(1), newPosition, state.userState),
+                                    ParseError.unknown(newPosition)
+                                );
+                            }
+                            else {
+                                return esuc(
+                                    state.input[0],
+                                    state,
+                                    ParseError.unknown(state.position)
+                                );
+                            }
+                        })
+                    ).run(
+                        new State("aaab", SourcePos.init("test"), "none"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    errorCaught = true;
+                }
+                finally {
+                    if (!errorCaught) {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+
+            (function () {
+                var errorCaught = false;
+                try {
+                    lq.prim.skipMany(
+                        alwaysESuc(
+                            "foo",
+                            new State("def", new SourcePos("test", 100, 200), "some"),
+                            new ParseError(
+                                new SourcePos("test", 100, 200),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                            )
+                        )
+                    ).run(
+                        new State("aaab", SourcePos.init("test"), "none"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    errorCaught = true;
+                }
+                finally {
+                    if (!errorCaught) {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+        });
     });
 
     describe("tokens(tokensToString, calcNextPos, expectedTokens, tokenEquals)", function () {
