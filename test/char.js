@@ -169,7 +169,7 @@ describe("char", function () {
         });
     });
 
-    describe("satisfy(verify)", function () {
+    describe("satisfy(test)", function () {
 
     });
 
