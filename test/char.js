@@ -170,7 +170,58 @@ describe("char", function () {
     });
 
     describe("satisfy(test)", function () {
+        it("should return a parser that parses a character evaluated as true by 'test'", function () {
+            lq.char.satisfy(function (char) { return char === "a"; }).run(
+                new State("abc", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    value.should.equal("a");
+                    State.equals(
+                        state,
+                        new State(
+                            "bc",
+                            new SourcePos("test", 1, 2),
+                            "none"
+                        )
+                    ).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2))).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            lq.char.satisfy(function (char) { return char === "a"; }).run(
+                new State("bcd", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b"))]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.char.satisfy(function (char) { return char === "a"; }).run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("oneOf(str)", function () {
