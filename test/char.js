@@ -225,11 +225,218 @@ describe("char", function () {
     });
 
     describe("oneOf(str)", function () {
+        it("should return a parser that parses one character of 'str'", function () {
+            lq.char.oneOf("xyz").run(
+                new State("xabc", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    value.should.equal("x");
+                    State.equals(
+                        state,
+                        new State(
+                            "abc",
+                            new SourcePos("test", 1, 2),
+                            "none"
+                        )
+                    ).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2))).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            lq.char.oneOf("xyz").run(
+                new State("yabc", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    value.should.equal("y");
+                    State.equals(
+                        state,
+                        new State(
+                            "abc",
+                            new SourcePos("test", 1, 2),
+                            "none"
+                        )
+                    ).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2))).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.char.oneOf("xyz").run(
+                new State("zabc", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    value.should.equal("z");
+                    State.equals(
+                        state,
+                        new State(
+                            "abc",
+                            new SourcePos("test", 1, 2),
+                            "none"
+                        )
+                    ).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2))).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.char.oneOf("xyz").run(
+                new State("abc", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a"))]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.char.oneOf("xyz").run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.char.oneOf("").run(
+                new State("abc", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a"))]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("noneOf(str)", function () {
+        it("should return a parser that parses one character except characters in 'str'", function () {
+            lq.char.noneOf("xyz").run(
+                new State("abc", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    value.should.equal("a");
+                    State.equals(
+                        state,
+                        new State(
+                            "bc",
+                            new SourcePos("test", 1, 2),
+                            "none"
+                        )
+                    ).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2))).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            lq.char.noneOf("xyz").run(
+                new State("xabc", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("x"))]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.char.noneOf("xyz").run(
+                new State("yabc", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("y"))]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.char.noneOf("xyz").run(
+                new State("zabc", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("z"))]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.char.noneOf("xyz").run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.char.noneOf("").run(
+                new State("abc", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    value.should.equal("a");
+                    State.equals(
+                        state,
+                        new State(
+                            "bc",
+                            new SourcePos("test", 1, 2),
+                            "none"
+                        )
+                    ).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2))).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+        });
     });
 
     describe("space", function () {
