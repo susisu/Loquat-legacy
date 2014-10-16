@@ -155,7 +155,7 @@ describe("util", function () {
         it("should return quoted string when 'value' is a string", function () {
             lq.util.show("foo").should.equal("\"foo\"");
             lq.util.show(new String("bar")).should.equal("\"bar\"");
-            lq.util.show("a\\\"\t\n\r\f\v\bz").should.equal("\"a\\\\\\\"\\t\\n\\r\\f\\v\\bz\"");
+            lq.util.show("a\\\"\t\n\r\f\v\\\"\t\n\r\f\vz").should.equal("\"a\\\\\\\"\\t\\n\\r\\f\\v\\\\\\\"\\t\\n\\r\\f\\vz\"");
         });
 
         it("should return the string representation of array when 'value' is an array, each element is stringified by 'show'", function () {
