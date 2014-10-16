@@ -700,11 +700,139 @@ describe("char", function () {
     });
 
     describe("upper", function () {
+        it("should parse an uppercase character (A-Z)", function () {
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(function (uppercaseChar) {
+                lq.char.upper.run(
+                    new State(uppercaseChar + "abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(uppercaseChar);
+                        State.equals(
+                            state,
+                            new State(
+                                "abc",
+                                new SourcePos("test", 1, 2),
+                                "none"
+                            )
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
 
+            " 0a!".split("").forEach(function (nonUppercaseChar) {
+                lq.char.upper.run(
+                    new State(nonUppercaseChar + "abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(nonUppercaseChar)),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "uppercase letter")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+
+            lq.char.upper.run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "uppercase letter")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("lower", function () {
+        it("should parse a lowercase character (a-z)", function () {
+            "abcdefghijklmnopqrstuvwxyz".split("").forEach(function (lowercaseChar) {
+                lq.char.lower.run(
+                    new State(lowercaseChar + "abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(lowercaseChar);
+                        State.equals(
+                            state,
+                            new State(
+                                "abc",
+                                new SourcePos("test", 1, 2),
+                                "none"
+                            )
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
 
+            " 0A!".split("").forEach(function (nonLowercaseChar) {
+                lq.char.lower.run(
+                    new State(nonLowercaseChar + "abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(nonLowercaseChar)),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "lowercase letter")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+
+            lq.char.lower.run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "lowercase letter")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("alphaNum", function () {
