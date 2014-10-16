@@ -1282,4 +1282,312 @@ describe("char", function () {
             );
         });
     });
+
+    describe("manyChar(parser)", function () {
+        it("should return a parser that parses zero or more occurrence of characters parsed by 'parser' and accumulates them in a string", function () {
+            lq.char.manyChar(lq.char.char("a")).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    value.should.equal("aaa");
+                    State.equals(state, new State("b", new SourcePos("test", 1, 4), "none")).should.be.ok;
+                    ParseError.equals(
+                        error,
+                         new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("a"))
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.char.manyChar(
+                new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                    return lq.char.char("a").run(state, csuc, cerr, esuc, cerr);
+                })
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("a"))
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.char.manyChar(
+                new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                    return lq.char.char("c").run(state, csuc, cerr, esuc, cerr);
+                })
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("c"))
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.char.manyChar(lq.char.char("c")).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                   value.should.equal("");
+                    State.equals(state, new State("aaab", SourcePos.init("test"), "none")).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("c"))
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.char.manyChar(
+                        lq.prim.mplus(
+                            lq.char.char("a"),
+                            new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                                return lq.char.char("b").run(state, esuc, cerr, esuc, eerr);
+                            })
+                        )
+                    ).run(
+                        new State("aaab", SourcePos.init("test"), "none"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.char.manyChar(
+                        new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                            return lq.char.char("a").run(state, esuc, cerr, esuc, eerr);
+                        })
+                    ).run(
+                        new State("aaab", SourcePos.init("test"), "none"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+        });
+    });
+
+    describe("manyChar1(parser)", function () {
+        it("should return a parser that parses one or more occurrence of characters parsed by 'parser' and accumulates them in a string", function () {
+            lq.char.manyChar1(lq.char.char("a")).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    value.should.equal("aaa");
+                    State.equals(state, new State("b", new SourcePos("test", 1, 4), "none")).should.be.ok;
+                    ParseError.equals(
+                        error,
+                         new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("a"))
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.char.manyChar1(
+                new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                    return lq.char.char("a").run(state, csuc, cerr, esuc, cerr);
+                })
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("a"))
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.char.manyChar1(
+                new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                    return lq.char.char("c").run(state, csuc, cerr, esuc, cerr);
+                })
+            ).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("c"))
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.char.manyChar1(lq.char.char("c")).run(
+                new State("aaab", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("c"))
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.char.manyChar1(
+                        lq.prim.mplus(
+                            lq.char.char("a"),
+                            new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                                return lq.char.char("b").run(state, esuc, cerr, esuc, eerr);
+                            })
+                        )
+                    ).run(
+                        new State("aaab", SourcePos.init("test"), "none"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.char.manyChar1(
+                        new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                            return lq.char.char("a").run(state, esuc, cerr, esuc, eerr);
+                        })
+                    ).run(
+                        new State("aaab", SourcePos.init("test"), "none"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+        });
+    });
 });
