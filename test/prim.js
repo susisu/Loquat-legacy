@@ -2394,7 +2394,7 @@ describe("prim", function () {
             );
 
             (function () {
-                var errorCaught = false;
+                var caughtError;
                 try {
                     lq.prim.manyAccum(
                         function (value, accum) {
@@ -2426,17 +2426,22 @@ describe("prim", function () {
                     );
                 }
                 catch (error) {
-                    errorCaught = true;
+                    caughtError = error;
                 }
                 finally {
-                    if (!errorCaught) {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
                         throw new Error("no error was thrown");
                     }
                 }
             })();
 
             (function () {
-                var errorCaught = false;
+                var caughtError;
                 try {
                     lq.prim.manyAccum(
                         function (value, accum) {
@@ -2459,10 +2464,15 @@ describe("prim", function () {
                     );
                 }
                 catch (error) {
-                    errorCaught = true;
+                    caughtError = error;
                 }
                 finally {
-                    if (!errorCaught) {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
                         throw new Error("no error was thrown");
                     }
                 }
@@ -2593,7 +2603,7 @@ describe("prim", function () {
             );
 
             (function () {
-                var errorCaught = false;
+                var caughtError;
                 try {
                     lq.prim.many(
                         new Parser(function (state, csuc, cerr, esuc, eerr) {
@@ -2622,17 +2632,22 @@ describe("prim", function () {
                     );
                 }
                 catch (error) {
-                    errorCaught = true;
+                    caughtError = error;
                 }
                 finally {
-                    if (!errorCaught) {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
                         throw new Error("no error was thrown");
                     }
                 }
             })();
 
             (function () {
-                var errorCaught = false;
+                var caughtError;
                 try {
                     lq.prim.many(
                         alwaysESuc(
@@ -2652,10 +2667,15 @@ describe("prim", function () {
                     );
                 }
                 catch (error) {
-                    errorCaught = true;
+                    caughtError = error;
                 }
                 finally {
-                    if (!errorCaught) {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
                         throw new Error("no error was thrown");
                     }
                 }
@@ -2786,7 +2806,7 @@ describe("prim", function () {
             );
 
             (function () {
-                var errorCaught = false;
+                var caughtError;
                 try {
                     lq.prim.skipMany(
                         new Parser(function (state, csuc, cerr, esuc, eerr) {
@@ -2815,17 +2835,22 @@ describe("prim", function () {
                     );
                 }
                 catch (error) {
-                    errorCaught = true;
+                    caughtError = error;
                 }
                 finally {
-                    if (!errorCaught) {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
                         throw new Error("no error was thrown");
                     }
                 }
             })();
 
             (function () {
-                var errorCaught = false;
+                var caughtError;
                 try {
                     lq.prim.skipMany(
                         alwaysESuc(
@@ -2845,10 +2870,15 @@ describe("prim", function () {
                     );
                 }
                 catch (error) {
-                    errorCaught = true;
+                    caughtError = error;
                 }
                 finally {
-                    if (!errorCaught) {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
                         throw new Error("no error was thrown");
                     }
                 }
