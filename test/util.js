@@ -158,10 +158,15 @@ describe("util", function () {
             lq.util.show("a\\\"\t\n\r\f\v\bz").should.equal("\"a\\\\\\\"\\t\\n\\r\\f\\v\\bz\"");
         });
 
+        it("should return the string representation of array when 'value' is an array, each element is stringified by 'show'", function () {
+            lq.util.show([1, 2, 3]).should.equal("[1, 2, 3]");
+            lq.util.show(["a", "b", "c"]).should.equal("[\"a\", \"b\", \"c\"]");
+            lq.util.show([1, [2, 3], [4, [5, 6]]]).should.equal("[1, [2, 3], [4, [5, 6]]]");
+        });
+
         it("should return the string representation of 'value' when it is not a string", function () {
             lq.util.show(1).should.equal("1");
             lq.util.show(true).should.equal("true");
-            lq.util.show(["a", "b", "c"]).should.equal("a,b,c");
             lq.util.show(null).should.equal("null");
             lq.util.show(undefined).should.equal("undefined");
         });
