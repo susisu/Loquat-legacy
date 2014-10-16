@@ -152,10 +152,26 @@ describe("util", function () {
     });
 
     describe("show(value)", function () {
+        it("should return quoted character when 'value' is a single character", function () {
+            lq.util.show(" ").should.equal("\" \"");
+            lq.util.show("0").should.equal("\"0\"");
+            lq.util.show("A").should.equal("\"A\"");
+            lq.util.show("a").should.equal("\"a\"");
+            lq.util.show("!").should.equal("\"!\"");
+            lq.util.show("\\").should.equal("\"\\\\\"");
+            lq.util.show("\"").should.equal("\"\\\"\"");
+            lq.util.show("\b").should.equal("\"\\b\"");
+            lq.util.show("\t").should.equal("\"\\t\"");
+            lq.util.show("\n").should.equal("\"\\n\"");
+            lq.util.show("\r").should.equal("\"\\r\"");
+            lq.util.show("\f").should.equal("\"\\f\"");
+            lq.util.show("\v").should.equal("\"\\v\"");
+        });
+
         it("should return quoted string when 'value' is a string", function () {
             lq.util.show("foo").should.equal("\"foo\"");
             lq.util.show(new String("bar")).should.equal("\"bar\"");
-            lq.util.show("a\\\"\t\n\r\f\v\\\"\t\n\r\f\vz").should.equal("\"a\\\\\\\"\\t\\n\\r\\f\\v\\\\\\\"\\t\\n\\r\\f\\vz\"");
+            lq.util.show("a\\\"\b\t\n\r\f\v\\\"\b\t\n\r\f\vz").should.equal("\"a\\\\\\\"\\b\\t\\n\\r\\f\\v\\\\\\\"\\b\\t\\n\\r\\f\\vz\"");
         });
 
         it("should return the string representation of array when 'value' is an array, each element is stringified by 'show'", function () {
