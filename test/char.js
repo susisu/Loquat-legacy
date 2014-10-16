@@ -440,11 +440,112 @@ describe("char", function () {
     });
 
     describe("space", function () {
+        it("should parses one of space characters", function () {
+            " \t\n\r\f\v".split("").forEach(function (spaceChar) {
+                lq.char.space.run(
+                    new State(spaceChar + "abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(spaceChar);
+                        State.equals(
+                            state,
+                            new State(
+                                "abc",
+                                SourcePos.init("test").addChar(spaceChar),
+                                "none"
+                            )
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(SourcePos.init("test").addChar(spaceChar))
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
 
+            "0Aa!".split("").forEach(function (nonSpaceChar) {
+                lq.char.space.run(
+                    new State(nonSpaceChar + "abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(nonSpaceChar)),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "space")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+        });
     });
 
     describe("spaces", function () {
+        it("should skips many space characters", function () {
+            lq.char.spaces.run(
+                new State(" \t\n\r\f\vabc", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State(
+                            "abc",
+                            SourcePos.init("test").addString(" \t\n\r\f\v"),
+                            "none"
+                        )
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            SourcePos.init("test").addString(" \t\n\r\f\v"),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "space")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            lq.char.spaces.run(
+                new State("abc", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State(
+                            "abc",
+                            SourcePos.init("test"),
+                            "none"
+                        )
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            SourcePos.init("test"),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "white space")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+        });
     });
 
     describe("newline", function () {
