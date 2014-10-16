@@ -1176,7 +1176,67 @@ describe("char", function () {
     });
 
     describe("char(expectedChar)", function () {
+        it("should return a parser that parses specified character", function () {
+            lq.char.char("a").run(
+                new State("abc", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    value.should.equal("a");
+                    State.equals(
+                        state,
+                        new State(
+                            "bc",
+                            new SourcePos("test", 1, 2),
+                            "none"
+                        )
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 1, 2))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            lq.char.char("d").run(
+                new State("abc", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("d"))
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.char.char("a").run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("a"))
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("anyChar", function () {
