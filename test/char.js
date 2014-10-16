@@ -836,23 +836,343 @@ describe("char", function () {
     });
 
     describe("alphaNum", function () {
+        it("should parse an alphabet or a digit (A-Z, a-z or 0-9)", function () {
+            "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split("").forEach(function (alphaNumChar) {
+                lq.char.alphaNum.run(
+                    new State(alphaNumChar + "abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(alphaNumChar);
+                        State.equals(
+                            state,
+                            new State(
+                                "abc",
+                                new SourcePos("test", 1, 2),
+                                "none"
+                            )
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
 
+            " !".split("").forEach(function (nonAlphaNumChar) {
+                lq.char.alphaNum.run(
+                    new State(nonAlphaNumChar + "abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(nonAlphaNumChar)),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "letter or digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+
+            lq.char.alphaNum.run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "letter or digit")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("letter", function () {
+        it("should parse an alphabet (A-Z or a-z)", function () {
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split("").forEach(function (letterChar) {
+                lq.char.letter.run(
+                    new State(letterChar + "abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(letterChar);
+                        State.equals(
+                            state,
+                            new State(
+                                "abc",
+                                new SourcePos("test", 1, 2),
+                                "none"
+                            )
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
 
+            " 0!".split("").forEach(function (nonLetterChar) {
+                lq.char.letter.run(
+                    new State(nonLetterChar + "abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(nonLetterChar)),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "letter")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+
+            lq.char.letter.run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "letter")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("digit", function () {
+        it("should parse a digit (0-9)", function () {
+            "0123456789".split("").forEach(function (digitChar) {
+                lq.char.digit.run(
+                    new State(digitChar + "abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(digitChar);
+                        State.equals(
+                            state,
+                            new State(
+                                "abc",
+                                new SourcePos("test", 1, 2),
+                                "none"
+                            )
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
 
+            " Aa!".split("").forEach(function (nonDigitChar) {
+                lq.char.digit.run(
+                    new State(nonDigitChar + "abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(nonDigitChar)),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+
+            lq.char.digit.run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "digit")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("hexDigit", function () {
+        it("should parse a hexadecimal digit (0-9 or A-Z (a-z))", function () {
+            "0123456789ABCDEFabcdef".split("").forEach(function (digitChar) {
+                lq.char.hexDigit.run(
+                    new State(digitChar + "abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(digitChar);
+                        State.equals(
+                            state,
+                            new State(
+                                "abc",
+                                new SourcePos("test", 1, 2),
+                                "none"
+                            )
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
 
+            " Gg!".split("").forEach(function (nonDigitChar) {
+                lq.char.hexDigit.run(
+                    new State(nonDigitChar + "abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(nonDigitChar)),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "hexadecimal digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+
+            lq.char.hexDigit.run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "hexadecimal digit")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("octDigit", function () {
+        it("should parse a octal digit (0-7)", function () {
+            "01234567".split("").forEach(function (digitChar) {
+                lq.char.octDigit.run(
+                    new State(digitChar + "abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(digitChar);
+                        State.equals(
+                            state,
+                            new State(
+                                "abc",
+                                new SourcePos("test", 1, 2),
+                                "none"
+                            )
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
 
+            " 89Aa!".split("").forEach(function (nonDigitChar) {
+                lq.char.octDigit.run(
+                    new State(nonDigitChar + "abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(nonDigitChar)),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "octal digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+
+            lq.char.octDigit.run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "octal digit")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("char(expectedChar)", function () {
