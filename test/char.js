@@ -440,7 +440,7 @@ describe("char", function () {
     });
 
     describe("space", function () {
-        it("should parses one of space characters", function () {
+        it("should parse one of space characters", function () {
             " \t\n\r\f\v".split("").forEach(function (spaceChar) {
                 lq.char.space.run(
                     new State(spaceChar + "abc", SourcePos.init("test"), "none"),
@@ -508,7 +508,7 @@ describe("char", function () {
     });
 
     describe("spaces", function () {
-        it("should skips many space characters", function () {
+        it("should skip many space characters", function () {
             lq.char.spaces.run(
                 new State(" \t\n\r\f\vabc", SourcePos.init("test"), "none"),
                 function (value, state, error) {
