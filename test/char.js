@@ -568,11 +568,135 @@ describe("char", function () {
     });
 
     describe("newline", function () {
+        it("should parse a new line character (\\n)", function () {
+            lq.char.newline.run(
+                new State("\nabc", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    value.should.equal("\n");
+                    State.equals(
+                        state,
+                        new State(
+                            "abc",
+                            new SourcePos("test", 2, 1),
+                            "none"
+                        )
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 2, 1))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            " 0Aa!".split("").forEach(function (dummyChar) {
+                lq.char.newline.run(
+                    new State(dummyChar + "abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(dummyChar)),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "new-line")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+
+            lq.char.newline.run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "new-line")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("tab", function () {
+        it("should parse a tab character (\\t)", function () {
+            lq.char.tab.run(
+                new State("\tabc", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    value.should.equal("\t");
+                    State.equals(
+                        state,
+                        new State(
+                            "abc",
+                            new SourcePos("test", 1, 9),
+                            "none"
+                        )
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 1, 9))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            " 0Aa!".split("").forEach(function (dummyChar) {
+                lq.char.tab.run(
+                    new State(dummyChar + "abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(dummyChar)),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "tab")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+
+            lq.char.tab.run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "tab")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("upper", function () {
