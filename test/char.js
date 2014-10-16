@@ -1240,6 +1240,46 @@ describe("char", function () {
     });
 
     describe("anyChar", function () {
+        it("should parse any single character", function () {
+            " 0Aa!".split("").forEach(function (char) {
+                lq.char.anyChar.run(
+                    new State(char + "abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(char);
+                        State.equals(
+                            state,
+                            new State(
+                                "abc",
+                                SourcePos.init("test").addChar(char),
+                                "none"
+                            )
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(SourcePos.init("test").addChar(char))
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
 
+            lq.char.anyChar.run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 });
