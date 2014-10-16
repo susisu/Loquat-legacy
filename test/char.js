@@ -485,6 +485,25 @@ describe("char", function () {
                     }
                 );
             });
+
+            lq.char.space.run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "space")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
         });
     });
 
