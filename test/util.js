@@ -155,6 +155,7 @@ describe("util", function () {
         it("should return quoted string when 'value' is a string", function () {
             lq.util.show("foo").should.equal("\"foo\"");
             lq.util.show(new String("bar")).should.equal("\"bar\"");
+            lq.util.show("a\\\"\t\n\r\f\v\bz").should.equal("\"a\\\\\\\"\\t\\n\\r\\f\\v\\bz\"");
         });
 
         it("should return the string representation of 'value' when it is not a string", function () {
