@@ -627,6 +627,98 @@ describe("prim", function () {
                 }
             );
         });
+
+        it("should satisfy the functor laws", function () {
+            var acsuc = alwaysCSuc(
+                "foo",
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                )
+            );
+            var acerr = alwaysCErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                )
+            );
+            var aesuc = alwaysESuc(
+                "foo",
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                )
+            );
+            var aeerr = alwaysEErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                )
+            );
+            var initState = new State("abc", SourcePos.init("test"), "none");
+
+            var id = function (x) { return x; };
+            var fid = lq.prim.fmap(id);
+
+            Result.equals(
+                id(acsuc).parse(initState),
+                fid(acsuc).parse(initState)
+            ).should.be.ok;
+
+            Result.equals(
+                id(acerr).parse(initState),
+                fid(acerr).parse(initState)
+            ).should.be.ok;
+
+            Result.equals(
+                id(aesuc).parse(initState),
+                fid(aesuc).parse(initState)
+            ).should.be.ok;
+
+            Result.equals(
+                id(aeerr).parse(initState),
+                fid(aeerr).parse(initState)
+            ).should.be.ok;
+
+            function f (str) {
+                return str.toUpperCase();
+            }
+
+            function g (str) {
+                return str + "bar";
+            }
+
+            function compose (f, g) {
+                return function (x) {
+                    return f(g(x));
+                };
+            }
+
+            var f1 = lq.prim.fmap(compose(f, g));
+            var f2 = compose(lq.prim.fmap(f), lq.prim.fmap(g));
+
+            Result.equals(
+                f1(acsuc).parse(initState),
+                f2(acsuc).parse(initState)
+            ).should.be.ok;
+
+            Result.equals(
+                f1(acerr).parse(initState),
+                f2(acerr).parse(initState)
+            ).should.be.ok;
+
+            Result.equals(
+                f1(aesuc).parse(initState),
+                f2(aesuc).parse(initState)
+            ).should.be.ok;
+
+            Result.equals(
+                f1(aeerr).parse(initState),
+                f2(aeerr).parse(initState)
+            ).should.be.ok;
+        });
     });
 
     describe("pure(value)", function () {
