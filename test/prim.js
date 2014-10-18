@@ -923,6 +923,113 @@ describe("prim", function () {
                 }
             );
         });
+
+        it("should satisfy the applicative laws", function () {
+            var acsucv = alwaysCSuc(
+                "foo",
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csucv")]
+                )
+            );
+            var acsucf = alwaysCSuc(
+                function (str) { return str + "bar"; },
+                new State("abc", new SourcePos("test", 3, 4), "none"),
+                new ParseError(
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csucf")]
+                )
+            );
+            var acerr = alwaysCErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                )
+            );
+            var aesucv = alwaysESuc(
+                "foo",
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esucv")]
+                )
+            );
+            var aesucf = alwaysESuc(
+                function (str) { return str + "baz"; },
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esucf")]
+                )
+            );
+            var aeerr = alwaysEErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                )
+            );
+            var initState = new State("abc", SourcePos.init("test"), "none");
+
+            var id = function (x) { return x; };
+
+            [acsucv, acerr, aesucv, aeerr].forEach(function (v) {
+                Result.equals(
+                    lq.prim.ap(lq.prim.pure(id), v).parse(initState),
+                    v.parse(initState)
+                ).should.be.ok;
+            });
+
+            var compose = function (f) {
+                return function (g) {
+                    return function (x) {
+                        return f(g(x));
+                    };
+                };
+            };
+
+            [acsucf, acerr, aesucf, aeerr].forEach(function (u) {
+                [acsucf, acerr, aesucf, aeerr].forEach(function (v) {
+                    [acsucv, acerr, aesucv, aeerr].forEach(function (w) {
+                        Result.equals(
+                            lq.prim.ap(
+                                lq.prim.ap(
+                                    lq.prim.ap(
+                                        lq.prim.pure(compose),
+                                        u
+                                    ),
+                                    v
+                                ),
+                                w
+                            ).parse(initState),
+                            lq.prim.ap(u, lq.prim.ap(v, w)).parse(initState)
+                        ).should.be.ok;
+                    });
+                });
+            });
+
+            var f = function (str) { str.toUpperCase(); };
+            var x = "foo";
+
+            Result.equals(
+                lq.prim.ap(lq.prim.pure(f), lq.prim.pure(x)).parse(initState),
+                lq.prim.pure(f(x)).parse(initState)
+            ).should.be.ok;
+
+            var y = "bar";
+            var fapply = function (x) {
+                return function (f) {
+                    return f(x);
+                };
+            };
+
+            [acsucf, acerr, aesucf, aeerr].forEach(function (u) {
+                Result.equals(
+                    lq.prim.ap(u, lq.prim.pure(y)).parse(initState),
+                    lq.prim.ap(lq.prim.pure(fapply(y)), u).parse(initState)
+                ).should.be.ok;
+            });
+        });
     });
 
     describe("left(parserA, parserB)", function () {
