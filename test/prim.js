@@ -737,7 +737,7 @@ describe("prim", function () {
         })
     });
 
-    describe("apply(parserA, parserB)", function () {
+    describe("ap(parserA, parserB)", function () {
         var valueA = function (str) { return str.toUpperCase(); };
         var posA = new SourcePos("test", 1, 2);
         var stateA = new State("abc", posA, "none");
@@ -753,7 +753,7 @@ describe("prim", function () {
             [new ErrorMessage(ErrorMessageType.MESSAGE, "BAR")]
         );
         it("should return a parser that runs 'parserA', then runs 'parserB' and applies the value (function) of 'parserA' to the value of 'parserB' when 'parserA' succeeded", function () {
-            lq.prim.apply(alwaysCSuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
+            lq.prim.ap(alwaysCSuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
                     value.should.equal(valueB.toUpperCase());
@@ -765,7 +765,7 @@ describe("prim", function () {
                 throwError
             );
 
-            lq.prim.apply(alwaysCSuc(valueA, stateA, errorA), alwaysCErr(errorB)).run(
+            lq.prim.ap(alwaysCSuc(valueA, stateA, errorA), alwaysCErr(errorB)).run(
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
@@ -775,7 +775,7 @@ describe("prim", function () {
                 throwError
             );
 
-            lq.prim.apply(alwaysCSuc(valueA, stateA, errorA), alwaysESuc(valueB, stateB, errorB)).run(
+            lq.prim.ap(alwaysCSuc(valueA, stateA, errorA), alwaysESuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
                     value.should.equal(valueB.toUpperCase());
@@ -787,7 +787,7 @@ describe("prim", function () {
                 throwError
             );
 
-            lq.prim.apply(alwaysCSuc(valueA, stateA, errorA), alwaysEErr(errorB)).run(
+            lq.prim.ap(alwaysCSuc(valueA, stateA, errorA), alwaysEErr(errorB)).run(
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
@@ -797,7 +797,7 @@ describe("prim", function () {
                 throwError
             );
 
-            lq.prim.apply(alwaysESuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
+            lq.prim.ap(alwaysESuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
                     value.should.equal(valueB.toUpperCase());
@@ -809,7 +809,7 @@ describe("prim", function () {
                 throwError
             );
 
-            lq.prim.apply(alwaysESuc(valueA, stateA, errorA), alwaysCErr(errorB)).run(
+            lq.prim.ap(alwaysESuc(valueA, stateA, errorA), alwaysCErr(errorB)).run(
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
@@ -819,7 +819,7 @@ describe("prim", function () {
                 throwError
             );
 
-            lq.prim.apply(alwaysESuc(valueA, stateA, errorA), alwaysESuc(valueB, stateB, errorB)).run(
+            lq.prim.ap(alwaysESuc(valueA, stateA, errorA), alwaysESuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 throwError,
                 throwError,
@@ -831,7 +831,7 @@ describe("prim", function () {
                 throwError
             );
 
-            lq.prim.apply(alwaysESuc(valueA, stateA, errorA), alwaysEErr(errorB)).run(
+            lq.prim.ap(alwaysESuc(valueA, stateA, errorA), alwaysEErr(errorB)).run(
                 SourcePos.init("test"),
                 throwError,
                 throwError,
@@ -843,7 +843,7 @@ describe("prim", function () {
         });
 
         it("should return a parser that fails when 'parserA' failed", function () {
-            lq.prim.apply(alwaysCErr(errorA), alwaysCSuc(valueB, stateB, errorB)).run(
+            lq.prim.ap(alwaysCErr(errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
@@ -853,7 +853,7 @@ describe("prim", function () {
                 throwError
             );
 
-            lq.prim.apply(alwaysCErr(errorA), alwaysCErr(errorB)).run(
+            lq.prim.ap(alwaysCErr(errorA), alwaysCErr(errorB)).run(
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
@@ -863,7 +863,7 @@ describe("prim", function () {
                 throwError
             );
 
-            lq.prim.apply(alwaysCErr(errorA), alwaysESuc(valueB, stateB, errorB)).run(
+            lq.prim.ap(alwaysCErr(errorA), alwaysESuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
@@ -873,7 +873,7 @@ describe("prim", function () {
                 throwError
             );
 
-            lq.prim.apply(alwaysCErr(errorA), alwaysEErr(errorB)).run(
+            lq.prim.ap(alwaysCErr(errorA), alwaysEErr(errorB)).run(
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
@@ -883,7 +883,7 @@ describe("prim", function () {
                 throwError
             );
 
-            lq.prim.apply(alwaysEErr(errorA), alwaysCSuc(valueB, stateB, errorB)).run(
+            lq.prim.ap(alwaysEErr(errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 throwError,
                 throwError,
@@ -893,7 +893,7 @@ describe("prim", function () {
                 }
             );
 
-            lq.prim.apply(alwaysEErr(errorA), alwaysCErr(errorB)).run(
+            lq.prim.ap(alwaysEErr(errorA), alwaysCErr(errorB)).run(
                 SourcePos.init("test"),
                 throwError,
                 throwError,
@@ -903,7 +903,7 @@ describe("prim", function () {
                 }
             );
 
-            lq.prim.apply(alwaysEErr(errorA), alwaysESuc(valueB, stateB, errorB)).run(
+            lq.prim.ap(alwaysEErr(errorA), alwaysESuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 throwError,
                 throwError,
@@ -913,7 +913,7 @@ describe("prim", function () {
                 }
             );
 
-            lq.prim.apply(alwaysEErr(errorA), alwaysEErr(errorB)).run(
+            lq.prim.ap(alwaysEErr(errorA), alwaysEErr(errorB)).run(
                 SourcePos.init("test"),
                 throwError,
                 throwError,
