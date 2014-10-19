@@ -1642,6 +1642,105 @@ describe("prim", function () {
                 }
             );
         });
+
+        it("should satisfy the monad laws", function () {
+            var acsuc = alwaysCSuc(
+                "foo",
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                )
+            );
+            var acerr = alwaysCErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                )
+            );
+            var aesuc = alwaysESuc(
+                "foo",
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                )
+            );
+            var aeerr = alwaysEErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                )
+            );
+            var fcsuc = function (str) {
+                return alwaysCSuc(
+                    str + "bar",
+                    new State("def", new SourcePos("test", 3, 4), "some"),
+                    new ParseError(
+                        new SourcePos("test", 3, 4),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csucf")]
+                    )
+                );
+            };
+            var fcerr = function (str) {
+                return alwaysCErr(
+                    new ParseError(
+                        new SourcePos("test", 3, 4),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "cerrf")]
+                    )
+                );
+            };
+            var fesuc = function (str) {
+                return alwaysESuc(
+                    str + "baz",
+                    new State("def", new SourcePos("test", 3, 4), "some"),
+                    new ParseError(
+                        new SourcePos("test", 3, 4),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "esucf")]
+                    )
+                );
+            };
+            var feerr = function (str) {
+                return alwaysEErr(
+                    new ParseError(
+                        new SourcePos("test", 3, 4),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "cerrf")]
+                    )
+                );
+            };
+            var initState = new State("abc", SourcePos.init("test"), "none");
+
+            [fcsuc, fcerr, fesuc, feerr].forEach(function (f) {
+                var x = "foo";
+                Result.equals(
+                    lq.prim.bind(lq.prim.pure(x), f).parse(initState),
+                    f(x).parse(initState)
+                ).should.be.ok;
+            });
+
+            [acsuc, acerr, aesuc, aeerr].forEach(function (m) {
+                Result.equals(
+                    lq.prim.bind(m, lq.prim.pure).parse(initState),
+                    m.parse(initState)
+                ).should.be.ok;
+            });
+
+            [acsuc, acerr, aesuc, aeerr].forEach(function (m) {
+                [fcsuc, fcerr, fesuc, feerr].forEach(function (f) {
+                     [fcsuc, fcerr, fesuc, feerr].forEach(function (g) {
+                        Result.equals(
+                            lq.prim.bind(lq.prim.bind(m, f), g).parse(initState),
+                            lq.prim.bind(
+                                m,
+                                function (x) {
+                                    return lq.prim.bind(f(x), g);
+                                }
+                            ).parse(initState)
+                        ).should.be.ok;
+                     });
+                });
+            });
+        });
     });
 
     describe("then(parserA, parserB)", function () {
