@@ -2163,6 +2163,61 @@ describe("prim", function () {
                 }
             );
         });
+
+        it("should satisfy the monoid laws", function () {
+            var acsuc = alwaysCSuc(
+                "foo",
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                )
+            );
+            var acerr = alwaysCErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                )
+            );
+            var aesuc = alwaysESuc(
+                "foo",
+                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                )
+            );
+            var aeerr = alwaysEErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                )
+            );
+            var initState = new State("abc", SourcePos.init("test"), "none");
+
+            [acsuc, acerr, aesuc, aeerr].forEach(function (x) {
+                [acsuc, acerr, aesuc, aeerr].forEach(function (y) {
+                    [acsuc, acerr, aesuc, aeerr].forEach(function (z) {
+                        Result.equals(
+                            lq.prim.mplus(lq.prim.mplus(x, y), z).parse(initState),
+                            lq.prim.mplus(x, lq.prim.mplus(y, z)).parse(initState)
+                        ).should.be.ok;
+                    });
+                });
+            });
+
+            [acsuc, acerr, aesuc, aeerr].forEach(function (x) {
+                Result.equals(
+                    lq.prim.mplus(x, lq.prim.mzero).parse(initState),
+                    x.parse(initState)
+                ).should.be.ok;
+
+                Result.equals(
+                    lq.prim.mplus(lq.prim.mzero, x).parse(initState),
+                    x.parse(initState)
+                ).should.be.ok;
+            });
+        });
     });
 
     describe("label(parser, message)", function () {
