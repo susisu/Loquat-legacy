@@ -57,7 +57,7 @@ describe("monad", function () {
     });
 
     describe("nullify(parser)", function () {
-        it("should return a parser that runs 'parser' and discard the result", function () {
+        it("should return a parser that runs 'parser' and discards the result", function () {
             lq.monad.nullify(alwaysCSuc(
                 "foo",
                 new State("abc", new SourcePos("test", 1, 2), "none"),
