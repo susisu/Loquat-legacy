@@ -440,7 +440,227 @@ describe("monad", function () {
     });
 
     describe("when(flag, parser)", function () {
+        it("should run parser when 'flag' is true", function () {
+            lq.monad.when(
+                true,
+                alwaysCSuc(
+                    "foo",
+                    new State("abc", new SourcePos("test", 1, 2), "none"),
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                    )
+                )
+            ).run(
+                new State("def", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("foo");
+                    State.equals(
+                        state,
+                        new State("abc", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            lq.monad.when(
+                true,
+                alwaysCErr(
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                    )
+                )
+            ).run(
+                new State("def", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.when(
+                true,
+                alwaysESuc(
+                    "foo",
+                    new State("abc", new SourcePos("test", 1, 2), "none"),
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                    )
+                )
+            ).run(
+                new State("def", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal("foo");
+                    State.equals(
+                        state,
+                        new State("abc", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.when(
+                true,
+                alwaysEErr(
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                    )
+                )
+            ).run(
+                new State("def", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
+
+        it("should return a parser that always returns undefined when 'flag' is false", function () {
+            lq.monad.when(
+                false,
+                alwaysCSuc(
+                    "foo",
+                    new State("abc", new SourcePos("test", 1, 2), "none"),
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                    )
+                )
+            ).run(
+                new State("def", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", SourcePos.init("test"), "some")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(SourcePos.init("test"))
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.when(
+                false,
+                alwaysCErr(
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                    )
+                )
+            ).run(
+                new State("def", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", SourcePos.init("test"), "some")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(SourcePos.init("test"))
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.when(
+                false,
+                alwaysESuc(
+                    "foo",
+                    new State("abc", new SourcePos("test", 1, 2), "none"),
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                    )
+                )
+            ).run(
+                new State("def", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", SourcePos.init("test"), "some")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(SourcePos.init("test"))
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.when(
+                false,
+                alwaysEErr(
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                    )
+                )
+            ).run(
+                new State("def", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", SourcePos.init("test"), "some")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(SourcePos.init("test"))
+                    ).should.be.ok;
+                },
+                throwError
+            );
+        });
     });
 
     describe("unless(flag, parser)", function () {
