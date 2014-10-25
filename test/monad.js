@@ -448,7 +448,7 @@ describe("monad", function () {
                     new State("abc", new SourcePos("test", 1, 2), "none"),
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -463,7 +463,7 @@ describe("monad", function () {
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
                     ).should.be.ok;
                 },
@@ -477,7 +477,7 @@ describe("monad", function () {
                 alwaysCErr(
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -488,7 +488,7 @@ describe("monad", function () {
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
                     ).should.be.ok;
                 },
@@ -503,7 +503,7 @@ describe("monad", function () {
                     new State("abc", new SourcePos("test", 1, 2), "none"),
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -520,7 +520,7 @@ describe("monad", function () {
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
                     ).should.be.ok;
                 },
@@ -532,7 +532,7 @@ describe("monad", function () {
                 alwaysEErr(
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -545,7 +545,7 @@ describe("monad", function () {
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
                     ).should.be.ok;
                 }
@@ -560,7 +560,7 @@ describe("monad", function () {
                     new State("abc", new SourcePos("test", 1, 2), "none"),
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -586,7 +586,7 @@ describe("monad", function () {
                 alwaysCErr(
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -614,7 +614,7 @@ describe("monad", function () {
                     new State("abc", new SourcePos("test", 1, 2), "none"),
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -640,7 +640,7 @@ describe("monad", function () {
                 alwaysEErr(
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -672,7 +672,7 @@ describe("monad", function () {
                     new State("abc", new SourcePos("test", 1, 2), "none"),
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -687,7 +687,7 @@ describe("monad", function () {
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
                     ).should.be.ok;
                 },
@@ -701,7 +701,7 @@ describe("monad", function () {
                 alwaysCErr(
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -712,7 +712,7 @@ describe("monad", function () {
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
                     ).should.be.ok;
                 },
@@ -727,7 +727,7 @@ describe("monad", function () {
                     new State("abc", new SourcePos("test", 1, 2), "none"),
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -744,7 +744,7 @@ describe("monad", function () {
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
                     ).should.be.ok;
                 },
@@ -756,7 +756,7 @@ describe("monad", function () {
                 alwaysEErr(
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -769,7 +769,7 @@ describe("monad", function () {
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
                     ).should.be.ok;
                 }
@@ -784,7 +784,7 @@ describe("monad", function () {
                     new State("abc", new SourcePos("test", 1, 2), "none"),
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -810,7 +810,7 @@ describe("monad", function () {
                 alwaysCErr(
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -838,7 +838,7 @@ describe("monad", function () {
                     new State("abc", new SourcePos("test", 1, 2), "none"),
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
@@ -864,7 +864,7 @@ describe("monad", function () {
                 alwaysEErr(
                     new ParseError(
                         new SourcePos("test", 1, 2),
-                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                     )
                 )
             ).run(
