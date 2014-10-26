@@ -2138,7 +2138,1230 @@ describe("monad", function () {
     });
 
     describe("liftM5(func)", function () {
+        it("should lift 'func' to a function that takes five parsers and return a parser", function () {
+            var f = function (strA, strB, strC, strD, strE) { return strA + strB + strC + strD + strE; };
+            var mf = lq.monad.liftM5(f);
 
+            var v_acsuc1 = "foo1";
+            var s_acsuc1 = new State("def", new SourcePos("test", 1, 2), "none");
+            var e_acsuc1 = new ParseError(
+                new SourcePos("test", 1, 2),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc1")]
+            );
+            var acsuc1 = alwaysCSuc(v_acsuc1, s_acsuc1, e_acsuc1);
+
+            var e_acerr1 = new ParseError(
+                new SourcePos("test", 1, 2),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr1")]
+            );
+            var acerr1 = alwaysCErr(e_acerr1);
+
+            var v_aesuc1 = "bar1";
+            var s_aesuc1 = new State("def", new SourcePos("test", 1, 2), "none");
+            var e_aesuc1 = new ParseError(
+                new SourcePos("test", 1, 2),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc1")]
+            );
+            var aesuc1 = alwaysESuc(v_aesuc1, s_aesuc1, e_aesuc1);
+
+            var e_aeerr1 = new ParseError(
+                new SourcePos("test", 1, 2),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr1")]
+            );
+            var aeerr1 = alwaysEErr(e_aeerr1);
+
+            var v_acsuc2 = "foo2";
+            var s_acsuc2 = new State("ghi", new SourcePos("test", 3, 4), "none");
+            var e_acsuc2 = new ParseError(
+                new SourcePos("test", 3, 4),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc2")]
+            );
+            var acsuc2 = alwaysCSuc(v_acsuc2, s_acsuc2, e_acsuc2);
+
+            var e_acerr2 = new ParseError(
+                new SourcePos("test", 3, 4),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr2")]
+            );
+            var acerr2 = alwaysCErr(e_acerr2);
+
+            var v_aesuc2 = "bar2";
+            var s_aesuc2 = new State("ghi", new SourcePos("test", 3, 4), "none");
+            var e_aesuc2 = new ParseError(
+                new SourcePos("test", 3, 4),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc2")]
+            );
+            var aesuc2 = alwaysESuc(v_aesuc2, s_aesuc2, e_aesuc2);
+
+            var e_aeerr2 = new ParseError(
+                new SourcePos("test", 3, 4),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr2")]
+            );
+            var aeerr2 = alwaysEErr(e_aeerr2);
+
+            var v_acsuc3 = "foo3";
+            var s_acsuc3 = new State("jkl", new SourcePos("test", 5, 6), "none");
+            var e_acsuc3 = new ParseError(
+                new SourcePos("test", 5, 6),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc3")]
+            );
+            var acsuc3 = alwaysCSuc(v_acsuc3, s_acsuc3, e_acsuc3);
+
+            var e_acerr3 = new ParseError(
+                new SourcePos("test", 5, 6),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr3")]
+            );
+            var acerr3 = alwaysCErr(e_acerr3);
+
+            var v_aesuc3 = "bar3";
+            var s_aesuc3 = new State("jkl", new SourcePos("test", 5, 6), "none");
+            var e_aesuc3 = new ParseError(
+                new SourcePos("test", 5, 6),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc3")]
+            );
+            var aesuc3 = alwaysESuc(v_aesuc3, s_aesuc3, e_aesuc3);
+
+            var e_aeerr3 = new ParseError(
+                new SourcePos("test", 5, 6),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr3")]
+            );
+            var aeerr3 = alwaysEErr(e_aeerr3);
+
+            var v_acsuc4 = "foo4";
+            var s_acsuc4 = new State("jkl", new SourcePos("test", 7, 8), "none");
+            var e_acsuc4 = new ParseError(
+                new SourcePos("test", 7, 8),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc4")]
+            );
+            var acsuc4 = alwaysCSuc(v_acsuc4, s_acsuc4, e_acsuc4);
+
+            var e_acerr4 = new ParseError(
+                new SourcePos("test", 7, 8),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr4")]
+            );
+            var acerr4 = alwaysCErr(e_acerr4);
+
+            var v_aesuc4 = "bar4";
+            var s_aesuc4 = new State("jkl", new SourcePos("test", 7, 8), "none");
+            var e_aesuc4 = new ParseError(
+                new SourcePos("test", 7, 8),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc4")]
+            );
+            var aesuc4 = alwaysESuc(v_aesuc4, s_aesuc4, e_aesuc4);
+
+            var e_aeerr4 = new ParseError(
+                new SourcePos("test", 7, 8),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr4")]
+            );
+            var aeerr4 = alwaysEErr(e_aeerr4);
+
+            var v_acsuc5 = "foo5";
+            var s_acsuc5 = new State("jkl", new SourcePos("test", 9, 10), "none");
+            var e_acsuc5 = new ParseError(
+                new SourcePos("test", 9, 10),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc5")]
+            );
+            var acsuc5 = alwaysCSuc(v_acsuc5, s_acsuc5, e_acsuc5);
+
+            var e_acerr5 = new ParseError(
+                new SourcePos("test", 9, 10),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr5")]
+            );
+            var acerr5 = alwaysCErr(e_acerr5);
+
+            var v_aesuc5 = "bar5";
+            var s_aesuc5 = new State("jkl", new SourcePos("test", 9, 10), "none");
+            var e_aesuc5 = new ParseError(
+                new SourcePos("test", 9, 10),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc5")]
+            );
+            var aesuc5 = alwaysESuc(v_aesuc5, s_aesuc5, e_aesuc5);
+
+            var e_aeerr5 = new ParseError(
+                new SourcePos("test", 9, 10),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr5")]
+            );
+            var aeerr5 = alwaysEErr(e_aeerr5);
+
+            var initState = new State("abc", SourcePos.init("test"), "some");
+
+            mf(acsuc1, acsuc2, acsuc3, acsuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, acsuc3, acsuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, acsuc3, acsuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, acsuc3, acsuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, acsuc3, aesuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, acsuc3, aesuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_acsuc3, ParseError.merge(e_aesuc4, e_aesuc5))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, acsuc3, aesuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, acsuc3, aesuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_acsuc3, ParseError.merge(e_acsuc4, e_aeerr5))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, aesuc3, acsuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, aesuc3, acsuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, aesuc3, acsuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, aesuc3, acsuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, aesuc3, aesuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, aesuc3, aesuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_aesuc4, e_aesuc5)))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, aesuc3, aesuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acsuc2, aesuc3, aesuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_acsuc4, e_aeerr5)))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, acsuc3, acsuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, acsuc3, acsuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, acsuc3, acsuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, acsuc3, acsuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, acsuc3, aesuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, acsuc3, aesuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_acsuc3, ParseError.merge(e_aesuc4, e_aesuc5))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, acsuc3, aesuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, acsuc3, aesuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_acsuc3, ParseError.merge(e_acsuc4, e_aeerr5))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, aesuc3, acsuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, aesuc3, acsuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, aesuc3, acsuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, aesuc3, acsuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, aesuc3, aesuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, aesuc3, aesuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_acsuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_aesuc4, e_aesuc5))))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, aesuc3, aesuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2, aesuc3, aesuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_acsuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_acsuc4, e_aeerr5))))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, acsuc3, acsuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, acsuc3, acsuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, acsuc3, acsuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, acsuc3, acsuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, acsuc3, aesuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, acsuc3, aesuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_acsuc3, ParseError.merge(e_aesuc4, e_aesuc5))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, acsuc3, aesuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, acsuc3, aesuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_acsuc3, ParseError.merge(e_acsuc4, e_aeerr5))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, aesuc3, acsuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, aesuc3, acsuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, aesuc3, acsuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, aesuc3, acsuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, aesuc3, aesuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, aesuc3, aesuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_aesuc4, e_aesuc5)))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, aesuc3, aesuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2, aesuc3, aesuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_acsuc4, e_aeerr5)))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, acsuc3, acsuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, acsuc3, acsuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, acsuc3, acsuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, acsuc3, acsuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, acsuc3, aesuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, acsuc3, aesuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_acsuc3, ParseError.merge(e_aesuc4, e_aesuc5))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, acsuc3, aesuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, acsuc3, aesuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_acsuc3, ParseError.merge(e_acsuc4, e_aeerr5))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, aesuc3, acsuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, aesuc3, acsuc4, aesuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, aesuc3, acsuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, aesuc3, acsuc4, aeerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, aesuc3, aesuc4, acsuc5).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4 + v_acsuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, aesuc3, aesuc4, aesuc5).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4 + v_aesuc5);
+                    State.equals(state, s_acsuc5).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_aesuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_aesuc4, e_aesuc5))))
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, aesuc3, aesuc4, acerr5).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr5).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2, aesuc3, aesuc4, aeerr5).run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        ParseError.merge(e_aesuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_acsuc4, e_aeerr5))))
+                    ).should.be.ok;
+                }
+            );
+
+            [acsuc5, acerr5, aesuc5, aeerr5].forEach(function (a5) {
+                mf(acsuc1, acsuc2, acsuc3, acerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(error, e_acerr4).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(acsuc1, acsuc2, acsuc3, aeerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4)).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(acsuc1, acsuc2, aesuc3, acerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(error, e_acerr4).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(acsuc1, acsuc2, aesuc3, aeerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, e_aeerr4))
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(acsuc1, aesuc2, acsuc3, acerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(error, e_acerr4).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(acsuc1, aesuc2, acsuc3, aeerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4)).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(acsuc1, aesuc2, aesuc3, acerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(error, e_acerr4).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(acsuc1, aesuc2, aesuc3, aeerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            ParseError.merge(e_acsuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, e_aeerr4)))
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(aesuc1, acsuc2, acsuc3, acerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(error, e_acerr4).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(aesuc1, acsuc2, acsuc3, aeerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4)).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(aesuc1, acsuc2, aesuc3, acerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(error, e_acerr4).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(aesuc1, acsuc2, aesuc3, aeerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, e_aeerr4))
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(aesuc1, aesuc2, acsuc3, acerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(error, e_acerr4).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(aesuc1, aesuc2, acsuc3, aeerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4)).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(aesuc1, aesuc2, aesuc3, acerr4, a5).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(error, e_acerr4).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(aesuc1, aesuc2, aesuc3, aeerr4, a5).run(
+                    initState,
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            ParseError.merge(e_aesuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, e_aeerr4)))
+                        ).should.be.ok;
+                    }
+                );
+
+                [acsuc4, acerr4, aesuc4, aeerr4].forEach(function (a4) {
+                    mf(acsuc1, acsuc2, acerr3, a4, a5).run(
+                        initState,
+                        throwError,
+                        function (error) {
+                            ParseError.equals(error, e_acerr3).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+
+                    mf(acsuc1, acsuc2, aeerr3, a4, a5).run(
+                        initState,
+                        throwError,
+                        function (error) {
+                            ParseError.equals(error, ParseError.merge(e_acsuc2, e_aeerr3)).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+
+                    mf(acsuc1, aesuc2, acerr3, a4, a5).run(
+                        initState,
+                        throwError,
+                        function (error) {
+                            ParseError.equals(error, e_acerr3).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+
+                    mf(acsuc1, aesuc2, aeerr3, a4, a5).run(
+                        initState,
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                ParseError.merge(e_acsuc1, ParseError.merge(e_aesuc2, e_aeerr3))
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+
+                    mf(aesuc1, acsuc2, acerr3, a4, a5).run(
+                        initState,
+                        throwError,
+                        function (error) {
+                            ParseError.equals(error, e_acerr3).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+
+                    mf(aesuc1, acsuc2, aeerr3, a4, a5).run(
+                        initState,
+                        throwError,
+                        function (error) {
+                            ParseError.equals(error, ParseError.merge(e_acsuc2, e_aeerr3)).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+
+                    mf(aesuc1, aesuc2, acerr3, a4, a5).run(
+                        initState,
+                        throwError,
+                        function (error) {
+                            ParseError.equals(error, e_acerr3).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+
+                    mf(aesuc1, aesuc2, aeerr3, a4, a5).run(
+                        initState,
+                        throwError,
+                        throwError,
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                ParseError.merge(e_aesuc1, ParseError.merge(e_aesuc2, e_aeerr3))
+                            ).should.be.ok;
+                        }
+                    );
+
+                    [acsuc3, acerr3, aesuc3, aeerr3].forEach(function (a3) {
+                        mf(acsuc1, acerr2, a3, a4, a5).run(
+                            initState,
+                            throwError,
+                            function (error) {
+                                ParseError.equals(error, e_acerr2).should.be.ok;
+                            },
+                            throwError,
+                            throwError
+                        );
+
+                         mf(acsuc1, aeerr2, a3, a4, a5).run(
+                            initState,
+                            throwError,
+                            function (error) {
+                                ParseError.equals(error, ParseError.merge(e_acsuc1, e_aeerr2)).should.be.ok;
+                            },
+                            throwError,
+                            throwError
+                        );
+
+                         mf(aesuc1, acerr2, a3, a4, a5).run(
+                            initState,
+                            throwError,
+                            function (error) {
+                                ParseError.equals(error, e_acerr2).should.be.ok;
+                            },
+                            throwError,
+                            throwError
+                        );
+
+                         mf(aesuc1, aeerr2, a3, a4, a5).run(
+                            initState,
+                            throwError,
+                            throwError,
+                            throwError,
+                            function (error) {
+                                ParseError.equals(error, ParseError.merge(e_aesuc1, e_aeerr2)).should.be.ok;
+                            }
+                        );
+
+                         [acsuc2, acerr2, aesuc2, aeerr2].forEach(function (a2) {
+                            mf(acerr1, a2, a3, a4, a5).run(
+                                initState,
+                                throwError,
+                                function (error) {
+                                    ParseError.equals(error, e_acerr1).should.be.ok;
+                                },
+                                throwError,
+                                throwError
+                            );
+
+                            mf(aeerr1, a2, a3, a4, a5).run(
+                                initState,
+                                throwError,
+                                throwError,
+                                throwError,
+                                function (error) {
+                                    ParseError.equals(error, e_aeerr1).should.be.ok;
+                                }
+                            );
+                         });
+                    });
+                });
+            });
+        });
     });
 
     describe("ltor(funcA, funcB)", function () {
