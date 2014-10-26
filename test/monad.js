@@ -888,7 +888,84 @@ describe("monad", function () {
     });
 
     describe("liftM(func)", function () {
+        it("should lift 'func' to a function that takes one parser and return a parser", function () {
+            var f = function (str) { return str.toUpperCase(); };
+            var mf = lq.monad.liftM(f);
 
+            var v_acsuc1 = "foo1";
+            var s_acsuc1 = new State("def", new SourcePos("test", 1, 2), "none");
+            var e_acsuc1 = new ParseError(
+                new SourcePos("test", 1, 2),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc1")]
+            );
+            var acsuc1 = alwaysCSuc(v_acsuc1, s_acsuc1, e_acsuc1);
+
+            var e_acerr1 = new ParseError(
+                new SourcePos("test", 1, 2),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr1")]
+            );
+            var acerr1 = alwaysCErr(e_acerr1);
+
+            var v_aesuc1 = "bar1";
+            var s_aesuc1 = new State("def", new SourcePos("test", 1, 2), "none");
+            var e_aesuc1 = new ParseError(
+                new SourcePos("test", 1, 2),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc1")]
+            );
+            var aesuc1 = alwaysESuc(v_aesuc1, s_aesuc1, e_aesuc1);
+
+            var e_aeerr1 = new ParseError(
+                new SourcePos("test", 1, 2),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr1")]
+            );
+            var aeerr1 = alwaysEErr(e_aeerr1);
+
+            var initState = new State("abc", SourcePos.init("test"), "some");
+
+            mf(acsuc1).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1.toUpperCase());
+                    State.equals(state, s_acsuc1).should.be.ok;
+                    ParseError.equals(error, e_acsuc1).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1.toUpperCase());
+                    State.equals(state, s_aesuc1).should.be.ok;
+                    ParseError.equals(error, e_aesuc1).should.be.ok;
+                },
+                throwError
+            );
+
+            mf(acerr1).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr1).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aeerr1).run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_aeerr1).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("liftM2(func)", function () {
