@@ -3365,11 +3365,539 @@ describe("monad", function () {
     });
 
     describe("ltor(funcA, funcB)", function () {
+        it("should compose two monadic functions from left to right", function () {
+            var acsucf = function (str) {
+                return alwaysCSuc(
+                    str + "bar",
+                    new State("def", new SourcePos("test", 1, 2), "none"),
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
+                    )
+                );
+            };
 
+            var acerrf = function (str) {
+                return alwaysCErr(
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
+                    )
+                );
+            };
+
+            var aesucf = function (str) {
+                return alwaysESuc(
+                    str + "bar",
+                    new State("def", new SourcePos("test", 1, 2), "none"),
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
+                    )
+                );
+            };
+
+            var aeerrf = function (str) {
+                return alwaysEErr(
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
+                    )
+                );
+            };
+
+            var acsucg = function (str) {
+                return alwaysCSuc(
+                    str + "baz",
+                    new State("ghi", new SourcePos("test", 3, 4), "none"),
+                    new ParseError(
+                        new SourcePos("test", 3, 4),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_baz")]
+                    )
+                );
+            };
+
+            var acerrg = function (str) {
+                return alwaysCErr(
+                    new ParseError(
+                        new SourcePos("test", 3, 4),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_baz")]
+                    )
+                );
+            };
+
+            var aesucg = function (str) {
+                return alwaysESuc(
+                    str + "baz",
+                    new State("ghi", new SourcePos("test", 3, 4), "none"),
+                    new ParseError(
+                        new SourcePos("test", 3, 4),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_baz")]
+                    )
+                );
+            };
+
+            var aeerrg = function (str) {
+                return alwaysEErr(
+                    new ParseError(
+                        new SourcePos("test", 3, 4),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_baz")]
+                    )
+                );
+            };
+
+            var initState = new State("abc", SourcePos.init("test"), "some");
+
+            lq.monad.ltor(acsucf, acsucg)("foo").run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal("foobarbaz"),
+                    State.equals(
+                        state,
+                        new State("ghi", new SourcePos("test", 3, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_baz")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.ltor(acsucf, acerrg)("foo").run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_baz")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.ltor(acsucf, aesucg)("foo").run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal("foobarbaz"),
+                    State.equals(
+                        state,
+                        new State("ghi", new SourcePos("test", 3, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.ltor(acsucf, aeerrg)("foo").run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.ltor(aesucf, acsucg)("foo").run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal("foobarbaz"),
+                    State.equals(
+                        state,
+                        new State("ghi", new SourcePos("test", 3, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_baz")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.ltor(aesucf, acerrg)("foo").run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_baz")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.ltor(aesucf, aesucg)("foo").run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal("foobarbaz"),
+                    State.equals(
+                        state,
+                        new State("ghi", new SourcePos("test", 3, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.ltor(aesucf, aeerrg)("foo").run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            [acsucg, acerrg, aesucg, aeerrg].forEach(function (ag) {
+                lq.monad.ltor(acerrf, acerrg)("foo").run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.monad.ltor(aeerrf, acerrg)("foo").run(
+                    initState,
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+        });
     });
 
     describe("rtol(funcA, funcB)", function () {
+        it("should compose two monadic functions from right to left", function () {
+            var acsucf = function (str) {
+                return alwaysCSuc(
+                    str + "bar",
+                    new State("def", new SourcePos("test", 1, 2), "none"),
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
+                    )
+                );
+            };
 
+            var acerrf = function (str) {
+                return alwaysCErr(
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
+                    )
+                );
+            };
+
+            var aesucf = function (str) {
+                return alwaysESuc(
+                    str + "bar",
+                    new State("def", new SourcePos("test", 1, 2), "none"),
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
+                    )
+                );
+            };
+
+            var aeerrf = function (str) {
+                return alwaysEErr(
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
+                    )
+                );
+            };
+
+            var acsucg = function (str) {
+                return alwaysCSuc(
+                    str + "baz",
+                    new State("ghi", new SourcePos("test", 3, 4), "none"),
+                    new ParseError(
+                        new SourcePos("test", 3, 4),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_baz")]
+                    )
+                );
+            };
+
+            var acerrg = function (str) {
+                return alwaysCErr(
+                    new ParseError(
+                        new SourcePos("test", 3, 4),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_baz")]
+                    )
+                );
+            };
+
+            var aesucg = function (str) {
+                return alwaysESuc(
+                    str + "baz",
+                    new State("ghi", new SourcePos("test", 3, 4), "none"),
+                    new ParseError(
+                        new SourcePos("test", 3, 4),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_baz")]
+                    )
+                );
+            };
+
+            var aeerrg = function (str) {
+                return alwaysEErr(
+                    new ParseError(
+                        new SourcePos("test", 3, 4),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_baz")]
+                    )
+                );
+            };
+
+            var initState = new State("abc", SourcePos.init("test"), "some");
+
+            lq.monad.rtol(acsucg, acsucf)("foo").run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal("foobarbaz"),
+                    State.equals(
+                        state,
+                        new State("ghi", new SourcePos("test", 3, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_baz")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.rtol(acerrg, acsucf)("foo").run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_baz")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.rtol(aesucg, acsucf)("foo").run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal("foobarbaz"),
+                    State.equals(
+                        state,
+                        new State("ghi", new SourcePos("test", 3, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.rtol(aeerrg, acsucf)("foo").run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.rtol(acsucg, aesucf)("foo").run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal("foobarbaz"),
+                    State.equals(
+                        state,
+                        new State("ghi", new SourcePos("test", 3, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_baz")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.rtol(acerrg, aesucf)("foo").run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_baz")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.rtol(aesucg, aesucf)("foo").run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal("foobarbaz"),
+                    State.equals(
+                        state,
+                        new State("ghi", new SourcePos("test", 3, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.rtol(aeerrg, aesucf)("foo").run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            [acsucg, acerrg, aesucg, aeerrg].forEach(function (ag) {
+                lq.monad.rtol(acerrg, acerrf)("foo").run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.monad.rtol(acerrg, aeerrf)("foo").run(
+                    initState,
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+        });
     });
 
     describe("sequence(parsers)", function () {
