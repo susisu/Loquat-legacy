@@ -969,7 +969,178 @@ describe("monad", function () {
     });
 
     describe("liftM2(func)", function () {
+        it("should lift 'func' to a function that takes two parsers and return a parser", function () {
+            var f = function (strA, strB) { return strA + strB; };
+            var mf = lq.monad.liftM2(f);
 
+            var v_acsuc1 = "foo1";
+            var s_acsuc1 = new State("def", new SourcePos("test", 1, 2), "none");
+            var e_acsuc1 = new ParseError(
+                new SourcePos("test", 1, 2),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc1")]
+            );
+            var acsuc1 = alwaysCSuc(v_acsuc1, s_acsuc1, e_acsuc1);
+
+            var e_acerr1 = new ParseError(
+                new SourcePos("test", 1, 2),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr1")]
+            );
+            var acerr1 = alwaysCErr(e_acerr1);
+
+            var v_aesuc1 = "bar1";
+            var s_aesuc1 = new State("def", new SourcePos("test", 1, 2), "none");
+            var e_aesuc1 = new ParseError(
+                new SourcePos("test", 1, 2),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc1")]
+            );
+            var aesuc1 = alwaysESuc(v_aesuc1, s_aesuc1, e_aesuc1);
+
+            var e_aeerr1 = new ParseError(
+                new SourcePos("test", 1, 2),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr1")]
+            );
+            var aeerr1 = alwaysEErr(e_aeerr1);
+
+            var v_acsuc2 = "foo2";
+            var s_acsuc2 = new State("ghi", new SourcePos("test", 3, 4), "none");
+            var e_acsuc2 = new ParseError(
+                new SourcePos("test", 3, 4),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc2")]
+            );
+            var acsuc2 = alwaysCSuc(v_acsuc2, s_acsuc2, e_acsuc2);
+
+            var e_acerr2 = new ParseError(
+                new SourcePos("test", 3, 4),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr2")]
+            );
+            var acerr2 = alwaysCErr(e_acerr2);
+
+            var v_aesuc2 = "bar2";
+            var s_aesuc2 = new State("ghi", new SourcePos("test", 3, 4), "none");
+            var e_aesuc2 = new ParseError(
+                new SourcePos("test", 3, 4),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc2")]
+            );
+            var aesuc2 = alwaysESuc(v_aesuc2, s_aesuc2, e_aesuc2);
+
+            var e_aeerr2 = new ParseError(
+                new SourcePos("test", 3, 4),
+                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr2")]
+            );
+            var aeerr2 = alwaysEErr(e_aeerr2);
+
+            var initState = new State("abc", SourcePos.init("test"), "some");
+
+            mf(acsuc1, acsuc2).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_acsuc2);
+                    State.equals(state, s_acsuc2).should.be.ok;
+                    ParseError.equals(error, e_acsuc2).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aesuc2).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_acsuc1 + v_aesuc2);
+                    State.equals(state, s_aesuc2).should.be.ok;
+                    ParseError.equals(error, ParseError.merge(e_acsuc1, e_aesuc2)).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, acerr2).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr2).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(acsuc1, aeerr2).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.merge(e_acsuc1, e_aeerr2)).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, acsuc2).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_acsuc2);
+                    State.equals(state, s_acsuc2).should.be.ok;
+                    ParseError.equals(error, e_acsuc2).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aesuc2).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal(v_aesuc1 + v_aesuc2);
+                    State.equals(state, s_aesuc2).should.be.ok;
+                    ParseError.equals(error, ParseError.merge(e_aesuc1, e_aesuc2)).should.be.ok;
+                },
+                throwError
+            );
+
+            mf(aesuc1, acerr2).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, e_acerr2).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            mf(aesuc1, aeerr2).run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.merge(e_aesuc1, e_aeerr2)).should.be.ok;
+                }
+            );
+
+            [acsuc2, acerr2, aesuc2, aeerr2].forEach(function (a2) {
+                mf(acerr1, a2).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(error, e_acerr1).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                mf(aeerr1, a2).run(
+                    initState,
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(error, e_aeerr1).should.be.ok;
+                    }
+                );
+            });
+        });
     });
 
     describe("liftM3(func)", function () {
