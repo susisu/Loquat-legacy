@@ -4429,11 +4429,501 @@ describe("monad", function () {
     });
 
     describe("mapM(func, array)", function () {
+        it("should map 'func' to array then run the returned parsers sequentially", function () {
+            var f = function (str) {
+                switch (str.toLowerCase()) {
+                    case "foo":
+                        return alwaysCSuc(
+                            "csuc_" + str,
+                            new State("def", new SourcePos("test", 1, 2), "none"),
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_" + str)]
+                            )
+                        );
+                    case "bar":
+                        return alwaysCErr(
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_" + str)]
+                            )
+                        );
+                    case "baz":
+                        return alwaysESuc(
+                            "esuc_" + str,
+                            new State("def", new SourcePos("test", 1, 2), "none"),
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_" + str)]
+                            )
+                        );
+                    default:
+                        return alwaysEErr(
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_" + str)]
+                            )
+                        );
+                }
+            };
 
+            var initState = new State("abc", SourcePos.init("test"), "some");
+            
+            lq.monad.mapM(f, []).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (lq.util.ArrayUtil.equals(value, [])).should.be.ok;
+                    State.equals(state, initState).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.mapM(f, ["foo", "FOO"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["csuc_foo", "csuc_FOO"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_FOO")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.mapM(f, ["foo", "BAR"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_BAR")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.mapM(f, ["foo", "BAZ"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["csuc_foo", "esuc_BAZ"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_BAZ")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.mapM(f, ["foo", "NYA"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_NYA")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.mapM(f, ["baz", "FOO"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["esuc_baz", "csuc_FOO"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_FOO")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.mapM(f, ["baz", "BAR"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_BAR")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.mapM(f, ["baz", "BAZ"]).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["esuc_baz", "esuc_BAZ"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_baz"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_BAZ")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.mapM(f, ["baz", "NYA"]).run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_baz"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_NYA")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            ["FOO", "BAR", "BAZ", "NYA"].forEach(function (a) {
+                lq.monad.mapM(f, ["bar", a]).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.monad.mapM(f, ["nya", a]).run(
+                    initState,
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_nya")]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+        });
     });
 
     describe("mapM_(func, array)", function () {
+        it("should map 'func' to array then run the returned parsers sequentially and discard the results", function () {
+            var f = function (str) {
+                switch (str.toLowerCase()) {
+                    case "foo":
+                        return alwaysCSuc(
+                            "csuc_" + str,
+                            new State("def", new SourcePos("test", 1, 2), "none"),
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_" + str)]
+                            )
+                        );
+                    case "bar":
+                        return alwaysCErr(
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_" + str)]
+                            )
+                        );
+                    case "baz":
+                        return alwaysESuc(
+                            "esuc_" + str,
+                            new State("def", new SourcePos("test", 1, 2), "none"),
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_" + str)]
+                            )
+                        );
+                    default:
+                        return alwaysEErr(
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_" + str)]
+                            )
+                        );
+                }
+            };
 
+            var initState = new State("abc", SourcePos.init("test"), "some");
+            
+            lq.monad.mapM_(f, []).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(state, initState).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.mapM_(f, ["foo", "FOO"]).run(
+                initState,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_FOO")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.mapM_(f, ["foo", "BAR"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_BAR")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.mapM_(f, ["foo", "BAZ"]).run(
+                initState,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_BAZ")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.mapM_(f, ["foo", "NYA"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_NYA")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.mapM_(f, ["baz", "FOO"]).run(
+                initState,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_FOO")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.mapM_(f, ["baz", "BAR"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_BAR")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.mapM_(f, ["baz", "BAZ"]).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_baz"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_BAZ")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.mapM_(f, ["baz", "NYA"]).run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_baz"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_NYA")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            ["FOO", "BAR", "BAZ", "NYA"].forEach(function (a) {
+                lq.monad.mapM_(f, ["bar", a]).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.monad.mapM_(f, ["nya", a]).run(
+                    initState,
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_nya")]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+        });
     });
 
     describe("forM(array, func)", function () {
