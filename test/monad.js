@@ -3901,11 +3901,383 @@ describe("monad", function () {
     });
 
     describe("sequence(parsers)", function () {
+        it("should run parsers sequentially and return the array of the results", function () {
+            var initState = new State("abc", SourcePos.init("test"), "some");
+            
+            lq.monad.sequence([]).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (lq.util.ArrayUtil.equals(value, [])).should.be.ok;
+                    State.equals(state, initState).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                },
+                throwError
+            );
 
+            var acsuc1 = alwaysCSuc(
+                "foo",
+                new State("def", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo")]
+                )
+            );
+
+            var acerr1 = alwaysCErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_foo")]
+                )
+            );
+
+            var aesuc1 = alwaysESuc(
+                "foo",
+                new State("def", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_foo")]
+                )
+            );
+
+            var aeerr1 = alwaysEErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_foo")]
+                )
+            );
+
+            var acsuc2 = alwaysCSuc(
+                "bar",
+                new State("ghi", new SourcePos("test", 3, 4), "none"),
+                new ParseError(
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
+                )
+            );
+
+            var acerr2 = alwaysCErr(
+                new ParseError(
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
+                )
+            );
+
+            var aesuc2 = alwaysESuc(
+                "bar",
+                new State("ghi", new SourcePos("test", 3, 4), "none"),
+                new ParseError(
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
+                )
+            );
+
+            var aeerr2 = alwaysEErr(
+                new ParseError(
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
+                )
+            );
+
+            lq.monad.sequence([acsuc1, acsuc2]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("ghi", new SourcePos("test", 3, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.sequence([acsuc1, acerr2]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.sequence([acsuc1, aesuc2]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("ghi", new SourcePos("test", 3, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.sequence([acsuc1, aeerr2]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            [acsuc2, acerr2, aesuc2, aeerr2].forEach(function (a2) {
+                lq.monad.sequence([acerr1, a2]).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_foo")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.monad.sequence([aeerr1, a2]).run(
+                    initState,
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_foo")]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+        });
     });
 
     describe("sequence_(parsers)", function () {
+        it("should run parsers sequentially and discard the results", function () {
+            var initState = new State("abc", SourcePos.init("test"), "some");
+            
+            lq.monad.sequence_([]).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(state, initState).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                },
+                throwError
+            );
 
+            var acsuc1 = alwaysCSuc(
+                "foo",
+                new State("def", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo")]
+                )
+            );
+
+            var acerr1 = alwaysCErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_foo")]
+                )
+            );
+
+            var aesuc1 = alwaysESuc(
+                "foo",
+                new State("def", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_foo")]
+                )
+            );
+
+            var aeerr1 = alwaysEErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_foo")]
+                )
+            );
+
+            var acsuc2 = alwaysCSuc(
+                "bar",
+                new State("ghi", new SourcePos("test", 3, 4), "none"),
+                new ParseError(
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
+                )
+            );
+
+            var acerr2 = alwaysCErr(
+                new ParseError(
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
+                )
+            );
+
+            var aesuc2 = alwaysESuc(
+                "bar",
+                new State("ghi", new SourcePos("test", 3, 4), "none"),
+                new ParseError(
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
+                )
+            );
+
+            var aeerr2 = alwaysEErr(
+                new ParseError(
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
+                )
+            );
+
+            lq.monad.sequence_([acsuc1, acsuc2]).run(
+                initState,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("ghi", new SourcePos("test", 3, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.sequence_([acsuc1, acerr2]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.sequence_([acsuc1, aesuc2]).run(
+                initState,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("ghi", new SourcePos("test", 3, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.sequence_([acsuc1, aeerr2]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            [acsuc2, acerr2, aesuc2, aeerr2].forEach(function (a2) {
+                lq.monad.sequence_([acerr1, a2]).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_foo")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.monad.sequence_([aeerr1, a2]).run(
+                    initState,
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_foo")]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+        });
     });
 
     describe("mapM(func, array)", function () {
