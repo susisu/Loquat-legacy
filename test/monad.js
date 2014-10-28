@@ -5428,11 +5428,11 @@ describe("monad", function () {
 
     });
 
-    describe("zipWithM(func, parsersA, parsersB)", function () {
+    describe("zipWithM(func, arrayA, arrayB)", function () {
 
     });
 
-    describe("zipWithM_(func, parsersA, parsersB", function () {
+    describe("zipWithM_(func, arrayA, arrayB", function () {
 
     });
 
