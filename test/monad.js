@@ -6038,11 +6038,541 @@ describe("monad", function () {
     });
 
     describe("zipWithM(func, arrayA, arrayB)", function () {
+        it("should zip arrays with function that returns parser", function () {
+            var f = function (flag, value) {
+                switch (flag) {
+                    case "csuc": return alwaysCSuc(
+                            value,
+                            new State("def", new SourcePos("test", 1, 2), "none"),
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            )
+                        );
+                    case "cerr": return alwaysCErr(
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        );
+                    case "esuc": return alwaysESuc(
+                            value,
+                            new State("def", new SourcePos("test", 1, 2), "none"),
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                            )
+                        );
+                    default: return alwaysEErr(
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        );
+                }
+            };
 
+            var initState = new State("abc", SourcePos.init("test"), "some");
+
+            lq.monad.zipWithM(f, [], []).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
+                    State.equals(state, initState).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.zipWithM(f, ["csuc", "cerr", "esuc", "eerr"], []).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
+                    State.equals(state, initState).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                },
+                throwError
+            );
+            
+            lq.monad.zipWithM(f, [], ["foo", "bar", "baz", "nya"]).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
+                    State.equals(state, initState).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.zipWithM(f, ["csuc", "csuc"], ["foo", "bar"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.zipWithM(f, ["csuc", "cerr"], ["foo", "bar"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.zipWithM(f, ["csuc", "esuc"], ["foo", "bar"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.zipWithM(f, ["csuc", "eerr"], ["foo", "bar"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.zipWithM(f, ["esuc", "csuc"], ["foo", "bar"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.zipWithM(f, ["esuc", "cerr"], ["foo", "bar"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.zipWithM(f, ["esuc", "esuc"], ["foo", "bar"]).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.zipWithM(f, ["esuc", "eerr"], ["foo", "bar"]).run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            ["csuc", "cerr", "esuc", "eerr"].forEach(function (e2) {
+                lq.monad.zipWithM(f, ["cerr", e2], ["foo", "bar"]).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.monad.zipWithM(f, ["eerr", e2], ["foo", "bar"]).run(
+                    initState,
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+        });
     });
 
     describe("zipWithM_(func, arrayA, arrayB", function () {
+        it("should zip arrays with function that returns parser and discard the results", function () {
+            var f = function (flag, value) {
+                switch (flag) {
+                    case "csuc": return alwaysCSuc(
+                            value,
+                            new State("def", new SourcePos("test", 1, 2), "none"),
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            )
+                        );
+                    case "cerr": return alwaysCErr(
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        );
+                    case "esuc": return alwaysESuc(
+                            value,
+                            new State("def", new SourcePos("test", 1, 2), "none"),
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                            )
+                        );
+                    default: return alwaysEErr(
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        );
+                }
+            };
 
+            var initState = new State("abc", SourcePos.init("test"), "some");
+
+            lq.monad.zipWithM_(f, [], []).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(state, initState).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.zipWithM_(f, ["csuc", "cerr", "esuc", "eerr"], []).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(state, initState).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                },
+                throwError
+            );
+            
+            lq.monad.zipWithM_(f, [], ["foo", "bar", "baz", "nya"]).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(state, initState).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.zipWithM_(f, ["csuc", "csuc"], ["foo", "bar"]).run(
+                initState,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.zipWithM_(f, ["csuc", "cerr"], ["foo", "bar"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.zipWithM_(f, ["csuc", "esuc"], ["foo", "bar"]).run(
+                initState,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.zipWithM_(f, ["csuc", "eerr"], ["foo", "bar"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.zipWithM_(f, ["esuc", "csuc"], ["foo", "bar"]).run(
+                initState,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.zipWithM_(f, ["esuc", "cerr"], ["foo", "bar"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.zipWithM_(f, ["esuc", "esuc"], ["foo", "bar"]).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.zipWithM_(f, ["esuc", "eerr"], ["foo", "bar"]).run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            ["csuc", "cerr", "esuc", "eerr"].forEach(function (e2) {
+                lq.monad.zipWithM_(f, ["cerr", e2], ["foo", "bar"]).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.monad.zipWithM_(f, ["eerr", e2], ["foo", "bar"]).run(
+                    initState,
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+        });
     });
 
     describe("foldM(func, initialValue, array)", function () {
