@@ -5425,7 +5425,616 @@ describe("monad", function () {
     });
 
     describe("filterM(test, array)", function () {
+        it("should filter the array with the function that returns parser", function () {
+            var acsuct = alwaysCSuc(
+                true,
+                new State("def", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_true")]
+                )
+            );
 
+            var acsucf = alwaysCSuc(
+                false,
+                new State("def", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_false")]
+                )
+            );
+
+            var acerr = alwaysCErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                )
+            );
+
+            var aesuct = alwaysESuc(
+                true,
+                new State("def", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_true")]
+                )
+            );
+
+            var aesucf = alwaysESuc(
+                false,
+                new State("def", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_false")]
+                )
+            );
+
+            var aeerr = alwaysEErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                )
+            );
+
+            var f = function (str) {
+                switch (str) {
+                    case "foo": return acsuct;
+                    case "FOO": return acsucf;
+                    case "bar": return aesuct;
+                    case "BAR": return aesucf;
+                    case "baz": return acerr;
+                    default: return aeerr;
+                }
+            };
+
+            var initState = new State("abc", SourcePos.init("test"), "some");
+
+            lq.monad.filterM(f, []).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
+                    State.equals(state, initState).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.filterM(f, ["foo", "foo"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["foo", "foo"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_true")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["foo", "FOO"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["foo"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_false")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["foo", "bar"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_true"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_true")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["foo", "BAR"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["foo"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_true"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_false")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["foo", "baz"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["foo", "nya"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_true"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["FOO", "foo"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["foo"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_true")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["FOO", "FOO"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_false")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["FOO", "bar"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["bar"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_false"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_true")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["FOO", "BAR"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_false"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_false")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["FOO", "baz"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["FOO", "nya"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_false"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["bar", "foo"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["bar", "foo"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_true")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["bar", "FOO"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["bar"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_false")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["bar", "bar"]).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["bar", "bar"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_true"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_true")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.filterM(f, ["bar", "BAR"]).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["bar"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_true"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_false")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.filterM(f, ["bar", "baz"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["bar", "nya"]).run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_true"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.monad.filterM(f, ["BAR", "foo"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["foo"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_true")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["BAR", "FOO"]).run(
+                initState,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_false")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["BAR", "bar"]).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["bar"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_false"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_true")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.filterM(f, ["BAR", "BAR"]).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_false"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_false")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.filterM(f, ["BAR", "baz"]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.filterM(f, ["BAR", "nya"]).run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_false"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            ["foo", "FOO", "bar", "BAR", "baz", "nya"].forEach(function (e2) {
+                lq.monad.filterM(f, ["baz", e2]).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.monad.filterM(f, ["nya", e2]).run(
+                    initState,
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+        });
     });
 
     describe("zipWithM(func, arrayA, arrayB)", function () {
