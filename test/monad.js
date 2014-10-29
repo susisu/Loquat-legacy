@@ -7452,7 +7452,31 @@ describe("monad", function () {
     });
 
     describe("guard(flag)", function () {
+        it("should return a parser that always succeeds with 'undefined' when 'flag' is true", function () {
+            lq.monad.guard(true).run(
+                new State("abc", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(state, new State("abc", SourcePos.init("test"), "some")).should.be.ok;
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                },
+                throwError
+            );
+        });
 
+        it("should retrun 'mzero' when 'flag' is false", function () {
+            lq.monad.guard(false).run(
+                new State("abc", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("msum(parsers)", function () {
