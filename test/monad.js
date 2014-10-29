@@ -7480,7 +7480,191 @@ describe("monad", function () {
     });
 
     describe("msum(parsers)", function () {
+        it("should concatenate the parsers with 'mplus'", function () {
+            var acsuc = alwaysCSuc(
+                "foo",
+                new State("def", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                )
+            );
 
+            var acerr = alwaysCErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                )
+            );
+
+            var aesuc = alwaysESuc(
+                "bar",
+                new State("def", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                )
+            );
+
+            var aeerr = alwaysEErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                )
+            );
+
+            var initState = new State("abc", SourcePos.init("test"), "some");
+
+            lq.monad.msum([]).run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                }
+            );
+
+            [acsuc, acerr, aesuc, aeerr].forEach(function (a2) {
+                lq.monad.msum([acsuc, a2]).run(
+                    initState,
+                    function (value, state, error) {
+                        value.should.equal("foo");
+                        State.equals(
+                            state,
+                            new State("def", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                lq.monad.msum([acerr, a2]).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.monad.msum([aesuc, a2]).run(
+                    initState,
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        value.should.equal("bar");
+                        State.equals(
+                            state,
+                            new State("def", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+            });
+
+            lq.monad.msum([aeerr, acsuc]).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal("foo");
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.monad.msum([aeerr, acerr]).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.msum([aeerr, aesuc]).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal("bar");
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.monad.msum([aeerr, aeerr]).run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("mfilter(test, parser)", function () {
