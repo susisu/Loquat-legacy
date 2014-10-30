@@ -53,7 +53,222 @@ describe("monad", function () {
     }
 
     describe("forever(parser)", function () {
+        it("should repeat parser infinitely", function () {
+            var p = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                switch (state.input.charAt(0)) {
+                    case "a": return csuc(
+                            "a" + state.position.column.toString(),
+                            new State(
+                                state.input.substr(1),
+                                state.position.setColumn(state.position.column + 1),
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            )
+                        );
+                    case "b": return cerr(
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        );
+                    case "c": return esuc(
+                            "c" + state.position.column.toString(),
+                            new State(
+                                state.input.substr(1),
+                                state.position,
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                            )
+                        );
+                    default: return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        );
+                }
+            });
 
+            lq.monad.forever(p).run(
+                new State("aababcd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.forever(p).run(
+                new State("acbabcd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.forever(p).run(
+                new State("cababcd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.forever(p).run(
+                new State("ccbabcd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.forever(p).run(
+                new State("aadabcd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.forever(p).run(
+                new State("acdabcd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.forever(p).run(
+                new State("cadabcd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.forever(p).run(
+                new State("ccdabcd", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.monad.forever(p).run(
+                new State("babcd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.monad.forever(p).run(
+                new State("dabcd", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("nullify(parser)", function () {
