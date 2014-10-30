@@ -480,7 +480,120 @@ describe("combinator", function () {
     });
 
     describe("optional(parser)", function () {
+        it("should try 'parser' and return 'undefined' when 'parser' succeeded or failed without consumption", function () {
+            lq.combinator.optional(
+                alwaysCSuc(
+                    "foo",
+                    new State("def", new SourcePos("test", 1, 2), "none"),
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                    )
+                )
+            ).run(
+                new State("abc", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            lq.combinator.optional(
+                alwaysESuc(
+                    "foo",
+                    new State("def", new SourcePos("test", 1, 2), "none"),
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                    )
+                )
+            ).run(
+                new State("abc", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("def", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.combinator.optional(
+                alwaysEErr(
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                    )
+                )
+            ).run(
+                new State("abc", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("abc", SourcePos.init("test"), "some")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+        });
+
+        it("should try 'parser' and fail when 'parser' failed with consumption", function () {
+            lq.combinator.optional(
+                alwaysCErr(
+                    new ParseError(
+                        new SourcePos("test", 1, 2),
+                        [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                    )
+                )
+            ).run(
+                new State("abc", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+        });
     });
 
     describe("between(open, close, parser)", function () {
