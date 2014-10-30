@@ -597,7 +597,501 @@ describe("combinator", function () {
     });
 
     describe("between(open, close, parser)", function () {
+        it("should parse something that 'parser' accepts between 'open' and 'close'", function () {
+            var open_acsuc = alwaysCSuc(
+                "(",
+                new State("def", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "open_csuc")]
+                )
+            );
 
+            var open_acerr = alwaysCErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "open_cerr")]
+                )
+            );
+
+            var open_aesuc = alwaysESuc(
+                "(",
+                new State("def", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "open_esuc")]
+                )
+            );
+
+            var open_aeerr = alwaysEErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "open_eerr")]
+                )
+            );
+
+            var content_acsuc = alwaysCSuc(
+                "foo",
+                new State("ghi", new SourcePos("test", 3, 4), "none"),
+                new ParseError(
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "content_csuc")]
+                )
+            );
+
+            var content_acerr = alwaysCErr(
+                new ParseError(
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "content_cerr")]
+                )
+            );
+
+            var content_aesuc = alwaysESuc(
+                "bar",
+                new State("ghi", new SourcePos("test", 3, 4), "none"),
+                new ParseError(
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "content_esuc")]
+                )
+            );
+
+            var content_aeerr = alwaysEErr(
+                new ParseError(
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "content_eerr")]
+                )
+            );
+
+            var close_acsuc = alwaysCSuc(
+                ")",
+                new State("jkl", new SourcePos("test", 5, 6), "none"),
+                new ParseError(
+                    new SourcePos("test", 5, 6),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "close_csuc")]
+                )
+            );
+
+            var close_acerr = alwaysCErr(
+                new ParseError(
+                    new SourcePos("test", 5, 6),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "close_cerr")]
+                )
+            );
+
+            var close_aesuc = alwaysESuc(
+                ")",
+                new State("jkl", new SourcePos("test", 5, 6), "none"),
+                new ParseError(
+                    new SourcePos("test", 5, 6),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "close_esuc")]
+                )
+            );
+
+            var close_aeerr = alwaysEErr(
+                new ParseError(
+                    new SourcePos("test", 5, 6),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "close_eerr")]
+                )
+            );
+
+            var initState = new State("abc", SourcePos.init("test"), "some");
+
+            lq.combinator.between(open_acsuc, close_acsuc, content_acsuc).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal("foo");
+                    State.equals(
+                        state,
+                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.between(open_acsuc, close_acerr, content_acsuc).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.between(open_acsuc, close_aesuc, content_acsuc).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal("foo");
+                    State.equals(
+                        state,
+                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "content_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.between(open_acsuc, close_aeerr, content_acsuc).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "content_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.between(open_acsuc, close_acsuc, content_aesuc).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal("bar");
+                    State.equals(
+                        state,
+                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.between(open_acsuc, close_acerr, content_aesuc).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.between(open_acsuc, close_aesuc, content_aesuc).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal("bar");
+                    State.equals(
+                        state,
+                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "open_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.between(open_acsuc, close_aeerr, content_aesuc).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "open_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.between(open_aesuc, close_acsuc, content_acsuc).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal("foo");
+                    State.equals(
+                        state,
+                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.between(open_aesuc, close_acerr, content_acsuc).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.between(open_aesuc, close_aesuc, content_acsuc).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal("foo");
+                    State.equals(
+                        state,
+                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "content_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.between(open_aesuc, close_aeerr, content_acsuc).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "content_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.between(open_aesuc, close_acsuc, content_aesuc).run(
+                initState,
+                function (value, state, error) {
+                    value.should.equal("bar");
+                    State.equals(
+                        state,
+                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.between(open_aesuc, close_acerr, content_aesuc).run(
+                initState,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.between(open_aesuc, close_aesuc, content_aesuc).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal("bar");
+                    State.equals(
+                        state,
+                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "open_esuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.combinator.between(open_aesuc, close_aeerr, content_aesuc).run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "open_esuc")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            [close_acsuc, close_acerr, close_aesuc, close_aeerr].forEach(function (close_a) {
+                lq.combinator.between(open_acsuc, close_a, content_acerr).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 3, 4),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "content_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.combinator.between(open_aesuc, close_a, content_acerr).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 3, 4),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "content_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.combinator.between(open_acsuc, close_a, content_aeerr).run(
+                    initState,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "open_csuc")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.combinator.between(open_aesuc, close_a, content_aeerr).run(
+                    initState,
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "open_esuc")]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                [content_acsuc, content_acerr, content_aesuc, content_aeerr].forEach(function (content_a) {
+                    lq.combinator.between(open_acerr, close_a, content_a).run(
+                        initState,
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 2),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "open_cerr")]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+
+                    lq.combinator.between(open_aeerr, close_a, content_a).run(
+                        initState,
+                        throwError,
+                        throwError,
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 2),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "open_eerr")]
+                                )
+                            ).should.be.ok;
+                        }
+                    );
+                });
+            });
+        });
     });
 
     describe("many1(parser)", function () {
