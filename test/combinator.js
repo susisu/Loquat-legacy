@@ -1095,11 +1095,335 @@ describe("combinator", function () {
     });
 
     describe("many1(parser)", function () {
+        it("should return a parser that runs 'parser' one or more times and accumulates the results of them in an array", function () {
+            var p = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                switch (state.input.charAt(0)) {
+                    case "a": return csuc(
+                            "a" + state.position.column.toString(),
+                            new State(
+                                state.input.substr(1),
+                                state.position.setColumn(state.position.column + 1),
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            )
+                        );
+                    case "b": return cerr(
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        );
+                    case "c": return esuc(
+                            "c" + state.position.column.toString(),
+                            new State(
+                                state.input,
+                                state.position,
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                            )
+                        );
+                    default: return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        );
+                }
+            });
+            
+            lq.combinator.many1(p).run(
+                new State("aab", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
 
+            lq.combinator.many1(p).run(
+                new State("aad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "a2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.many1(p).run(
+                new State("b", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.many1(p).run(
+                new State("d", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.combinator.many1(p).run(
+                        new State("acbd", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.combinator.many1(p).run(
+                        new State("cabd", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+        });
     });
 
     describe("skipMany1(parser)", function () {
+        it("should return a parser that runs 'parser' one or more times and ignores all the results of them", function () {
+            var p = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                switch (state.input.charAt(0)) {
+                    case "a": return csuc(
+                            "a" + state.position.column.toString(),
+                            new State(
+                                state.input.substr(1),
+                                state.position.setColumn(state.position.column + 1),
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            )
+                        );
+                    case "b": return cerr(
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        );
+                    case "c": return esuc(
+                            "c" + state.position.column.toString(),
+                            new State(
+                                state.input,
+                                state.position,
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                            )
+                        );
+                    default: return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        );
+                }
+            });
+            
+            lq.combinator.skipMany1(p).run(
+                new State("aab", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
 
+            lq.combinator.skipMany1(p).run(
+                new State("aad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.skipMany1(p).run(
+                new State("b", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.skipMany1(p).run(
+                new State("d", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.combinator.skipMany1(p).run(
+                        new State("acbd", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.combinator.skipMany1(p).run(
+                        new State("cabd", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+        });
     });
 
     describe("sepBy(parser, separator)", function () {
