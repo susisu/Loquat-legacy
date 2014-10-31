@@ -3625,11 +3625,1896 @@ describe("combinator", function () {
     });
 
     describe("endBy(parser, separator)", function () {
+        it("should parse many things ended by 'separator'", function () {
+            var p = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                switch (state.input.charAt(0)) {
+                    case "a": return csuc(
+                            "a" + state.position.column.toString(),
+                            new State(
+                                state.input.substr(1),
+                                state.position.setColumn(state.position.column + 1),
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            )
+                        );
+                    case "b": return cerr(
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        );
+                    case "c": return esuc(
+                            "c" + state.position.column.toString(),
+                            new State(
+                                state.input.substr(1),
+                                state.position,
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                            )
+                        );
+                    default: return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        );
+                }
+            });
 
+            var sep = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                switch (state.input.charAt(0)) {
+                    case ",": return csuc(
+                            undefined,
+                            new State(
+                                state.input.substr(1),
+                                state.position.setColumn(state.position.column + 1),
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_csuc")]
+                            )
+                        );
+                    case ".": return cerr(
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                            )
+                        );
+                    case ";": return esuc(
+                            undefined,
+                            new State(
+                                state.input.substr(1),
+                                state.position,
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_esuc")]
+                            )
+                        );
+                    default: return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")]
+                            )
+                        );
+                }
+            });
+            
+            lq.combinator.endBy(p, sep).run(
+                new State("a,a,d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "a3"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 5), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("a,a.d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("a,a;d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "a3"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("a,a:d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("a,c,d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "c3"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("a,c.d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.combinator.endBy(p, sep).run(
+                        new State("a,c;d", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+
+            lq.combinator.endBy(p, sep).run(
+                new State("a,c:d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("c:d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                lq.combinator.endBy(p, sep).run(
+                    new State("a,b" + sep2 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.combinator.endBy(p, sep).run(
+                    new State("a,d" + sep2 + "d", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, ["a1"]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("d" + sep2 + "d", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+            
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                ["a", "b", "c", "d"].forEach(function (e2) {
+                    lq.combinator.endBy(p, sep).run(
+                        new State("a." + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 3),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            lq.combinator.endBy(p, sep).run(
+                new State("a;a,d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "a2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("a;a.d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("a;a;d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "a2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("a;a:d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("a;c,d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "c2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("a;c.d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.combinator.endBy(p, sep).run(
+                        new State("a;c;d", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+
+            lq.combinator.endBy(p, sep).run(
+                new State("a;c:d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("c:d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                lq.combinator.endBy(p, sep).run(
+                    new State("a;b" + sep2 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.combinator.endBy(p, sep).run(
+                    new State("a;d" + sep2 + "d", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, ["a1"]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("d" + sep2 + "d", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                ["a", "b", "c", "d"].forEach(function (e2) {
+                    lq.combinator.endBy(p, sep).run(
+                        new State("a:" + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 2),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            lq.combinator.endBy(p, sep).run(
+                new State("c,a,d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1", "a2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("c,a.d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("c,a;d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1", "a2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("c,a:d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("c,c,d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1", "c2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy(p, sep).run(
+                new State("c,c.d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.combinator.endBy(p, sep).run(
+                        new State("c,c;d", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+
+            lq.combinator.endBy(p, sep).run(
+                new State("c,c:d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("c:d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                lq.combinator.endBy(p, sep).run(
+                    new State("c,b" + sep2 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.combinator.endBy(p, sep).run(
+                    new State("c,d" + sep2 + "d", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, ["c1"]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("d" + sep2 + "d", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+            
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                ["a", "b", "c", "d"].forEach(function (e2) {
+                    lq.combinator.endBy(p, sep).run(
+                        new State("c." + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 2),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+
+                    (function () {
+                        var caughtError;
+                        try {
+                            lq.combinator.endBy(p, sep).run(
+                                new State("c;" + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                                throwError,
+                                throwError,
+                                throwError,
+                                throwError
+                            );
+                        }
+                        catch (error) {
+                            caughtError = error;
+                        }
+                        finally {
+                            if (caughtError) {
+                                if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                                    throw caughtError;
+                                }
+                            }
+                            else {
+                                throw new Error("no error was thrown");
+                            }
+                        }
+                    })();
+
+                    lq.combinator.endBy(p, sep).run(
+                        new State("c:" + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        function (value, state, error) {
+                            lq.util.ArrayUtil.equals(value, []).should.be.ok;
+                            State.equals(
+                                state,
+                                new State("c:" + e2 + sep2 + "d", new SourcePos("test", 1, 1), "some")
+                            ).should.be.ok;
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 1),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError
+                    );
+                });
+            });
+
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                ["a", "b", "c", "d"].forEach(function (e2) {
+                    [",", ".", ";", ":"].forEach(function (sep1) {
+                        lq.combinator.endBy(p, sep).run(
+                            new State("b" + sep1 + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                            throwError,
+                            function (error) {
+                                ParseError.equals(
+                                    error,
+                                    new ParseError(
+                                        new SourcePos("test", 1, 2),
+                                        [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                    )
+                                ).should.be.ok;
+                            },
+                            throwError,
+                            throwError
+                        );
+
+                        lq.combinator.endBy(p, sep).run(
+                            new State("d" + sep1 + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                            throwError,
+                            throwError,
+                            function (value, state, error) {
+                                lq.util.ArrayUtil.equals(value, []).should.be.ok;
+                                State.equals(
+                                    state,
+                                    new State("d" + sep1 + e2 + sep2 + "d", new SourcePos("test", 1, 1), "some")
+                                ).should.be.ok;
+                                ParseError.equals(
+                                    error,
+                                    new ParseError(
+                                        new SourcePos("test", 1, 1),
+                                        [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                                    )
+                                ).should.be.ok;
+                            },
+                            throwError
+                        );
+                    });
+                });
+            });
+        });
     });
 
     describe("endBy1(parser, separator)", function () {
+        it("should parse one or more things ended by 'separator'", function () {
+            var p = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                switch (state.input.charAt(0)) {
+                    case "a": return csuc(
+                            "a" + state.position.column.toString(),
+                            new State(
+                                state.input.substr(1),
+                                state.position.setColumn(state.position.column + 1),
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            )
+                        );
+                    case "b": return cerr(
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        );
+                    case "c": return esuc(
+                            "c" + state.position.column.toString(),
+                            new State(
+                                state.input.substr(1),
+                                state.position,
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                            )
+                        );
+                    default: return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        );
+                }
+            });
 
+            var sep = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                switch (state.input.charAt(0)) {
+                    case ",": return csuc(
+                            undefined,
+                            new State(
+                                state.input.substr(1),
+                                state.position.setColumn(state.position.column + 1),
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_csuc")]
+                            )
+                        );
+                    case ".": return cerr(
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                            )
+                        );
+                    case ";": return esuc(
+                            undefined,
+                            new State(
+                                state.input.substr(1),
+                                state.position,
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_esuc")]
+                            )
+                        );
+                    default: return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")]
+                            )
+                        );
+                }
+            });
+            
+            lq.combinator.endBy1(p, sep).run(
+                new State("a,a,d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "a3"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 5), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("a,a.d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("a,a;d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "a3"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("a,a:d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("a,c,d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "c3"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("a,c.d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.combinator.endBy1(p, sep).run(
+                        new State("a,c;d", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("a,c:d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("c:d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                lq.combinator.endBy1(p, sep).run(
+                    new State("a,b" + sep2 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.combinator.endBy1(p, sep).run(
+                    new State("a,d" + sep2 + "d", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, ["a1"]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("d" + sep2 + "d", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "sep_csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+            
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                ["a", "b", "c", "d"].forEach(function (e2) {
+                    lq.combinator.endBy1(p, sep).run(
+                        new State("a." + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 3),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("a;a,d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "a2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("a;a.d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("a;a;d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "a2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("a;a:d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("a;c,d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "c2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("a;c.d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.combinator.endBy1(p, sep).run(
+                        new State("a;c;d", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("a;c:d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("c:d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                lq.combinator.endBy1(p, sep).run(
+                    new State("a;b" + sep2 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.combinator.endBy1(p, sep).run(
+                    new State("a;d" + sep2 + "d", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, ["a1"]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("d" + sep2 + "d", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "sep_esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                ["a", "b", "c", "d"].forEach(function (e2) {
+                    lq.combinator.endBy1(p, sep).run(
+                        new State("a:" + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 2),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("c,a,d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1", "a2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("c,a.d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("c,a;d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1", "a2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("c,a:d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("c,c,d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1", "c2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("c,c.d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.combinator.endBy1(p, sep).run(
+                        new State("c,c;d", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("c,c:d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("c:d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                lq.combinator.endBy1(p, sep).run(
+                    new State("c,b" + sep2 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.combinator.endBy1(p, sep).run(
+                    new State("c,d" + sep2 + "d", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, ["c1"]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("d" + sep2 + "d", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "sep_csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+            
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                ["a", "b", "c", "d"].forEach(function (e2) {
+                    lq.combinator.endBy1(p, sep).run(
+                        new State("c." + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 2),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("c;a,d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1", "a1"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("c;a.d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("c;a;d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1", "a1"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("c;a:d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("c;c,d", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1", "c1"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("c;c.d", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "sep_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            (function () {
+                var caughtError;
+                try {
+                    lq.combinator.endBy1(p, sep).run(
+                        new State("c;c;d", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                }
+                catch (error) {
+                    caughtError = error;
+                }
+                finally {
+                    if (caughtError) {
+                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
+                            throw caughtError;
+                        }
+                    }
+                    else {
+                        throw new Error("no error was thrown");
+                    }
+                }
+            })();
+
+            lq.combinator.endBy1(p, sep).run(
+                new State("c;c:d", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("c:d", new SourcePos("test", 1, 1), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                lq.combinator.endBy1(p, sep).run(
+                    new State("c;b" + sep2 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                lq.combinator.endBy1(p, sep).run(
+                    new State("c;d" + sep2 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, ["c1"]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("d" + sep2 + "d", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "sep_esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+            });
+
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                ["a", "b", "c", "d"].forEach(function (e2) {
+                    lq.combinator.endBy1(p, sep).run(
+                        new State("c:" + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 1),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "sep_eerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        }
+                    );
+                });
+            });
+
+            [",", ".", ";", ":"].forEach(function (sep2) {
+                ["a", "b", "c", "d"].forEach(function (e2) {
+                    [",", ".", ";", ":"].forEach(function (sep1) {
+                        lq.combinator.endBy1(p, sep).run(
+                            new State("b" + sep1 + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                            throwError,
+                            function (error) {
+                                ParseError.equals(
+                                    error,
+                                    new ParseError(
+                                        new SourcePos("test", 1, 2),
+                                        [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                    )
+                                ).should.be.ok;
+                            },
+                            throwError,
+                            throwError
+                        );
+
+                        lq.combinator.endBy1(p, sep).run(
+                            new State("d" + sep1 + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                            throwError,
+                            throwError,
+                            throwError,
+                            function (error) {
+                                ParseError.equals(
+                                    error,
+                                    new ParseError(
+                                        new SourcePos("test", 1, 1),
+                                        [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                                    )
+                                ).should.be.ok;
+                            }
+                        );
+                    });
+                });
+            });
+        });
     });
 
     describe("count(n, parser)", function () {
