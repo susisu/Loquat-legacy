@@ -5776,7 +5776,7 @@ describe("combinator", function () {
         });
     });
 
-    describe("chainl(parser, operator, initialValue)", function () {
+    describe("chainl(parser, operator, defaultValue)", function () {
 
     });
 
@@ -5784,7 +5784,7 @@ describe("combinator", function () {
 
     });
 
-    describe("chainr(parser, operator, initialValue)", function () {
+    describe("chainr(parser, operator, defaultValue)", function () {
 
     });
 
