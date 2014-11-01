@@ -5777,11 +5777,4392 @@ describe("combinator", function () {
     });
 
     describe("chainl(parser, operator, defaultValue)", function () {
+        it("should parse many values separated by 'operator' and apply the functions returned by 'operator' to the values left to right", function () {
+            var p = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                switch (state.input.charAt(0)) {
+                    case "a": return csuc(
+                            "a" + state.position.column.toString(),
+                            new State(
+                                state.input.substr(1),
+                                state.position.setColumn(state.position.column + 1),
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            )
+                        );
+                    case "b": return cerr(
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        );
+                    case "c": return esuc(
+                            "c" + state.position.column.toString(),
+                            new State(
+                                state.input.substr(1),
+                                state.position,
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                            )
+                        );
+                    default: return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        );
+                }
+            });
 
+            var op = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                switch (state.input.charAt(0)) {
+                    case "(": return csuc(
+                            function (a, b) { return "(" + a + b + ")"; },
+                            new State(
+                                state.input.substr(1),
+                                state.position.setColumn(state.position.column + 1),
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc")]
+                            )
+                        );
+                    case "{": return cerr(
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        );
+                    case "[": return esuc(
+                            function (a, b) { return "[" + a + b + "]"; },
+                            new State(
+                                state.input.substr(1),
+                                state.position,
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc")]
+                            )
+                        );
+                    default: return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")]
+                            )
+                        );
+                }
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(a(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((a1a3)a5)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 6), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 6),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(a(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(a(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((a1a3)c5)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 5), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(a(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("a(a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 5),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(a[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(a1a3)a4]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 5), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(a[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(a[cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(a1a3)c4]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(a[dd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("(a1a3)");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("a(a<dd", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        value.should.equal("(a1a3)");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+            
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl(p, op, "x").run(
+                        new State("a(b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 4),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(c(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((a1c3)a4)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 5), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(c(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(c(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((a1c3)c4)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(c(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("a(c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(c[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(a1c3)a3]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(c[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(c[cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(a1c3)c3]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a(c[dd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("(a1c3)");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("a(c<dd", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        value.should.equal("(a1c3)");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl(p, op, "x").run(
+                        new State("a(d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 3),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+            
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    ["a", "b", "c", "d"].forEach(function (e2) {
+                        lq.combinator.chainl(p, op, "x").run(
+                            new State("a{" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            throwError,
+                            function (error) {
+                                ParseError.equals(
+                                    error,
+                                    new ParseError(
+                                        new SourcePos("test", 1, 3),
+                                        [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                                    )
+                                ).should.be.ok;
+                            },
+                            throwError,
+                            throwError
+                        );
+                    });
+                });
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[a(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([a1a2]a4)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 5), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[a(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[a(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([a1a2]c4)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[a(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("a[a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[a[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[[a1a2]a3]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[a[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[a[cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[[a1a2]c3]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[a[dd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[a1a2]");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("a[a<dd", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        value.should.equal("[a1a2]");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+            
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl(p, op, "x").run(
+                        new State("a[b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 3),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[c(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([a1c2]a3)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[c(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[c(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([a1c2]c3)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[c(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("a[c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[c[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[[a1c2]a2]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[c[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[c[cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[[a1c2]c2]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("a[c[dd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[a1c2]");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("a[c<dd", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        value.should.equal("[a1c2]");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl(p, op, "x").run(
+                        new State("a[d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        function (value, state, error) {
+                            value.should.equal("a1");
+                            State.equals(
+                                state,
+                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 2), "none")
+                            ).should.be.ok;
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 2),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    ["a", "b", "c", "d"].forEach(function (e2) {
+                        lq.combinator.chainl(p, op, "x").run(
+                            new State("a<" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            function (value, state, error) {
+                                value.should.equal("a1");
+                                State.equals(
+                                    state,
+                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 2), "none")
+                                ).should.be.ok;
+                                ParseError.equals(
+                                    error,
+                                    new ParseError(
+                                        new SourcePos("test", 1, 2),
+                                        [
+                                            new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                            new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                        ]
+                                    )
+                                ).should.be.ok;
+                            },
+                            throwError,
+                            throwError,
+                            throwError
+                        );
+                    });
+                });
+            });
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    ["a", "b", "c", "d"].forEach(function (e2) {
+                        ["(", "{", "[", "<"].forEach(function (op1) {
+                            lq.combinator.chainl(p, op, "x").run(
+                                new State("b" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                                throwError,
+                                function (error) {
+                                    ParseError.equals(
+                                        error,
+                                        new ParseError(
+                                            new SourcePos("test", 1, 2),
+                                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                        )
+                                    ).should.be.ok;
+                                },
+                                throwError,
+                                throwError
+                            );
+                        });
+                    });
+                });
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(a(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((c1a2)a4)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 5), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(a(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(a(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((c1a2)c4)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(a(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("c(a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(a[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(c1a2)a3]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(a[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(a[cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(c1a2)c3]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(a[dd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("(c1a2)");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("c(a<dd", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        value.should.equal("(c1a2)");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+            
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl(p, op, "x").run(
+                        new State("c(b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 3),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(c(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((c1c2)a3)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(c(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(c(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((c1c2)c3)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(c(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("c(c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(c[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(c1c2)a2]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(c[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(c[cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(c1c2)c2]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c(c[dd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("(c1c2)");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("c(c<dd", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        value.should.equal("(c1c2)");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl(p, op, "x").run(
+                        new State("c(d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 2),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+            
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    ["a", "b", "c", "d"].forEach(function (e2) {
+                        lq.combinator.chainl(p, op, "x").run(
+                            new State("c{" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            throwError,
+                            function (error) {
+                                ParseError.equals(
+                                    error,
+                                    new ParseError(
+                                        new SourcePos("test", 1, 2),
+                                        [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                                    )
+                                ).should.be.ok;
+                            },
+                            throwError,
+                            throwError
+                        );
+                    });
+                });
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[a(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([c1a1]a3)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[a(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[a(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([c1a1]c3)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[a(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("c[a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[a[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[[c1a1]a2]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[a[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[a[cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[[c1a1]c2]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[a[dd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[c1a1]");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("c[a<dd", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        value.should.equal("[c1a1]");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+            
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl(p, op, "x").run(
+                        new State("c[b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 2),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[c(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([c1c1]a2)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[c(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[c(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([c1c1]c2)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[c(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("c[c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[c[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[[c1c1]a1]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[c[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[c[cd", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal("[[c1c1]c1]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 1), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.combinator.chainl(p, op, "x").run(
+                new State("c[c[dd", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal("[c1c1]");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 1), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl(p, op, "x").run(
+                    new State("c[c<dd", SourcePos.init("test"), "some"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        value.should.equal("[c1c1]");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+            });
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl(p, op, "x").run(
+                        new State("c[d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        function (value, state, error) {
+                            value.should.equal("c1");
+                            State.equals(
+                                state,
+                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 1), "none")
+                            ).should.be.ok;
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 1),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError
+                    );
+                });
+            });
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    ["a", "b", "c", "d"].forEach(function (e2) {
+                        lq.combinator.chainl(p, op, "x").run(
+                            new State("c<" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            throwError,
+                            throwError,
+                            function (value, state, error) {
+                                value.should.equal("c1");
+                                State.equals(
+                                    state,
+                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), "none")
+                                ).should.be.ok;
+                                ParseError.equals(
+                                    error,
+                                    new ParseError(
+                                        new SourcePos("test", 1, 1),
+                                        [
+                                            new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                            new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                        ]
+                                    )
+                                ).should.be.ok;
+                            },
+                            throwError
+                        );
+                    });
+                });
+            });
+            
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    ["a", "b", "c", "d"].forEach(function (e2) {
+                        ["(", "{", "[", "<"].forEach(function (op1) {
+                            lq.combinator.chainl(p, op, "x").run(
+                                new State("d" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                                throwError,
+                                throwError,
+                                function (value, state, error) {
+                                    value.should.equal("x");
+                                    State.equals(
+                                        state,
+                                        new State("d" + op1 + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), "some")
+                                    ).should.be.ok;
+                                    ParseError.equals(
+                                        error,
+                                        new ParseError(
+                                            new SourcePos("test", 1, 1),
+                                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                                        )
+                                    ).should.be.ok;
+                                },
+                                throwError
+                            );
+                        });
+                    });
+                });
+            });
+        });
     });
 
     describe("chainl1(parser, operator)", function () {
+        it("should parse one or more values separated by 'operator' and apply the functions returned by 'operator' to the values left to right", function () {
+            var p = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                switch (state.input.charAt(0)) {
+                    case "a": return csuc(
+                            "a" + state.position.column.toString(),
+                            new State(
+                                state.input.substr(1),
+                                state.position.setColumn(state.position.column + 1),
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            )
+                        );
+                    case "b": return cerr(
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        );
+                    case "c": return esuc(
+                            "c" + state.position.column.toString(),
+                            new State(
+                                state.input.substr(1),
+                                state.position,
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                            )
+                        );
+                    default: return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        );
+                }
+            });
 
+            var op = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                switch (state.input.charAt(0)) {
+                    case "(": return csuc(
+                            function (a, b) { return "(" + a + b + ")"; },
+                            new State(
+                                state.input.substr(1),
+                                state.position.setColumn(state.position.column + 1),
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc")]
+                            )
+                        );
+                    case "{": return cerr(
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        );
+                    case "[": return esuc(
+                            function (a, b) { return "[" + a + b + "]"; },
+                            new State(
+                                state.input.substr(1),
+                                state.position,
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc")]
+                            )
+                        );
+                    default: return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")]
+                            )
+                        );
+                }
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(a(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((a1a3)a5)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 6), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 6),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(a(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(a(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((a1a3)c5)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 5), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(a(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("a(a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 5),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(a[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(a1a3)a4]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 5), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(a[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(a[cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(a1a3)c4]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(a[dd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("(a1a3)");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("a(a<dd", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        value.should.equal("(a1a3)");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+            
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl1(p, op, "x").run(
+                        new State("a(b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 4),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(c(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((a1c3)a4)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 5), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(c(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(c(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((a1c3)c4)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(c(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("a(c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(c[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(a1c3)a3]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(c[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(c[cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(a1c3)c3]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a(c[dd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("(a1c3)");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("a(c<dd", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        value.should.equal("(a1c3)");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl1(p, op, "x").run(
+                        new State("a(d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 3),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+            
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    ["a", "b", "c", "d"].forEach(function (e2) {
+                        lq.combinator.chainl1(p, op, "x").run(
+                            new State("a{" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            throwError,
+                            function (error) {
+                                ParseError.equals(
+                                    error,
+                                    new ParseError(
+                                        new SourcePos("test", 1, 3),
+                                        [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                                    )
+                                ).should.be.ok;
+                            },
+                            throwError,
+                            throwError
+                        );
+                    });
+                });
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[a(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([a1a2]a4)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 5), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[a(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[a(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([a1a2]c4)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[a(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("a[a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[a[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[[a1a2]a3]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[a[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[a[cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[[a1a2]c3]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[a[dd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[a1a2]");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("a[a<dd", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        value.should.equal("[a1a2]");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+            
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl1(p, op, "x").run(
+                        new State("a[b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 3),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[c(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([a1c2]a3)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[c(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[c(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([a1c2]c3)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[c(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("a[c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[c[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[[a1c2]a2]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[c[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[c[cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[[a1c2]c2]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("a[c[dd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[a1c2]");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("a[c<dd", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        value.should.equal("[a1c2]");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl1(p, op, "x").run(
+                        new State("a[d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        function (value, state, error) {
+                            value.should.equal("a1");
+                            State.equals(
+                                state,
+                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 2), "none")
+                            ).should.be.ok;
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 2),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    ["a", "b", "c", "d"].forEach(function (e2) {
+                        lq.combinator.chainl1(p, op, "x").run(
+                            new State("a<" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            function (value, state, error) {
+                                value.should.equal("a1");
+                                State.equals(
+                                    state,
+                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 2), "none")
+                                ).should.be.ok;
+                                ParseError.equals(
+                                    error,
+                                    new ParseError(
+                                        new SourcePos("test", 1, 2),
+                                        [
+                                            new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                            new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                        ]
+                                    )
+                                ).should.be.ok;
+                            },
+                            throwError,
+                            throwError,
+                            throwError
+                        );
+                    });
+                });
+            });
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    ["a", "b", "c", "d"].forEach(function (e2) {
+                        ["(", "{", "[", "<"].forEach(function (op1) {
+                            lq.combinator.chainl1(p, op, "x").run(
+                                new State("b" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                                throwError,
+                                function (error) {
+                                    ParseError.equals(
+                                        error,
+                                        new ParseError(
+                                            new SourcePos("test", 1, 2),
+                                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                        )
+                                    ).should.be.ok;
+                                },
+                                throwError,
+                                throwError
+                            );
+                        });
+                    });
+                });
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(a(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((c1a2)a4)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 5), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(a(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 5),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(a(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((c1a2)c4)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(a(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("c(a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(a[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(c1a2)a3]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(a[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(a[cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(c1a2)c3]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(a[dd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("(c1a2)");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("c(a<dd", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        value.should.equal("(c1a2)");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+            
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl1(p, op, "x").run(
+                        new State("c(b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 3),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(c(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((c1c2)a3)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(c(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(c(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("((c1c2)c3)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(c(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("c(c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(c[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(c1c2)a2]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(c[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(c[cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[(c1c2)c2]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c(c[dd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("(c1c2)");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("c(c<dd", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        value.should.equal("(c1c2)");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl1(p, op, "x").run(
+                        new State("c(d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 2),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+            
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    ["a", "b", "c", "d"].forEach(function (e2) {
+                        lq.combinator.chainl1(p, op, "x").run(
+                            new State("c{" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            throwError,
+                            function (error) {
+                                ParseError.equals(
+                                    error,
+                                    new ParseError(
+                                        new SourcePos("test", 1, 2),
+                                        [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                                    )
+                                ).should.be.ok;
+                            },
+                            throwError,
+                            throwError
+                        );
+                    });
+                });
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[a(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([c1a1]a3)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[a(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[a(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([c1a1]c3)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[a(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("c[a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[a[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[[c1a1]a2]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[a[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[a[cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[[c1a1]c2]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[a[dd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[c1a1]");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("c[a<dd", SourcePos.init("test"), "some"),
+                    function (value, state, error) {
+                        value.should.equal("[c1a1]");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+            
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl1(p, op, "x").run(
+                        new State("c[b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 2),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[c(ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([c1c1]a2)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[c(bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[c(cd", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("([c1c1]c2)");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[c(dd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("c[c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "op_cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[c[ad", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    value.should.equal("[[c1c1]a1]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[c[bd", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[c[cd", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal("[[c1c1]c1]");
+                    State.equals(
+                        state,
+                        new State("d", new SourcePos("test", 1, 1), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.combinator.chainl1(p, op, "x").run(
+                new State("c[c[dd", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    value.should.equal("[c1c1]");
+                    State.equals(
+                        state,
+                        new State("[dd", new SourcePos("test", 1, 1), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                lq.combinator.chainl1(p, op, "x").run(
+                    new State("c[c<dd", SourcePos.init("test"), "some"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        value.should.equal("[c1c1]");
+                        State.equals(
+                            state,
+                            new State("<dd", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+            });
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    lq.combinator.chainl1(p, op, "x").run(
+                        new State("c[d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        function (value, state, error) {
+                            value.should.equal("c1");
+                            State.equals(
+                                state,
+                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 1), "none")
+                            ).should.be.ok;
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 1),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "op_esuc"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError
+                    );
+                });
+            });
+
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    ["a", "b", "c", "d"].forEach(function (e2) {
+                        lq.combinator.chainl1(p, op, "x").run(
+                            new State("c<" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            throwError,
+                            throwError,
+                            function (value, state, error) {
+                                value.should.equal("c1");
+                                State.equals(
+                                    state,
+                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), "none")
+                                ).should.be.ok;
+                                ParseError.equals(
+                                    error,
+                                    new ParseError(
+                                        new SourcePos("test", 1, 1),
+                                        [
+                                            new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                            new ErrorMessage(ErrorMessageType.MESSAGE, "op_eerr")
+                                        ]
+                                    )
+                                ).should.be.ok;
+                            },
+                            throwError
+                        );
+                    });
+                });
+            });
+            
+            ["a", "b", "c", "d"].forEach(function (e3) {
+                ["(", "{", "[", "<"].forEach(function (op2) {
+                    ["a", "b", "c", "d"].forEach(function (e2) {
+                        ["(", "{", "[", "<"].forEach(function (op1) {
+                            lq.combinator.chainl1(p, op, "x").run(
+                                new State("d" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                                throwError,
+                                throwError,
+                                throwError,
+                                function (error) {
+                                    ParseError.equals(
+                                        error,
+                                        new ParseError(
+                                            new SourcePos("test", 1, 1),
+                                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                                        )
+                                    ).should.be.ok;
+                                }
+                            );
+                        });
+                    });
+                });
+            });
+        });
     });
 
     describe("chainr(parser, operator, defaultValue)", function () {
