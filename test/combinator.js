@@ -12363,7 +12363,7 @@ describe("combinator", function () {
     });
 
     describe("chainr1(parser, operator)", function () {
-        it("should parse many values separated by 'operator' and apply the functions returned by 'operator' to the values right to left", function () {
+        it("should parse one or more values separated by 'operator' and apply the functions returned by 'operator' to the values right to left", function () {
             var p = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
                 switch (state.input.charAt(0)) {
                     case "a": return csuc(
