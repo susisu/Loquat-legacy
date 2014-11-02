@@ -8057,7 +8057,7 @@ describe("combinator", function () {
                 }
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(a(ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("((a1a3)a5)");
@@ -8081,7 +8081,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(a(bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -8097,7 +8097,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(a(cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("((a1a3)c5)");
@@ -8122,7 +8122,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(a(dd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -8142,7 +8142,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("a(a{" + e3 + "d", SourcePos.init("test"), "some"),
                     throwError,
                     function (error) {
@@ -8159,7 +8159,7 @@ describe("combinator", function () {
                 );
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(a[ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[(a1a3)a4]");
@@ -8183,7 +8183,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(a[bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -8199,7 +8199,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(a[cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[(a1a3)c4]");
@@ -8225,7 +8225,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(a[dd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("(a1a3)");
@@ -8251,7 +8251,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("a(a<dd", SourcePos.init("test"), "some"),
                     function (value, state, error) {
                         value.should.equal("(a1a3)");
@@ -8278,7 +8278,7 @@ describe("combinator", function () {
             
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
-                    lq.combinator.chainl1(p, op, "x").run(
+                    lq.combinator.chainl1(p, op).run(
                         new State("a(b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
                         throwError,
                         function (error) {
@@ -8296,7 +8296,7 @@ describe("combinator", function () {
                 });
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(c(ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("((a1c3)a4)");
@@ -8320,7 +8320,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(c(bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -8336,7 +8336,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(c(cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("((a1c3)c4)");
@@ -8361,7 +8361,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(c(dd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -8381,7 +8381,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("a(c{" + e3 + "d", SourcePos.init("test"), "some"),
                     throwError,
                     function (error) {
@@ -8398,7 +8398,7 @@ describe("combinator", function () {
                 );
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(c[ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[(a1c3)a3]");
@@ -8422,7 +8422,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(c[bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -8438,7 +8438,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(c[cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[(a1c3)c3]");
@@ -8465,7 +8465,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a(c[dd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("(a1c3)");
@@ -8492,7 +8492,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("a(c<dd", SourcePos.init("test"), "some"),
                     function (value, state, error) {
                         value.should.equal("(a1c3)");
@@ -8520,7 +8520,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
-                    lq.combinator.chainl1(p, op, "x").run(
+                    lq.combinator.chainl1(p, op).run(
                         new State("a(d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
                         throwError,
                         function (error) {
@@ -8544,7 +8544,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
-                        lq.combinator.chainl1(p, op, "x").run(
+                        lq.combinator.chainl1(p, op).run(
                             new State("a{" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
                             throwError,
                             function (error) {
@@ -8563,7 +8563,7 @@ describe("combinator", function () {
                 });
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[a(ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("([a1a2]a4)");
@@ -8587,7 +8587,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[a(bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -8603,7 +8603,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[a(cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("([a1a2]c4)");
@@ -8628,7 +8628,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[a(dd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -8648,7 +8648,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("a[a{" + e3 + "d", SourcePos.init("test"), "some"),
                     throwError,
                     function (error) {
@@ -8665,7 +8665,7 @@ describe("combinator", function () {
                 );
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[a[ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[[a1a2]a3]");
@@ -8689,7 +8689,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[a[bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -8705,7 +8705,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[a[cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[[a1a2]c3]");
@@ -8731,7 +8731,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[a[dd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[a1a2]");
@@ -8757,7 +8757,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("a[a<dd", SourcePos.init("test"), "some"),
                     function (value, state, error) {
                         value.should.equal("[a1a2]");
@@ -8784,7 +8784,7 @@ describe("combinator", function () {
             
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
-                    lq.combinator.chainl1(p, op, "x").run(
+                    lq.combinator.chainl1(p, op).run(
                         new State("a[b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
                         throwError,
                         function (error) {
@@ -8802,7 +8802,7 @@ describe("combinator", function () {
                 });
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[c(ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("([a1c2]a3)");
@@ -8826,7 +8826,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[c(bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -8842,7 +8842,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[c(cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("([a1c2]c3)");
@@ -8867,7 +8867,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[c(dd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -8887,7 +8887,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("a[c{" + e3 + "d", SourcePos.init("test"), "some"),
                     throwError,
                     function (error) {
@@ -8904,7 +8904,7 @@ describe("combinator", function () {
                 );
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[c[ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[[a1c2]a2]");
@@ -8928,7 +8928,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[c[bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -8944,7 +8944,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[c[cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[[a1c2]c2]");
@@ -8972,7 +8972,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("a[c[dd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[a1c2]");
@@ -9000,7 +9000,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("a[c<dd", SourcePos.init("test"), "some"),
                     function (value, state, error) {
                         value.should.equal("[a1c2]");
@@ -9029,7 +9029,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
-                    lq.combinator.chainl1(p, op, "x").run(
+                    lq.combinator.chainl1(p, op).run(
                         new State("a[d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
                         function (value, state, error) {
                             value.should.equal("a1");
@@ -9059,7 +9059,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
-                        lq.combinator.chainl1(p, op, "x").run(
+                        lq.combinator.chainl1(p, op).run(
                             new State("a<" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
                             function (value, state, error) {
                                 value.should.equal("a1");
@@ -9090,7 +9090,7 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         ["(", "{", "[", "<"].forEach(function (op1) {
-                            lq.combinator.chainl1(p, op, "x").run(
+                            lq.combinator.chainl1(p, op).run(
                                 new State("b" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
                                 throwError,
                                 function (error) {
@@ -9110,7 +9110,7 @@ describe("combinator", function () {
                 });
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(a(ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("((c1a2)a4)");
@@ -9134,7 +9134,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(a(bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -9150,7 +9150,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(a(cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("((c1a2)c4)");
@@ -9175,7 +9175,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(a(dd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -9195,7 +9195,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("c(a{" + e3 + "d", SourcePos.init("test"), "some"),
                     throwError,
                     function (error) {
@@ -9212,7 +9212,7 @@ describe("combinator", function () {
                 );
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(a[ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[(c1a2)a3]");
@@ -9236,7 +9236,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(a[bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -9252,7 +9252,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(a[cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[(c1a2)c3]");
@@ -9278,7 +9278,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(a[dd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("(c1a2)");
@@ -9304,7 +9304,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("c(a<dd", SourcePos.init("test"), "some"),
                     function (value, state, error) {
                         value.should.equal("(c1a2)");
@@ -9331,7 +9331,7 @@ describe("combinator", function () {
             
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
-                    lq.combinator.chainl1(p, op, "x").run(
+                    lq.combinator.chainl1(p, op).run(
                         new State("c(b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
                         throwError,
                         function (error) {
@@ -9349,7 +9349,7 @@ describe("combinator", function () {
                 });
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(c(ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("((c1c2)a3)");
@@ -9373,7 +9373,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(c(bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -9389,7 +9389,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(c(cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("((c1c2)c3)");
@@ -9414,7 +9414,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(c(dd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -9434,7 +9434,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("c(c{" + e3 + "d", SourcePos.init("test"), "some"),
                     throwError,
                     function (error) {
@@ -9451,7 +9451,7 @@ describe("combinator", function () {
                 );
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(c[ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[(c1c2)a2]");
@@ -9475,7 +9475,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(c[bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -9491,7 +9491,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(c[cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[(c1c2)c2]");
@@ -9518,7 +9518,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c(c[dd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("(c1c2)");
@@ -9545,7 +9545,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("c(c<dd", SourcePos.init("test"), "some"),
                     function (value, state, error) {
                         value.should.equal("(c1c2)");
@@ -9573,7 +9573,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
-                    lq.combinator.chainl1(p, op, "x").run(
+                    lq.combinator.chainl1(p, op).run(
                         new State("c(d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
                         throwError,
                         function (error) {
@@ -9597,7 +9597,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
-                        lq.combinator.chainl1(p, op, "x").run(
+                        lq.combinator.chainl1(p, op).run(
                             new State("c{" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
                             throwError,
                             function (error) {
@@ -9616,7 +9616,7 @@ describe("combinator", function () {
                 });
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[a(ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("([c1a1]a3)");
@@ -9640,7 +9640,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[a(bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -9656,7 +9656,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[a(cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("([c1a1]c3)");
@@ -9681,7 +9681,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[a(dd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -9701,7 +9701,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("c[a{" + e3 + "d", SourcePos.init("test"), "some"),
                     throwError,
                     function (error) {
@@ -9718,7 +9718,7 @@ describe("combinator", function () {
                 );
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[a[ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[[c1a1]a2]");
@@ -9742,7 +9742,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[a[bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -9758,7 +9758,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[a[cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[[c1a1]c2]");
@@ -9784,7 +9784,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[a[dd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[c1a1]");
@@ -9810,7 +9810,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("c[a<dd", SourcePos.init("test"), "some"),
                     function (value, state, error) {
                         value.should.equal("[c1a1]");
@@ -9837,7 +9837,7 @@ describe("combinator", function () {
             
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
-                    lq.combinator.chainl1(p, op, "x").run(
+                    lq.combinator.chainl1(p, op).run(
                         new State("c[b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
                         throwError,
                         function (error) {
@@ -9855,7 +9855,7 @@ describe("combinator", function () {
                 });
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[c(ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("([c1c1]a2)");
@@ -9879,7 +9879,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[c(bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -9895,7 +9895,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[c(cd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("([c1c1]c2)");
@@ -9920,7 +9920,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[c(dd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -9940,7 +9940,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("c[c{" + e3 + "d", SourcePos.init("test"), "some"),
                     throwError,
                     function (error) {
@@ -9957,7 +9957,7 @@ describe("combinator", function () {
                 );
             });
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[c[ad", SourcePos.init("test"), "some"),
                 function (value, state, error) {
                     value.should.equal("[[c1c1]a1]");
@@ -9981,7 +9981,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[c[bd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
@@ -9997,7 +9997,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[c[cd", SourcePos.init("test"), "some"),
                 throwError,
                 throwError,
@@ -10025,7 +10025,7 @@ describe("combinator", function () {
                 throwError
             );
 
-            lq.combinator.chainl1(p, op, "x").run(
+            lq.combinator.chainl1(p, op).run(
                 new State("c[c[dd", SourcePos.init("test"), "some"),
                 throwError,
                 throwError,
@@ -10053,7 +10053,7 @@ describe("combinator", function () {
             );
 
             ["a", "b", "c", "d"].forEach(function (e3) {
-                lq.combinator.chainl1(p, op, "x").run(
+                lq.combinator.chainl1(p, op).run(
                     new State("c[c<dd", SourcePos.init("test"), "some"),
                     throwError,
                     throwError,
@@ -10082,7 +10082,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
-                    lq.combinator.chainl1(p, op, "x").run(
+                    lq.combinator.chainl1(p, op).run(
                         new State("c[d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
                         throwError,
                         throwError,
@@ -10112,7 +10112,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
-                        lq.combinator.chainl1(p, op, "x").run(
+                        lq.combinator.chainl1(p, op).run(
                             new State("c<" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
                             throwError,
                             throwError,
@@ -10143,7 +10143,7 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         ["(", "{", "[", "<"].forEach(function (op1) {
-                            lq.combinator.chainl1(p, op, "x").run(
+                            lq.combinator.chainl1(p, op).run(
                                 new State("d" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
                                 throwError,
                                 throwError,
