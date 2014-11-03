@@ -6,11 +6,13 @@
 var should = require("should");
 
 var lq = Object.freeze({
+    "array"     : require("../lib/array"),
     "combinator": require("../lib/combinator"),
     "error"     : require("../lib/error"),
     "monad"     : require("../lib/monad"),
     "pos"       : require("../lib/pos"),
     "prim"      : require("../lib/prim"),
+    "string"    : require("../lib/string"),
     "util"      : require("../lib/util")
 });
 
@@ -14555,7 +14557,76 @@ describe("combinator", function () {
     });
 
     describe("anyToken", function () {
+        it("should parse any token in stream without updating the position", function () {
+            lq.combinator.anyToken.run(
+                new State("abc", SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    value.should.equal("a");
+                    State.equals(
+                        state,
+                        new State("bc", new SourcePos("test", 1, 1), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 1, 1))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
 
+            lq.combinator.anyToken.run(
+                new State(["abc", "def", "ghi"], SourcePos.init("test"), "none"),
+                function (value, state, error) {
+                    value.should.equal("abc");
+                    State.equals(
+                        state,
+                        new State(["def", "ghi"], new SourcePos("test", 1, 1), "none"),
+                        lq.util.ArrayUtil.equals
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(new SourcePos("test", 1, 1))
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.anyToken.run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            SourcePos.init("test"),
+                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.combinator.anyToken.run(
+                new State([], SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            SourcePos.init("test"),
+                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "")]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("eof", function () {
