@@ -14630,7 +14630,94 @@ describe("combinator", function () {
     });
 
     describe("eof", function () {
+        it("should accept the end of the input and return 'undefined'", function () {
+            lq.combinator.eof.run(
+                new State("", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("", SourcePos.init("test"), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            SourcePos.init("test"),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "end of input")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
 
+            lq.combinator.eof.run(
+                new State([], SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(
+                        state,
+                        new State([], SourcePos.init("test"), "none"),
+                        lq.util.ArrayUtil.equals
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            SourcePos.init("test"),
+                            [
+                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "end of input")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.combinator.eof.run(
+                new State("abc", SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            SourcePos.init("test"),
+                            [
+                                new ErrorMessage(ErrorMessageType.UNEXPECT, lq.util.show("a")),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "end of input")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.combinator.eof.run(
+                new State(["abc", "def", "ghi"], SourcePos.init("test"), "none"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            SourcePos.init("test"),
+                            [
+                                new ErrorMessage(ErrorMessageType.UNEXPECT, lq.util.show("abc")),
+                                new ErrorMessage(ErrorMessageType.EXPECT, "end of input")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 
     describe("notFollowedBy(parser)", function () {
