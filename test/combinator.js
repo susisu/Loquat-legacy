@@ -14833,6 +14833,685 @@ describe("combinator", function () {
     });
 
     describe("manyTill(parser, end)", function () {
+        it("should parse many things that 'parser' accepts until 'end' succeeds", function () {
+            var p = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                switch (state.input.charAt(0)) {
+                    case "a": return csuc(
+                            "a" + state.position.column.toString(),
+                            new State(
+                                state.input.substr(1),
+                                state.position.setColumn(state.position.column + 1),
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                            )
+                        );
+                    case "b": return cerr(
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        );
+                    case "c": return esuc(
+                            "c" + state.position.column.toString(),
+                            new State(
+                                state.input.substr(1),
+                                state.position,
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                            )
+                        );
+                    default: return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        );
+                }
+            });
 
+            var end = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                switch (state.input.charAt(0)) {
+                    case ".": return csuc(
+                            undefined,
+                            new State(
+                                state.input.substr(1),
+                                state.position.setColumn(state.position.column + 1),
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "end_csuc")]
+                            )
+                        );
+                    case ",": return cerr(
+                            new ParseError(
+                                state.position.setColumn(state.position.column + 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "end_cerr")]
+                            )
+                        );
+                    case ":": return esuc(
+                            undefined,
+                            new State(
+                                state.input.substr(1),
+                                state.position,
+                                "none"
+                            ),
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "end_esuc")]
+                            )
+                        );
+                    default: return eerr(
+                            new ParseError(
+                                state.position,
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr")]
+                            )
+                        );
+                }
+            });
+
+            lq.combinator.manyTill(p, end).run(
+                new State("", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("aa", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("cc", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("aa.", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "a2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("", new SourcePos("test", 1, 4), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "end_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("aa,", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "end_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("aa:", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "a2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_esuc")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("aa;", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            [".", ",", ":", ";"].forEach(function (endChar) {
+                lq.combinator.manyTill(p, end).run(
+                    new State("ab" + endChar, SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.manyTill(p, end).run(
+                new State("ac.", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "c2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "end_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("ac,", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "end_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("ac:", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["a1", "c2"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_esuc")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("ac;", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            [".", ",", ":", ";"].forEach(function (endChar) {
+                lq.combinator.manyTill(p, end).run(
+                    new State("ad" + endChar, SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            [".", ",", ":", ";"].forEach(function (endChar) {
+                ["a", "b", "c", "d"].forEach(function (e2) {
+                    lq.combinator.manyTill(p, end).run(
+                        new State("b" + e2 + endChar, SourcePos.init("test"), "some"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 2),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+            });
+
+            lq.combinator.manyTill(p, end).run(
+                new State("ca.", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1", "a1"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("", new SourcePos("test", 1, 3), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "end_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("ca,", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "end_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("ca:", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1", "a1"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_esuc")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("ca;", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            [".", ",", ":", ";"].forEach(function (endChar) {
+                lq.combinator.manyTill(p, end).run(
+                    new State("cb" + endChar, SourcePos.init("test"), "some"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+
+            lq.combinator.manyTill(p, end).run(
+                new State("cc.", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1", "c1"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "end_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("cc,", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "end_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("cc:", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, ["c1", "c1"]).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("", new SourcePos("test", 1, 1), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_esuc")
+                            ]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State("cc;", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            [".", ",", ":", ";"].forEach(function (endChar) {
+                lq.combinator.manyTill(p, end).run(
+                    new State("cd" + endChar, SourcePos.init("test"), "some"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+
+            [".", ",", ":", ";"].forEach(function (endChar) {
+                ["a", "b", "c", "d"].forEach(function (e2) {
+                    lq.combinator.manyTill(p, end).run(
+                        new State("d" + e2 + endChar, SourcePos.init("test"), "some"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 1),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        }
+                    );
+                });
+            });
+
+            lq.combinator.manyTill(p, end).run(
+                new State(".", SourcePos.init("test"), "some"),
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("", new SourcePos("test", 1, 2), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "end_csuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State(",", SourcePos.init("test"), "some"),
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "end_cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError,
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State(":", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
+                    State.equals(
+                        state,
+                        new State("", new SourcePos("test", 1, 1), "none")
+                    ).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "end_esuc")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.combinator.manyTill(p, end).run(
+                new State(";", SourcePos.init("test"), "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+        });
     });
 });
