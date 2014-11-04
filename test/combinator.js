@@ -14721,7 +14721,115 @@ describe("combinator", function () {
     });
 
     describe("notFollowedBy(parser)", function () {
+        it("should succeed without consumption only when the parser failed", function () {
+            var acsuc = alwaysCSuc(
+                "foo",
+                new State("def", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                )
+            );
 
+            var acerr = alwaysCErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                )
+            );
+
+            var aesuc = alwaysESuc(
+                "bar",
+                new State("def", new SourcePos("test", 1, 2), "none"),
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                )
+            );
+
+            var aeerr = alwaysEErr(
+                new ParseError(
+                    new SourcePos("test", 1, 2),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                )
+            );
+
+            var initState = new State("abc", SourcePos.init("test"), "some");
+
+            lq.combinator.notFollowedBy(acsuc).run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.UNEXPECT, lq.util.show("foo"))
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.combinator.notFollowedBy(acerr).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(state, initState).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+
+            lq.combinator.notFollowedBy(aesuc).run(
+                initState,
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.UNEXPECT, lq.util.show("bar"))
+                            ]
+                        )
+                    ).should.be.ok;
+                }
+            );
+
+            lq.combinator.notFollowedBy(aeerr).run(
+                initState,
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    (value === undefined).should.be.ok;
+                    State.equals(state, initState).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    ).should.be.ok;
+                },
+                throwError
+            );
+        });
     });
 
     describe("manyTill(parser, end)", function () {
