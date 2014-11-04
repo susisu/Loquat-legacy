@@ -1,3 +1,4 @@
+.gitignore
 /test
 /build
 Gruntfile.js

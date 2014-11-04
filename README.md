@@ -2,15 +2,13 @@
 JavaScript parser combinator inspired by [Parsec](https://github.com/aslatter/parsec)
 
 ## Description
-Loquat is a parser combinator library written in JavaScript, available for both Node.js and browsers. It enables you to write parsers easily, without complex regular expressions.
-
-***NOTICE***
-Loquat is under development, so that there may be inefficient functions and bugs.
+Loquat is a parser combinator library written in JavaScript, available for both Node.js and browsers.
+It enables you to write parsers easily, without complex regular expressions.
 
 ## Installation and Usage
 ### Node.js
 ``` shell
-$ npm install git+https://github.com/susisu/Loquat.git
+$ npm install loquat
 ```
 Here is a simple parsing example:
 ``` javascript
