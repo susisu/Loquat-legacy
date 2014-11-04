@@ -2500,6 +2500,12 @@ describe("prim", function () {
         });
     });
 
+    describe("try(parser)", function () {
+        it("should be a synonym for 'attempt'", function () {
+            (lq.prim.try === lq.prim.attempt).should.be.ok;
+        });
+    });
+
     describe("attempt(parser)", function () {
         it("should return a parser that always treats any failure from 'parser' as the parser didn't consume", function () {
             var valueA = "foo"

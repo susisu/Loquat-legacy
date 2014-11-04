@@ -270,6 +270,12 @@ describe("monad", function () {
             );
         });
     });
+    
+    describe("void(parser)", function () {
+        it("should be a synonym for 'nullify'", function () {
+            (lq.monad.void === lq.monad.nullify).should.be.ok;
+        });
+    });
 
     describe("nullify(parser)", function () {
         it("should return a parser that runs 'parser' and discards the result", function () {
