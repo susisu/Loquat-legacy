@@ -50,5 +50,5 @@ else {
 [MIT License](http://opensource.org/licenses/mit-license.php)
 
 ## TODO
-* test
-* optimization (remove redundant recursions, etc.)
+* refine APIs (if necessary)
+* document
