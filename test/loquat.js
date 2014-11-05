@@ -12,6 +12,6 @@ var lq = Object.freeze({
     "pos"       : require("./pos"),
     "prim"      : require("./prim"),
     "string"    : require("./string"),
-    // "sugar"     : require("./sugar"),
+    "sugar"     : require("./sugar"),
     "util"      : require("./util")
 });
