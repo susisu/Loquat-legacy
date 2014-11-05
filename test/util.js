@@ -24,47 +24,6 @@ describe("util", function () {
             });
         });
 
-        describe(".head(array)", function () {
-            it("should return the first element of 'array'", function () {
-                lq.util.ArrayUtil.head([1, 2, 3]).should.equal(1);
-            });
-        });
-
-        describe(".tail(array)", function () {
-            it("should return a new array that contains all the elements of 'array' except the first element", function () {
-                lq.util.ArrayUtil.equals(lq.util.ArrayUtil.tail([1]), []).should.be.ok;
-                lq.util.ArrayUtil.equals(lq.util.ArrayUtil.tail([1, 2, 3]), [2, 3]).should.be.ok;
-            });
-        });
-
-        describe(".init(array)", function () {
-            it("should return a new array that contains all the elements of 'array' except the last element", function () {
-                lq.util.ArrayUtil.equals(lq.util.ArrayUtil.init([1]), []).should.be.ok;
-                lq.util.ArrayUtil.equals(lq.util.ArrayUtil.init([1, 2, 3]), [1, 2]).should.be.ok;
-            });
-        });
-
-        describe(".last(array)", function () {
-            it("should return the last element of array", function () {
-                lq.util.ArrayUtil.last([1, 2, 3]).should.equal(3);
-            });
-        });
-
-        describe(".cons(head, tail)", function () {
-            it("should return a new array that 'head' is concatenated to the head of 'tail'", function () {
-                lq.util.ArrayUtil.equals(lq.util.ArrayUtil.cons(1, []), [1]).should.be.ok;
-                lq.util.ArrayUtil.equals(lq.util.ArrayUtil.cons(1, [2, 3, 4]), [1, 2, 3, 4]).should.be.ok;
-            });
-        });
-
-        describe(".nub(array)", function () {
-            it("should return a new array that contains all the unique elements of 'array'", function () {
-                lq.util.ArrayUtil.equals(lq.util.ArrayUtil.nub([]), []).should.be.ok;
-                lq.util.ArrayUtil.equals(lq.util.ArrayUtil.nub([1, 2, 3]), [1, 2, 3]).should.be.ok;
-                lq.util.ArrayUtil.equals(lq.util.ArrayUtil.nub([1, 4, 6, 4, 1]), [1, 4, 6]).should.be.ok;
-            });
-        });
-
         describe(".replicate(n, element)", function () {
             it("should return an array, the length of which is 'n' and every element is 'element'", function () {
                 lq.util.ArrayUtil.equals(lq.util.ArrayUtil.replicate(0, 1), []).should.be.ok;

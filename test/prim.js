@@ -3259,7 +3259,7 @@ describe("prim", function () {
                     }).join("; ");
                 },
                 function (position, expectedTokens) {
-                    var last = lq.util.ArrayUtil.last(expectedTokens);
+                    var last = expectedTokens[expectedTokens.length - 1];
                     return new SourcePos("test", last[0], last[1]);
                 },
                 tokensA,
@@ -3297,7 +3297,7 @@ describe("prim", function () {
                     }).join("; ");
                 },
                 function (position, expectedTokens) {
-                    var last = lq.util.ArrayUtil.last(expectedTokens);
+                    var last = expectedTokens[expectedTokens.length - 1];
                     return new SourcePos("test", last[0], last[1]);
                 },
                 tokensB,
@@ -3333,7 +3333,7 @@ describe("prim", function () {
                     }).join("; ");
                 },
                 function (position, expectedTokens) {
-                    var last = lq.util.ArrayUtil.last(expectedTokens);
+                    var last = expectedTokens[expectedTokens.length - 1];
                     return new SourcePos("test", last[0], last[1]);
                 },
                 tokensC,
@@ -3369,7 +3369,7 @@ describe("prim", function () {
                     }).join("; ");
                 },
                 function (position, expectedTokens) {
-                    var last = lq.util.ArrayUtil.last(expectedTokens);
+                    var last = expectedTokens[expectedTokens.length - 1];
                     return new SourcePos("test", last[0], last[1]);
                 },
                 tokensD,
@@ -3405,7 +3405,7 @@ describe("prim", function () {
                     }).join("; ");
                 },
                 function (position, expectedTokens) {
-                    var last = lq.util.ArrayUtil.last(expectedTokens);
+                    var last = expectedTokens[expectedTokens.length - 1];
                     return new SourcePos("test", last[0], last[1]);
                 },
                 tokensE,
@@ -3441,7 +3441,7 @@ describe("prim", function () {
                     }).join("; ");
                 },
                 function (position, expectedTokens) {
-                    var last = lq.util.ArrayUtil.last(expectedTokens);
+                    var last = expectedTokens[expectedTokens.length - 1];
                     return new SourcePos("test", last[0], last[1]);
                 },
                 tokensF,
