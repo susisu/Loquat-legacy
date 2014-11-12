@@ -359,6 +359,147 @@ describe("expr", function () {
                     throwError
                 );
             })();
+
+            (function () {
+                var term = newValueM(lq.char.letter);
+                var postop1 = new Operator(
+                    OperatorType.POSTFIX,
+                    newPostfixOpM(lq.char.char("+"))
+                );
+                var postop2 = new Operator(
+                    OperatorType.POSTFIX,
+                    newPostfixOpM(lq.char.char("-"))
+                );
+                var parser1 = lq.expr.buildExpressionParser([[postop1], [postop2]], term);
+                var parser2 = lq.expr.buildExpressionParser([[postop2], [postop1]], term);
+                var parser3 = lq.expr.buildExpressionParser([[postop2, postop1]], term);
+
+                parser1.run(
+                    new State("a+-", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("((a+)-)");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                []
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser1.run(
+                    new State("a-+", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("(a-)");
+                        State.equals(
+                            state,
+                            new State("+", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                []
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser2.run(
+                    new State("a+-", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("(a+)");
+                        State.equals(
+                            state,
+                            new State("-", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                []
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser2.run(
+                    new State("a-+", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("((a-)+)");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                []
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser3.run(
+                    new State("a+-", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("(a+)");
+                        State.equals(
+                            state,
+                            new State("-", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                []
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+                
+                parser3.run(
+                    new State("a-+", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("(a-)");
+                        State.equals(
+                            state,
+                            new State("+", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                []
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            })();
         });
     });
 });
