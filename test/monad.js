@@ -3818,7 +3818,7 @@ describe("monad", function () {
             );
 
             [acsucg, acerrg, aesucg, aeerrg].forEach(function (ag) {
-                lq.monad.ltor(acerrf, acerrg)("foo").run(
+                lq.monad.ltor(acerrf, ag)("foo").run(
                     initState,
                     throwError,
                     function (error) {
@@ -3834,7 +3834,7 @@ describe("monad", function () {
                     throwError
                 );
 
-                lq.monad.ltor(aeerrf, acerrg)("foo").run(
+                lq.monad.ltor(aeerrf, ag)("foo").run(
                     initState,
                     throwError,
                     throwError,
@@ -4086,7 +4086,7 @@ describe("monad", function () {
             );
 
             [acsucg, acerrg, aesucg, aeerrg].forEach(function (ag) {
-                lq.monad.rtol(acerrg, acerrf)("foo").run(
+                lq.monad.rtol(ag, acerrf)("foo").run(
                     initState,
                     throwError,
                     function (error) {
@@ -4102,7 +4102,7 @@ describe("monad", function () {
                     throwError
                 );
 
-                lq.monad.rtol(acerrg, aeerrf)("foo").run(
+                lq.monad.rtol(ag, aeerrf)("foo").run(
                     initState,
                     throwError,
                     throwError,
