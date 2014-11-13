@@ -2563,7 +2563,7 @@ describe("prim", function () {
     });
 
     describe("lookAhead(parser)", function () {
-        it("should return a parser that runs 'parser' but doesn't consume, the state remains intact", function () {
+        it("should return a parser that runs 'parser' but doesn't consume the input and reports no error, the state remains intact", function () {
             var valueA = "foo"
             var posA = new SourcePos("test", 1, 2);
             var stateA = new State("abc", posA, "none");
@@ -2579,7 +2579,10 @@ describe("prim", function () {
                 function (value, state, error) {
                     value.should.equal(valueA);
                     State.equals(state, origState).should.be.ok;
-                    ParseError.equals(error, errorA).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(SourcePos.init("test"))
+                    ).should.be.ok;
                 },
                 throwError
             );
@@ -2601,7 +2604,10 @@ describe("prim", function () {
                 function (value, state, error) {
                     value.should.equal(valueA);
                     State.equals(state, origState).should.be.ok;
-                    ParseError.equals(error, errorA).should.be.ok;
+                    ParseError.equals(
+                        error,
+                        ParseError.unknown(SourcePos.init("test"))
+                    ).should.be.ok;
                 },
                 throwError
             );
