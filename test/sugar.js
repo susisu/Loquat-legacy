@@ -146,8 +146,11 @@ describe("sugar", function () {
                         ParseError.equals(
                             error,
                             new ParseError(
-                                new SourcePos("test", 1, 2),
-                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "end_csuc"),
+                                    new ErrorMessage(ErrorMessageType.UNEXPECT, lq.util.show("."))
+                                ]
                             )
                         ).should.be.ok;
                     }
@@ -164,8 +167,8 @@ describe("sugar", function () {
                         ParseError.equals(
                             error,
                             new ParseError(
-                                new SourcePos("test", 1, 2),
-                                [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "end_cerr")]
                             )
                         ).should.be.ok;
                     },
@@ -245,8 +248,11 @@ describe("sugar", function () {
                         ParseError.equals(
                             error,
                             new ParseError(
-                                new SourcePos("test", 1, 1),
-                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "end_csuc"),
+                                    new ErrorMessage(ErrorMessageType.UNEXPECT, lq.util.show("."))
+                                ]
                             )
                         ).should.be.ok;
                     }
@@ -265,8 +271,8 @@ describe("sugar", function () {
                         ParseError.equals(
                             error,
                             new ParseError(
-                                new SourcePos("test", 1, 1),
-                                [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "end_cerr")]
                             )
                         ).should.be.ok;
                     },

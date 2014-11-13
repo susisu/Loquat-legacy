@@ -564,8 +564,8 @@ describe("combinator", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 3, 4),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "content_csuc")]
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_esuc")]
                         )
                     ).should.be.ok;
                 },
@@ -581,8 +581,8 @@ describe("combinator", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 3, 4),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "content_csuc")]
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_eerr")]
                         )
                     ).should.be.ok;
                 },
@@ -638,8 +638,8 @@ describe("combinator", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "open_csuc")]
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_esuc")]
                         )
                     ).should.be.ok;
                 },
@@ -655,8 +655,8 @@ describe("combinator", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "open_csuc")]
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_eerr")]
                         )
                     ).should.be.ok;
                 },
@@ -712,8 +712,8 @@ describe("combinator", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 3, 4),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "content_csuc")]
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_esuc")]
                         )
                     ).should.be.ok;
                 },
@@ -729,8 +729,8 @@ describe("combinator", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 3, 4),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "content_csuc")]
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_eerr")]
                         )
                     ).should.be.ok;
                 },
@@ -788,8 +788,8 @@ describe("combinator", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "open_esuc")]
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_esuc")]
                         )
                     ).should.be.ok;
                 },
@@ -805,8 +805,8 @@ describe("combinator", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "open_esuc")]
+                            new SourcePos("test", 5, 6),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "close_eerr")]
                         )
                     ).should.be.ok;
                 }
@@ -852,8 +852,8 @@ describe("combinator", function () {
                         ParseError.equals(
                             error,
                             new ParseError(
-                                new SourcePos("test", 1, 2),
-                                [new ErrorMessage(ErrorMessageType.MESSAGE, "open_csuc")]
+                                new SourcePos("test", 3, 4),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "content_eerr")]
                             )
                         ).should.be.ok;
                     },
@@ -870,8 +870,8 @@ describe("combinator", function () {
                         ParseError.equals(
                             error,
                             new ParseError(
-                                new SourcePos("test", 1, 2),
-                                [new ErrorMessage(ErrorMessageType.MESSAGE, "open_esuc")]
+                                new SourcePos("test", 3, 4),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "content_eerr")]
                             )
                         ).should.be.ok;
                     }

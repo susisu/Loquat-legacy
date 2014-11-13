@@ -481,8 +481,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
                         )
                     ).should.be.ok;
                 },
@@ -505,8 +505,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                         )
                     ).should.be.ok;
                 },
@@ -606,8 +606,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
                         )
                     ).should.be.ok;
                 },
@@ -630,8 +630,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                         )
                     ).should.be.ok;
                 }
@@ -3717,8 +3717,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_baz")]
                         )
                     ).should.be.ok;
                 },
@@ -3734,8 +3734,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_baz")]
                         )
                     ).should.be.ok;
                 },
@@ -3793,8 +3793,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_baz")]
                         )
                     ).should.be.ok;
                 },
@@ -3810,8 +3810,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_baz")]
                         )
                     ).should.be.ok;
                 }
@@ -3985,8 +3985,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_baz")]
                         )
                     ).should.be.ok;
                 },
@@ -4002,8 +4002,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_baz")]
                         )
                     ).should.be.ok;
                 },
@@ -4061,8 +4061,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_baz")]
                         )
                     ).should.be.ok;
                 },
@@ -4078,8 +4078,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_baz")]
                         )
                     ).should.be.ok;
                 }
@@ -4249,8 +4249,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
                         )
                     ).should.be.ok;
                 },
@@ -4266,8 +4266,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
                         )
                     ).should.be.ok;
                 },
@@ -4325,8 +4325,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_foo")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
                         )
                     ).should.be.ok;
                 },
@@ -4342,8 +4342,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_foo")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
                         )
                     ).should.be.ok;
                 }
@@ -4513,8 +4513,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
                         )
                     ).should.be.ok;
                 },
@@ -4530,8 +4530,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
                         )
                     ).should.be.ok;
                 },
@@ -4589,8 +4589,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_foo")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
                         )
                     ).should.be.ok;
                 },
@@ -4606,8 +4606,8 @@ describe("monad", function () {
                     ParseError.equals(
                         error,
                         new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_foo")]
+                            new SourcePos("test", 3, 4),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
                         )
                     ).should.be.ok;
                 }
