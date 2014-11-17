@@ -729,6 +729,132 @@ describe("expr", function () {
                     throwError
                 );
             })();
+
+            (function () {
+                var term = newValueM(lq.char.letter);
+                var op = new Operator(
+                    OperatorType.INFIX,
+                    newInfixOpM(lq.char.char(":")),
+                    OperatorAssoc.ASSOC_LEFT
+                );
+                var parser = lq.expr.buildExpressionParser([[op]], term);
+
+                parser.run(
+                    new State("a", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("a");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.EXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "operator")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+                
+                parser.run(
+                    new State("a:", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.EXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "letter")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.run(
+                    new State("a:b", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("(a:b)");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.EXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show(":"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.run(
+                    new State("a:b:", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 5),
+                                [
+                                    new ErrorMessage(ErrorMessageType.EXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "letter")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.run(
+                    new State("a:b:c", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("((a:b):c)");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 6), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 6),
+                                [
+                                    new ErrorMessage(ErrorMessageType.EXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show(":"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            })();
         });
     });
 });
