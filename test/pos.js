@@ -28,7 +28,7 @@ describe("pos", function () {
                 pos.line.should.equal(1);
                 pos.column.should.equal(2);
             });
-        })
+        });
 
         describe(".init(name)", function () {
             it("should return initial position in source", function () {

@@ -245,8 +245,8 @@ describe("error", function () {
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                 );
                 var merged3 = new ParseError(
-                    new SourcePos("test", 1, 2),
-                    [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                 );
                 ParseError.equals(
                     ParseError.merge(error3A, error3B),
@@ -262,8 +262,8 @@ describe("error", function () {
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                 );
                 var merged4 = new ParseError(
-                    new SourcePos("test", 1, 2),
-                    [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
+                    new SourcePos("test", 3, 4),
+                    [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
                 );
                 ParseError.equals(
                     ParseError.merge(error4A, error4B),
