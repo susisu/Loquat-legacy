@@ -1974,6 +1974,239 @@ describe("expr", function () {
                     throwError
                 );
             })();
+
+            (function () {
+                var term = newValueM(lq.char.letter);
+                var opN = new Operator(
+                    OperatorType.INFIX,
+                    newInfixOpM(lq.char.char("=")),
+                    OperatorAssoc.ASSOC_NONE
+                );
+                var opR = new Operator(
+                    OperatorType.INFIX,
+                    newInfixOpM(lq.char.char("$")),
+                    OperatorAssoc.ASSOC_RIGHT
+                );
+                var opL = new Operator(
+                    OperatorType.INFIX,
+                    newInfixOpM(lq.char.char("+")),
+                    OperatorAssoc.ASSOC_LEFT
+                );
+                var parser = lq.expr.buildExpressionParser([[opN, opR, opL]], term);
+
+                parser.run(
+                    new State("a=b", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("(a=b)");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.EXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("$")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("+")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("="))
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.run(
+                    new State("a$b", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("(a$b)");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.EXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("$")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("+")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("="))
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.run(
+                    new State("a+b", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("(a+b)");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.EXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("+")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("$")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("="))
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.run(
+                    new State("a=b$c", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("(a=b)");
+                        State.equals(
+                            state,
+                            new State("$c", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 5),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "ambiguous use of a right associative operator")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.run(
+                    new State("a=b+c", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("(a=b)");
+                        State.equals(
+                            state,
+                            new State("+c", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 5),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "ambiguous use of a left associative operator")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.run(
+                    new State("a$b=c", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("(a$b)");
+                        State.equals(
+                            state,
+                            new State("=c", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 5),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "ambiguous use of a non associative operator")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.run(
+                    new State("a$b+c", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("(a$b)");
+                        State.equals(
+                            state,
+                            new State("+c", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 5),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "ambiguous use of a left associative operator")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.run(
+                    new State("a+b=c", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("(a+b)");
+                        State.equals(
+                            state,
+                            new State("=c", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 5),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "ambiguous use of a non associative operator")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.run(
+                    new State("a+b$c", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.toString().should.equal("(a+b)");
+                        State.equals(
+                            state,
+                            new State("$c", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 5),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "ambiguous use of a right associative operator")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            })();
         });
     });
 });
