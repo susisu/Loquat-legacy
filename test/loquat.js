@@ -14,5 +14,6 @@ var lq = Object.freeze({
     "prim"      : require("./prim"),
     "string"    : require("./string"),
     "sugar"     : require("./sugar"),
+    "token"     : require("./token"),
     "util"      : require("./util")
 });
