@@ -1,7 +1,7 @@
 {
   "name": "loquat",
-  "version": "1.1.0",
-  "description": "JavaScript perser combinator",
+  "version": "1.1.1",
+  "description": "Monadic parser combinators",
   "main": "index.js",
   "directories": {
     "lib": "lib",
