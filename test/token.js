@@ -161,7 +161,7 @@ describe("token", function () {
                     undefined, /* opStart */
                     undefined, /* opLetter */
                     ["var", "function"], /* reservedNames */
-                    undefined, /* reservedOpNames */
+                    ["=", "@"], /* reservedOpNames */
                     true /* caseSensitive */
                 );
                 var parser1 = makeTokenParser(def1);
@@ -175,7 +175,7 @@ describe("token", function () {
                     undefined, /* opStart */
                     undefined, /* opLetter */
                     ["var", "function"], /* reservedNames */
-                    undefined, /* reservedOpNames */
+                    ["=", "@"], /* reservedOpNames */
                     false /* caseSensitive */
                 );
                 var parser2 = makeTokenParser(def2);
@@ -562,7 +562,7 @@ describe("token", function () {
                     undefined, /* opStart */
                     undefined, /* opLetter */
                     ["var", "function"], /* reservedNames */
-                    undefined, /* reservedOpNames */
+                    ["=", "@"], /* reservedOpNames */
                     true /* caseSensitive */
                 );
                 var parser1 = makeTokenParser(def1);
@@ -576,7 +576,7 @@ describe("token", function () {
                     undefined, /* opStart */
                     undefined, /* opLetter */
                     ["var", "function"], /* reservedNames */
-                    undefined, /* reservedOpNames */
+                    ["=", "@"], /* reservedOpNames */
                     false /* caseSensitive */
                 );
                 var parser2 = makeTokenParser(def2);
