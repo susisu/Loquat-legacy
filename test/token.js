@@ -1123,5 +1123,182 @@ describe("token", function () {
                 );
             });
         });
+
+        describe(".reservedOp(name)", function () {
+            it("should parse reserved operator 'name'", function () {
+                var def = new LanguageDef(
+                    "/*", /* commentStart */
+                    "*/", /* commentEnd */
+                    "//", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    lq.char.oneOf("!#$%&*+./<=>?@\\^|-~"), /* opStart */
+                    lq.char.oneOf("!#$%&*+./<=>?@\\^|-~:"), /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser = makeTokenParser(def);
+
+                parser.reservedOp("=").run(
+                    new State("", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("="))
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                parser.reservedOp("=").run(
+                    new State("+", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("+")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("="))
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                parser.reservedOp("=").run(
+                    new State("=", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "end of " + lq.util.show("=")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.reservedOp("=").run(
+                    new State("= +", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("+", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("+")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("+")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("+")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.reservedOp("=").run(
+                    new State("==", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.UNEXPECT, lq.util.show("=")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "end of " + lq.util.show("=")),
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                parser.reservedOp("->").run(
+                    new State("->", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "end of " + lq.util.show("->")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.reservedOp("->").run(
+                    new State("-+", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("+")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("->"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+        });
     });
 });
