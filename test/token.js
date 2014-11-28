@@ -1300,5 +1300,140 @@ describe("token", function () {
                 );
             });
         });
+
+        describe(".semi", function () {
+            it("should parse semicolon", function () {
+                var def = new LanguageDef(
+                    "/*", /* commentStart */
+                    "*/", /* commentEnd */
+                    "//", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser = makeTokenParser(def);
+
+                parser.semi.run(
+                    new State("", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show(";"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                parser.semi.run(
+                    new State(":", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(":")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show(";"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                parser.semi.run(
+                    new State(";", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(";");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.semi.run(
+                    new State(";;", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(";");
+                        State.equals(
+                            state,
+                            new State(";", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(";")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(";")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(";")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.semi.run(
+                    new State("; ;", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(";");
+                        State.equals(
+                            state,
+                            new State(";", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(";")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(";")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show(";")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+        });
     });
 });
