@@ -1301,6 +1301,715 @@ describe("token", function () {
             });
         });
 
+        describe(".whiteSpace", function () {
+            it("should skip white spaces and comments", function () {
+                var def1 = new LanguageDef(
+                    "/*", /* commentStart */
+                    "*/", /* commentEnd */
+                    "//", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser1 = makeTokenParser(def1);
+                
+                parser1.whiteSpace.run(
+                    new State("abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+
+                parser1.whiteSpace.run(
+                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 2, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 2, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+                
+                parser1.whiteSpace.run(
+                    new State("// foo\n// bar\nabc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 3, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 3, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser1.whiteSpace.run(
+                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 21), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 21),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+                
+                parser1.whiteSpace.run(
+                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("*/ abc", new SourcePos("test", 1, 18), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 18),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("*")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("*")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("*")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                var def2 = new LanguageDef(
+                    "/*", /* commentStart */
+                    "*/", /* commentEnd */
+                    "//", /* commentLine */
+                    true, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser2 = makeTokenParser(def2);
+                
+                parser2.whiteSpace.run(
+                    new State("abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+
+                parser2.whiteSpace.run(
+                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 2, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 2, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+                
+                parser2.whiteSpace.run(
+                    new State("// foo\n// bar\nabc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 3, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 3, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser2.whiteSpace.run(
+                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 21), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 21),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+                
+                parser2.whiteSpace.run(
+                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 21), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 21),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                var def3 = new LanguageDef(
+                    "/*", /* commentStart */
+                    "*/", /* commentEnd */
+                    "", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser3 = makeTokenParser(def3);
+                
+                parser3.whiteSpace.run(
+                    new State("abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+
+                parser3.whiteSpace.run(
+                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 2, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 2, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+                
+                parser3.whiteSpace.run(
+                    new State("// foo\n// bar\nabc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("// foo\n// bar\nabc", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("/")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("/")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+
+                parser3.whiteSpace.run(
+                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 21), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 21),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+                
+                parser3.whiteSpace.run(
+                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("*/ abc", new SourcePos("test", 1, 18), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 18),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("*")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("*")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                var def4 = new LanguageDef(
+                    "", /* commentStart */
+                    "", /* commentEnd */
+                    "//", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser4 = makeTokenParser(def4);
+                
+                parser4.whiteSpace.run(
+                    new State("abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+
+                parser4.whiteSpace.run(
+                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 2, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 2, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+                
+                parser4.whiteSpace.run(
+                    new State("// foo\n// bar\nabc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 3, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 3, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser4.whiteSpace.run(
+                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("/* foo */ /* bar */ abc", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("/")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("*")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+                
+                parser4.whiteSpace.run(
+                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("/* foo /* bar */ */ abc", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("/")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("*")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+
+                var def5 = new LanguageDef(
+                    "", /* commentStart */
+                    "", /* commentEnd */
+                    "", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser5 = makeTokenParser(def5);
+                
+                parser5.whiteSpace.run(
+                    new State("abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+
+                parser5.whiteSpace.run(
+                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 2, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 2, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+                
+                parser5.whiteSpace.run(
+                    new State("// foo\n// bar\nabc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("// foo\n// bar\nabc", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("/")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+
+                parser5.whiteSpace.run(
+                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("/* foo */ /* bar */ abc", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("/")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+                
+                parser5.whiteSpace.run(
+                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        (value === undefined).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("/* foo /* bar */ */ abc", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("/")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+            });
+        });
+
         describe(".semi", function () {
             it("should parse semicolon", function () {
                 var def = new LanguageDef(
