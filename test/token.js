@@ -1410,6 +1410,235 @@ describe("token", function () {
             });
         });
 
+        describe(".lexeme(parser)", function () {
+            it("should run the parser and skip trailing spaces", function () {
+                var def = new LanguageDef(
+                    "/*", /* commentStart */
+                    "*/", /* commentEnd */
+                    "//", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser = makeTokenParser(def);
+                var p = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                    switch (state.input.charAt(0)) {
+                        case "a": return csuc(
+                                "a" + state.position.column.toString(),
+                                new State(
+                                    state.input.substr(1),
+                                    state.position.setColumn(state.position.column + 1),
+                                    "none"
+                                ),
+                                new ParseError(
+                                    state.position.setColumn(state.position.column + 1),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                                )
+                            );
+                        case "b": return cerr(
+                                new ParseError(
+                                    state.position.setColumn(state.position.column + 1),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                )
+                            );
+                        case "c": return esuc(
+                                "c" + state.position.column.toString(),
+                                new State(
+                                    state.input.substr(1),
+                                    state.position,
+                                    "none"
+                                ),
+                                new ParseError(
+                                    state.position,
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                                )
+                            );
+                        default: return eerr(
+                                new ParseError(
+                                    state.position,
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                                )
+                            );
+                    }
+                });
+
+                parser.lexeme(p).run(
+                    new State("a", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("a1");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.lexeme(p).run(
+                    new State("a /* foo */ b", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("a1");
+                        State.equals(
+                            state,
+                            new State("b", new SourcePos("test", 1, 13), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 13),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.lexeme(p).run(
+                    new State("b", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.lexeme(p).run(
+                    new State("b /* foo */ b", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.lexeme(p).run(
+                    new State("c", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        value.should.equal("c1");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+
+                parser.lexeme(p).run(
+                    new State("c /* foo */ b", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("c1");
+                        State.equals(
+                            state,
+                            new State("b", new SourcePos("test", 1, 12), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 12),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.lexeme(p).run(
+                    new State("d", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                parser.lexeme(p).run(
+                    new State("d /* foo */ b", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+            });
+        });
+
         describe(".whiteSpace", function () {
             it("should skip white spaces and comments", function () {
                 var def1 = new LanguageDef(
