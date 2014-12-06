@@ -2688,6 +2688,346 @@ describe("token", function () {
             });
         });
 
+        describe(".braces(parser)", function () {
+            it("should parse token between '{' and '}'", function () {
+                var def = new LanguageDef(
+                    "/*", /* commentStart */
+                    "*/", /* commentEnd */
+                    "//", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser = makeTokenParser(def);
+                var p = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                    switch (state.input.charAt(0)) {
+                        case "a": return csuc(
+                                "a" + state.position.column.toString(),
+                                new State(
+                                    state.input.substr(1),
+                                    state.position.setColumn(state.position.column + 1),
+                                    "none"
+                                ),
+                                new ParseError(
+                                    state.position.setColumn(state.position.column + 1),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                                )
+                            );
+                        case "b": return cerr(
+                                new ParseError(
+                                    state.position.setColumn(state.position.column + 1),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                )
+                            );
+                        case "c": return esuc(
+                                "c" + state.position.column.toString(),
+                                new State(
+                                    state.input.substr(1),
+                                    state.position,
+                                    "none"
+                                ),
+                                new ParseError(
+                                    state.position,
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                                )
+                            );
+                        default: return eerr(
+                                new ParseError(
+                                    state.position,
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                                )
+                            );
+                    }
+                });
+
+                parser.braces(p).run(
+                    new State("", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("{"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                parser.braces(p).run(
+                    new State("{ab", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("}"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.braces(p).run(
+                    new State("{a}b", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("a2");
+                        State.equals(
+                            state,
+                            new State("b", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.braces(p).run(
+                    new State("{ a} b", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("a3");
+                        State.equals(
+                            state,
+                            new State("b", new SourcePos("test", 1, 6), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 6),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.braces(p).run(
+                    new State("{bb", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.braces(p).run(
+                    new State("{b}b", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.braces(p).run(
+                    new State("{ b} b", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.braces(p).run(
+                    new State("{cb", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("c")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("c")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("c")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("}"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.braces(p).run(
+                    new State("{c}b", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("c2");
+                        State.equals(
+                            state,
+                            new State("b", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.braces(p).run(
+                    new State("{ c} b", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("c3");
+                        State.equals(
+                            state,
+                            new State("b", new SourcePos("test", 1, 5), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 5),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.braces(p).run(
+                    new State("{db", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.braces(p).run(
+                    new State("{d}b", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.braces(p).run(
+                    new State("{ d} b", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+            });
+        });
+
         describe(".semi", function () {
             it("should parse semicolon", function () {
                 var def = new LanguageDef(
