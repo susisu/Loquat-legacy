@@ -4642,5 +4642,390 @@ describe("token", function () {
                 });
             });
         });
+
+        describe(".semiSep1(parser)", function () {
+            it("should parse one or more tokens separated by ';'", function () {
+                var def = new LanguageDef(
+                    "/*", /* commentStart */
+                    "*/", /* commentEnd */
+                    "//", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser = makeTokenParser(def);
+                var p = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+                    switch (state.input.charAt(0)) {
+                        case "a": return csuc(
+                                "a" + state.position.column.toString(),
+                                new State(
+                                    state.input.substr(1),
+                                    state.position.setColumn(state.position.column + 1),
+                                    "none"
+                                ),
+                                new ParseError(
+                                    state.position.setColumn(state.position.column + 1),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                                )
+                            );
+                        case "b": return cerr(
+                                new ParseError(
+                                    state.position.setColumn(state.position.column + 1),
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                                )
+                            );
+                        case "c": return esuc(
+                                "c" + state.position.column.toString(),
+                                new State(
+                                    state.input.substr(1),
+                                    state.position,
+                                    "none"
+                                ),
+                                new ParseError(
+                                    state.position,
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                                )
+                            );
+                        default: return eerr(
+                                new ParseError(
+                                    state.position,
+                                    [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                                )
+                            );
+                    }
+                });
+
+                parser.semiSep1(p).run(
+                    new State("aabcd", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, ["a1"]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abcd", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show(";"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.semiSep1(p).run(
+                    new State("babcd", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.semiSep1(p).run(
+                    new State("cabcd", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, ["c1"]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abcd", new SourcePos("test", 1, 1), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show(";"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError
+                );
+
+                parser.semiSep1(p).run(
+                    new State("dabcd", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                parser.semiSep1(p).run(
+                    new State("a;aabcd", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, ["a1", "a3"]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abcd", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show(";"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.semiSep1(p).run(
+                    new State("a; /* foo */ aabcd", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, ["a1", "a14"]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abcd", new SourcePos("test", 1, 15), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 15),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show(";"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.semiSep1(p).run(
+                    new State("a;babcd", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.semiSep1(p).run(
+                    new State("a;cabcd", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, ["a1", "c3"]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abcd", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show(";"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.semiSep1(p).run(
+                    new State("a;dabcd", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+                
+                ["a", "b", "c", "d"].forEach(function (c) {
+                    parser.semiSep1(p).run(
+                        new State("b;" + c + "abcd", SourcePos.init("test"), "none"),
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 2),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        },
+                        throwError,
+                        throwError
+                    );
+                });
+
+                parser.semiSep1(p).run(
+                    new State("c;aabcd", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, ["c1", "a2"]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abcd", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show(";"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.semiSep1(p).run(
+                    new State("c;babcd", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.semiSep1(p).run(
+                    new State("c;cabcd", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, ["c1", "c2"]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("abcd", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("a")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show(";"))
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.semiSep1(p).run(
+                    new State("c;dabcd", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("d")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                ["a", "b", "c", "d"].forEach(function (c) {
+                    parser.semiSep1(p).run(
+                        new State("d;" + c + "abcd", SourcePos.init("test"), "none"),
+                        throwError,
+                        throwError,
+                        throwError,
+                        function (error) {
+                            ParseError.equals(
+                                error,
+                                new ParseError(
+                                    new SourcePos("test", 1, 1),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                                    ]
+                                )
+                            ).should.be.ok;
+                        }
+                    );
+                });
+            });
+        });
     });
 });
