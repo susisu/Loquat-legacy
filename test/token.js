@@ -1301,6 +1301,153 @@ describe("token", function () {
             });
         });
         
+        describe(".octal", function () {
+            it("should parse octal digits and return the value as a number", function () {
+                var def = new LanguageDef(
+                    "/*", /* commentStart */
+                    "*/", /* commentEnd */
+                    "//", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser = makeTokenParser(def);
+
+                parser.octal.run(
+                    new State("", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                parser.octal.run(
+                    new State("o", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "octal digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.octal.run(
+                    new State("O", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "octal digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.octal.run(
+                    new State("o0", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(0);
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "octal digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.octal.run(
+                    new State("O0", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(0);
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "octal digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.octal.run(
+                    new State("o0123456789", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(parseInt("01234567", 8));
+                        State.equals(
+                            state,
+                            new State("89", new SourcePos("test", 1, 10), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 10),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("8")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "octal digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+        });
+
         describe(".symbol(name)", function () {
             it("should parse a symbol and skip trailing spaces", function () {
                 var def = new LanguageDef(
