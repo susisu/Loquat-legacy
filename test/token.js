@@ -1301,6 +1301,92 @@ describe("token", function () {
             });
         });
         
+        describe(".decimal", function () {
+            it("should parse decimal digits and return the value as a number", function () {
+                var def = new LanguageDef(
+                    "/*", /* commentStart */
+                    "*/", /* commentEnd */
+                    "//", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser = makeTokenParser(def);
+
+                parser.decimal.run(
+                    new State("", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                parser.decimal.run(
+                    new State("0", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(0);
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 2), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.decimal.run(
+                    new State("0123456789A", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(0123456789);
+                        State.equals(
+                            state,
+                            new State("A", new SourcePos("test", 1, 11), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 11),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+        });
+
         describe(".hexadecimal", function () {
             it("should parse hexadecimal digits and return the value as a number", function () {
                 var def = new LanguageDef(
