@@ -1301,6 +1301,337 @@ describe("token", function () {
             });
         });
         
+        describe(".naturalOrFloat", function () {
+            it("should parse natural or float and return the value as a number", function () {
+                var def = new LanguageDef(
+                    "/*", /* commentStart */
+                    "*/", /* commentEnd */
+                    "//", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser = makeTokenParser(def);
+
+                parser.naturalOrFloat.run(
+                    new State("", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "number")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                parser.naturalOrFloat.run(
+                    new State("0x123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, [parseInt("0123456789ABCDEF", 16)]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("G", new SourcePos("test", 1, 18), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 18),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("G")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "hexadecimal digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("G")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("G")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("G")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.naturalOrFloat.run(
+                    new State("0o123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, [parseInt("01234567", 8)]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("89ABCDEFG", new SourcePos("test", 1, 10), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 10),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("8")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "octal digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("8")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("8")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("8")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.naturalOrFloat.run(
+                    new State("0123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, [0123456789]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("ABCDEFG", new SourcePos("test", 1, 11), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 11),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "fraction"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "exponent"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.naturalOrFloat.run(
+                    new State("01234.56789ABCDEFG", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, [undefined, 1234.56789]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("ABCDEFG", new SourcePos("test", 1, 12), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 12),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "exponent"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.naturalOrFloat.run(
+                    new State("0123456789e-4ABCDEFG", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, [undefined, 123456789e-4]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("ABCDEFG", new SourcePos("test", 1, 14), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 14),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.naturalOrFloat.run(
+                    new State("01234.56789e-6ABCDEFG", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, [undefined, 1234.56789e-6]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("ABCDEFG", new SourcePos("test", 1, 15), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 15),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.naturalOrFloat.run(
+                    new State("123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, [123456789]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("ABCDEFG", new SourcePos("test", 1, 10), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 10),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "fraction"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "exponent"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.naturalOrFloat.run(
+                    new State("1234.56789ABCDEFG", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, [undefined, 1234.56789]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("ABCDEFG", new SourcePos("test", 1, 11), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 11),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "exponent"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.naturalOrFloat.run(
+                    new State("123456789e-4ABCDEFG", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, [undefined, 123456789e-4]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("ABCDEFG", new SourcePos("test", 1, 13), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 13),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.naturalOrFloat.run(
+                    new State("1234.56789e-6ABCDEFG", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        lq.util.ArrayUtil.equals(value, [undefined, 1234.56789e-6]).should.be.ok;
+                        State.equals(
+                            state,
+                            new State("ABCDEFG", new SourcePos("test", 1, 14), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 14),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+        });
+
         describe(".decimal", function () {
             it("should parse decimal digits and return the value as a number", function () {
                 var def = new LanguageDef(
