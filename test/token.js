@@ -2002,6 +2002,251 @@ describe("token", function () {
             });
         });
 
+        describe(".float", function () {
+            it("should parse float and return the value as a number", function () {
+                var def = new LanguageDef(
+                    "/*", /* commentStart */
+                    "*/", /* commentEnd */
+                    "//", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser = makeTokenParser(def);
+
+                parser.float.run(
+                    new State("", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "float")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                parser.float.run(
+                    new State("1234567890A", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 11),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "fraction"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "exponent")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.float.run(
+                    new State("1234567890.A", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 12),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "fraction")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.float.run(
+                    new State("1234567890.5A", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(1234567890.5);
+                        State.equals(
+                            state,
+                            new State("A", new SourcePos("test", 1, 13), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 13),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "exponent"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.float.run(
+                    new State("1234567890eA", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 12),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("-")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("+")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "exponent")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.float.run(
+                    new State("1234567890e-1A", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(1234567890e-1);
+                        State.equals(
+                            state,
+                            new State("A", new SourcePos("test", 1, 14), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 14),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.float.run(
+                    new State("1234567890e+1A", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(1234567890e+1);
+                        State.equals(
+                            state,
+                            new State("A", new SourcePos("test", 1, 14), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 14),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.float.run(
+                    new State("1234567890e1A", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(1234567890e1);
+                        State.equals(
+                            state,
+                            new State("A", new SourcePos("test", 1, 13), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 13),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.float.run(
+                    new State("1234567890.5e-2A", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal(1234567890.5e-2);
+                        State.equals(
+                            state,
+                            new State("A", new SourcePos("test", 1, 16), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 16),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "digit"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("A")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+        });
+
         describe(".naturalOrFloat", function () {
             it("should parse natural or float and return the value as a number", function () {
                 var def = new LanguageDef(
