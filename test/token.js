@@ -1300,7 +1300,453 @@ describe("token", function () {
                 );
             });
         });
-        
+
+        describe(".charLiteral", function () {
+            it("should parse character literal and return the value as a string", function () {
+                var def = new LanguageDef(
+                    "/*", /* commentStart */
+                    "*/", /* commentEnd */
+                    "//", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser = makeTokenParser(def);
+
+                parser.charLiteral.run(
+                    new State("", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "character")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                parser.charLiteral.run(
+                    new State("'a'", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("a");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 4), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'ab'", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "end of character")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("''", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("'")),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("'")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "literal character")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'\\'", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "end of character")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'\\?'", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [].concat(
+                                    lq.util.ArrayUtil.replicate(
+                                        10, new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?"))
+                                    ),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?")),
+                                        new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?")),
+                                        new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?"))
+                                    ],
+                                    lq.util.ArrayUtil.replicate(
+                                        14, new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?"))
+                                    ),
+                                    lq.util.ArrayUtil.replicate(
+                                        20, new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?"))
+                                    ),
+                                    [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?"))],
+                                    [new ErrorMessage(ErrorMessageType.EXPECT, "escape code")]
+                                )
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'\\''", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("'");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 5), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 5),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'\\n'", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("\n");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 5), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 5),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'\\65'", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("A");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 6), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 6),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'\\65'", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("A");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 6), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 6),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'\\o'", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("'")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "octal digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'\\o101'", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("A");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 8), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 8),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'\\x'", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("'")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "hexadecimal digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'\\x41'", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("A");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 7), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 7),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'\\BS'", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("\u0008");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 6), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 6),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'\\NUL'", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("\u0000");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 7), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 7),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'\\^'", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("'")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "uppercase letter")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.charLiteral.run(
+                    new State("'\\^A'", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("\u0001");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 6), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 6),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+        });
+
         describe(".natural", function () {
             it("should parse natural and return the value as a number", function () {
                 var def = new LanguageDef(
