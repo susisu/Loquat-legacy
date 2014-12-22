@@ -27,7 +27,7 @@ Pack the library for browsers:
 ``` shell
 $ git clone https://github.com/susisu/Loquat.git
 $ npm install
-$ grunt
+$ gulp
 ```
 Then `loquat.{version}.js` and `loquat.{version}.min.js` will be placed in `/build`.
 You can use them as below:

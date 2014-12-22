@@ -1,4 +1,4 @@
 .gitignore
 /test
 /build
-Gruntfile.js
+gulpfile.js
