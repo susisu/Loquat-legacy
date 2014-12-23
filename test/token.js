@@ -1533,32 +1533,6 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'\\65'", SourcePos.init("test"), "none"),
-                    function (value, state, error) {
-                        value.should.equal("A");
-                        State.equals(
-                            state,
-                            new State("", new SourcePos("test", 1, 6), "none")
-                        ).should.be.ok;
-                        ParseError.equals(
-                            error,
-                            new ParseError(
-                                new SourcePos("test", 1, 6),
-                                [
-                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
-                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
-                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
-                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
-                                ]
-                            )
-                        ).should.be.ok;
-                    },
-                    throwError,
-                    throwError,
-                    throwError
-                );
-
-                parser.charLiteral.run(
                     new State("'\\o'", SourcePos.init("test"), "none"),
                     throwError,
                     function (error) {
