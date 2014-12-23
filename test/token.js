@@ -1301,6 +1301,497 @@ describe("token", function () {
             });
         });
 
+        describe(".stringLiteral", function () {
+            it("should parse strgin literal and return the value as a string", function () {
+                var def = new LanguageDef(
+                    "/*", /* commentStart */
+                    "*/", /* commentEnd */
+                    "//", /* commentLine */
+                    false, /* nestedComments */
+                    undefined, /* identStart */
+                    undefined, /* identLetter */
+                    undefined, /* opStart */
+                    undefined, /* opLetter */
+                    ["var", "function"], /* reservedNames */
+                    ["=", "@"], /* reservedOpNames */
+                    true /* caseSensitive */
+                );
+                var parser = makeTokenParser(def);
+
+                parser.stringLiteral.run(
+                    new State("", SourcePos.init("test"), "none"),
+                    throwError,
+                    throwError,
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 1),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "literal string")
+                                ]
+                            )
+                        ).should.be.ok;
+                    }
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"\"", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 3), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"foo\"", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("foo");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 6), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 6),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"\\\"", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "string character"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "end of string")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"a\\        b\"", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 12),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "space"),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("b")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "end of string gap")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"a\\        \\b\"", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("ab");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 15), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 15),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"a\\&b\"", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("ab");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 7), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 7),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"\\?\"", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 3),
+                                [].concat(
+                                    [
+                                        new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?")),
+                                        new ErrorMessage(ErrorMessageType.EXPECT, "space")
+                                    ],
+                                    [
+                                        new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?")),
+                                        new ErrorMessage(ErrorMessageType.EXPECT, lq.util.show("&"))
+                                    ],
+                                    lq.util.ArrayUtil.replicate(
+                                        10, new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?"))
+                                    ),
+                                    [
+                                        new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?")),
+                                        new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?")),
+                                        new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?"))
+                                    ],
+                                    lq.util.ArrayUtil.replicate(
+                                        14, new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?"))
+                                    ),
+                                    lq.util.ArrayUtil.replicate(
+                                        20, new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?"))
+                                    ),
+                                    [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("?"))],
+                                    [new ErrorMessage(ErrorMessageType.EXPECT, "escape code")]
+                                )
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"a\\\"b\"", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("a\"b");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 7), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 7),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"a\\nb\"", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("a\nb");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 7), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 7),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"a\\65b\"", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("aAb");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 8), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 8),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"\\o\"", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("\"")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "octal digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"a\\o101b\"", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("aAb");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 10), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 10),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"\\x\"", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("\"")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "hexadecimal digit")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"y\\x41z\"", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("yAz");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 9), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 9),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"a\\BSb\"", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("a\u0008b");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 8), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 8),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"a\\NULb\"", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("a\u0000b");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 9), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 9),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"\\^\"", SourcePos.init("test"), "none"),
+                    throwError,
+                    function (error) {
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("\"")),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "uppercase letter")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError
+                );
+
+                parser.stringLiteral.run(
+                    new State("\"a\\^Ab\"", SourcePos.init("test"), "none"),
+                    function (value, state, error) {
+                        value.should.equal("a\u0001b");
+                        State.equals(
+                            state,
+                            new State("", new SourcePos("test", 1, 8), "none")
+                        ).should.be.ok;
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 8),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "")
+                                ]
+                            )
+                        ).should.be.ok;
+                    },
+                    throwError,
+                    throwError,
+                    throwError
+                );
+            });
+        });
+
         describe(".charLiteral", function () {
             it("should parse character literal and return the value as a string", function () {
                 var def = new LanguageDef(
