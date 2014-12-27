@@ -24,6 +24,14 @@ describe("util", function () {
             });
         });
 
+        describe(".nub(array)", function () {
+            it("should return a new array that contains all the unique elements of 'array'", function () {
+                lq.util.ArrayUtil.equals(lq.util.ArrayUtil.nub([]), []).should.be.ok;
+                lq.util.ArrayUtil.equals(lq.util.ArrayUtil.nub([1, 2, 3]), [1, 2, 3]).should.be.ok;
+                lq.util.ArrayUtil.equals(lq.util.ArrayUtil.nub([1, 4, 6, 4, 1]), [1, 4, 6]).should.be.ok;
+            });
+        });
+
         describe(".replicate(n, element)", function () {
             it("should return an array, the length of which is 'n' and every element is 'element'", function () {
                 lq.util.ArrayUtil.equals(lq.util.ArrayUtil.replicate(0, 1), []).should.be.ok;

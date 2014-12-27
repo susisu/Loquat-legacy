@@ -1,8 +1,8 @@
 # Loquat
-JavaScript parser combinator inspired by [Parsec](https://github.com/aslatter/parsec)
+JavaScript monadic parser combinators inspired by [Parsec](https://github.com/aslatter/parsec)
 
 ## Description
-Loquat is a parser combinator library written in JavaScript, available for both Node.js and browsers.
+Loquat is a monadic parser combinators library written in JavaScript, available for both Node.js and browsers.
 It enables you to write parsers easily, without complex regular expressions.
 
 ## Installation and Usage
@@ -27,7 +27,7 @@ Pack the library for browsers:
 ``` shell
 $ git clone https://github.com/susisu/Loquat.git
 $ npm install
-$ grunt
+$ gulp
 ```
 Then `loquat.{version}.js` and `loquat.{version}.min.js` will be placed in `/build`.
 You can use them as below:
