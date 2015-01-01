@@ -4,7 +4,7 @@
  */
 
 var chai   = require("chai"),
-    should = chai.should();
+    expect = chai.expect;
 
 var lq = Object.freeze({
     "pos": require("../lib/pos")
@@ -17,68 +17,92 @@ describe("pos", function () {
 
         it("should have fields 'name', 'line' and 'column'", function () {
             var pos = new SourcePos("foo", 1, 2);
-            pos.hasOwnProperty("name").should.be.ok;
-            pos.hasOwnProperty("line").should.be.ok;
-            pos.hasOwnProperty("column").should.be.ok;
+            expect(pos).to.have.property("name").that.is.a("string");
+            expect(pos).to.have.property("line").that.is.a("number");
+            expect(pos).to.have.property("column").that.is.a("number");
         });
 
         describe("constructor(name, line, column)", function () {
             it("should create a new SourcePos object that represents a position in source", function () {
                 var pos = new SourcePos("foo", 1, 2);
-                pos.name.should.equal("foo");
-                pos.line.should.equal(1);
-                pos.column.should.equal(2);
+                expect(pos).to.have.property("name", "foo");
+                expect(pos).to.have.property("line", 1);
+                expect(pos).to.have.property("column", 2);
             });
         });
 
         describe(".init(name)", function () {
             it("should return initial position in source", function () {
                 var init = SourcePos.init("foo");
-                init.name.should.equal("foo");
-                init.line.should.equal(1);
-                init.column.should.equal(1);
+                expect(init).to.have.property("name", "foo");
+                expect(init).to.have.property("line", 1);
+                expect(init).to.have.property("column", 1);
             });
         });
 
         describe(".equals(positionA, positionB)", function () {
             it("shoud return true when two positions represent the same position", function () {
                 var pos = new SourcePos("foo", 1, 2);
-                SourcePos.equals(pos, pos).should.be.ok;
-                SourcePos.equals(new SourcePos("bar", 3, 4), new SourcePos("bar", 3, 4)).should.be.ok;
+                expect(SourcePos.equals(pos, pos)).to.be.true;
+                expect(
+                    SourcePos.equals(new SourcePos("bar", 3, 4), new SourcePos("bar", 3, 4))
+                ).to.be.true;
             });
 
             it("should return false when two positions represent different positions", function () {
-                SourcePos.equals(new SourcePos("foo", 3, 4), new SourcePos("bar", 3, 4)).should.not.be.ok;
-                SourcePos.equals(new SourcePos("foo", 5, 6), new SourcePos("foo", 7, 6)).should.not.be.ok;
-                SourcePos.equals(new SourcePos("foo", 7, 8), new SourcePos("foo", 7, 9)).should.not.be.ok;
-                SourcePos.equals(new SourcePos("foo", 1, 2), new SourcePos("bar", 3, 4)).should.not.be.ok;
+                expect(
+                    SourcePos.equals(new SourcePos("foo", 3, 4), new SourcePos("bar", 3, 4))
+                ).to.be.false;
+                expect(
+                    SourcePos.equals(new SourcePos("foo", 5, 6), new SourcePos("foo", 7, 6))
+                ).to.be.false;
+                expect(
+                    SourcePos.equals(new SourcePos("foo", 7, 8), new SourcePos("foo", 7, 9))
+                ).to.be.false;
+                expect(
+                    SourcePos.equals(new SourcePos("foo", 1, 2), new SourcePos("bar", 3, 4))
+                ).to.be.false;
             });
         });
 
         describe(".compare(positionA, positionB)", function () {
             it("should return -1 when 'positionA' is former than 'positionB'", function () {
-                SourcePos.compare(new SourcePos("abc", 3, 4), new SourcePos("bcd", 1, 2)).should.equal(-1);
-                SourcePos.compare(new SourcePos("foo", 1, 2), new SourcePos("foo", 1, 3)).should.equal(-1);
-                SourcePos.compare(new SourcePos("foo", 1, 2), new SourcePos("foo", 2, 1)).should.equal(-1);
+                expect(
+                    SourcePos.compare(new SourcePos("abc", 3, 4), new SourcePos("bcd", 1, 2))
+                ).to.equal(-1);
+                expect(
+                    SourcePos.compare(new SourcePos("foo", 1, 2), new SourcePos("foo", 1, 3))
+                ).to.equal(-1);
+                expect(
+                    SourcePos.compare(new SourcePos("foo", 1, 2), new SourcePos("foo", 2, 1))
+                ).to.equal(-1);
             });
 
             it("should return 1 when 'positionA is latter than 'positionB'", function () {
-                SourcePos.compare(new SourcePos("bcd", 1, 2), new SourcePos("abc", 3, 4)).should.equal(1);
-                SourcePos.compare(new SourcePos("foo", 1, 3), new SourcePos("foo", 1, 2)).should.equal(1);
-                SourcePos.compare(new SourcePos("foo", 2, 1), new SourcePos("foo", 1, 2)).should.equal(1);
+                expect(
+                    SourcePos.compare(new SourcePos("bcd", 1, 2), new SourcePos("abc", 3, 4))
+                ).to.equal(1);
+                expect(
+                    SourcePos.compare(new SourcePos("foo", 1, 3), new SourcePos("foo", 1, 2))
+                ).to.equal(1);
+                expect(
+                    SourcePos.compare(new SourcePos("foo", 2, 1), new SourcePos("foo", 1, 2))
+                ).to.equal(1);
             });
 
             it("should return 0 when two positions represent the same position", function () {
                 var pos = new SourcePos("foo", 1, 2);
-                SourcePos.compare(pos, pos).should.equal(0);
-                SourcePos.compare(new SourcePos("bar", 3, 4), new SourcePos("bar", 3, 4)).should.equal(0);
+                expect(SourcePos.compare(pos, pos)).to.equal(0);
+                expect(
+                    SourcePos.compare(new SourcePos("bar", 3, 4), new SourcePos("bar", 3, 4))
+                ).to.equal(0);
             });
         });
 
         describe("#toString()", function () {
             it("should return the string representation of the position", function () {
-                new SourcePos("foo", 1, 2).toString().should.equal("\"foo\" (line 1, column 2)");
-                new SourcePos("", 3, 4).toString().should.equal("(line 3, column 4)");
+                expect(new SourcePos("foo", 1, 2).toString()).to.equal("\"foo\" (line 1, column 2)");
+                expect(new SourcePos("", 3, 4).toString()).to.equal("(line 3, column 4)");
             });
         });
 
@@ -86,8 +110,8 @@ describe("pos", function () {
             it("should return a copy of the position", function () {
                 var pos = new SourcePos("foo", 1, 2);
                 var copy = pos.clone();
-                (copy === pos).should.not.be.ok;
-                SourcePos.equals(copy, pos).should.be.ok;
+                expect(copy).not.to.equal(pos);
+                expect(SourcePos.equals(copy, pos)).to.be.true;
             });
         });
 
@@ -95,12 +119,12 @@ describe("pos", function () {
             it("should return a copy of the position the name is set to the specified value", function () {
                 var pos = new SourcePos("foo", 1, 2);
                 var copy = pos.setName("bar");
-                copy.name.should.equal("bar");
-                copy.line.should.equal(1);
-                copy.column.should.equal(2);
+                expect(copy).to.have.property("name", "bar");
+                expect(copy).to.have.property("line", 1);
+                expect(copy).to.have.property("column", 2);
 
-                pos.name.should.not.equal("bar");
-                (copy === pos).should.not.be.ok;
+                expect(pos).to.have.property("name").that.not.equals("bar");
+                expect(copy).not.to.equal(pos);
             });
         });
 
@@ -108,12 +132,12 @@ describe("pos", function () {
             it("should return a copy of the position the line is set to the specified value", function () {
                 var pos = new SourcePos("foo", 1, 2);
                 var copy = pos.setLine(3);
-                copy.name.should.equal("foo");
-                copy.line.should.equal(3);
-                copy.column.should.equal(2);
+                expect(copy).to.have.property("name", "foo");
+                expect(copy).to.have.property("line", 3);
+                expect(copy).to.have.property("column", 2);
 
-                pos.line.should.not.equal(3);
-                (copy === pos).should.not.be.ok;
+                expect(pos).to.have.property("line").that.not.equals(3);
+                expect(copy).not.to.equal(pos);
             });
         });
 
@@ -121,12 +145,12 @@ describe("pos", function () {
             it("should return a copy of the position the column is set to the specified value", function () {
                 var pos = new SourcePos("foo", 1, 2);
                 var copy = pos.setColumn(3);
-                copy.name.should.equal("foo");
-                copy.line.should.equal(1);
-                copy.column.should.equal(3);
+                expect(copy).to.have.property("name", "foo");
+                expect(copy).to.have.property("line", 1);
+                expect(copy).to.have.property("column", 3);
 
-                pos.column.should.not.equal(3);
-                (copy === pos).should.not.be.ok;
+                expect(pos).to.have.property("column").that.not.equals(3);
+                expect(copy).not.to.equal(pos);
             });
         });
 
@@ -134,33 +158,33 @@ describe("pos", function () {
             it("should return a copy of the position, the line and the column of which are incremented by the specified character", function () {
                 var posA = new SourcePos("abc", 1, 2);
                 var copyA = posA.addChar("a");
-                copyA.name.should.equal("abc");
-                copyA.line.should.equal(1);
-                copyA.column.should.equal(3);
+                expect(copyA).to.have.property("name", "abc");
+                expect(copyA).to.have.property("line", 1);
+                expect(copyA).to.have.property("column", 3);
 
                 var posB = new SourcePos("def", 1, 2);
                 var copyB = posB.addChar("\n");
-                copyB.name.should.equal("def");
-                copyB.line.should.equal(2);
-                copyB.column.should.equal(1);
+                expect(copyB).to.have.property("name", "def");
+                expect(copyB).to.have.property("line", 2);
+                expect(copyB).to.have.property("column", 1);
 
                 var posC = new SourcePos("ghi", 1, 1);
                 var copyC = posC.addChar("\t");
-                copyC.name.should.equal("ghi");
-                copyC.line.should.equal(1);
-                copyC.column.should.equal(9);
+                expect(copyC).to.have.property("name", "ghi");
+                expect(copyC).to.have.property("line", 1);
+                expect(copyC).to.have.property("column", 9);
 
                 var posD = new SourcePos("jkl", 1, 5);
                 var copyD = posD.addChar("\t");
-                copyD.name.should.equal("jkl");
-                copyD.line.should.equal(1);
-                copyD.column.should.equal(9);
+                expect(copyD).to.have.property("name", "jkl");
+                expect(copyD).to.have.property("line", 1);
+                expect(copyD).to.have.property("column", 9);
 
                 var posE = new SourcePos("mno", 1, 9);
                 var copyE = posE.addChar("\t");
-                copyE.name.should.equal("mno");
-                copyE.line.should.equal(1);
-                copyE.column.should.equal(17);
+                expect(copyE).to.have.property("name", "mno");
+                expect(copyE).to.have.property("line", 1);
+                expect(copyE).to.have.property("column", 17);
             });
         });
 
@@ -168,21 +192,21 @@ describe("pos", function () {
             it("should return a copy of the position, the line and the column of which are incremented by the specified string", function () {
                 var posA = new SourcePos("abc", 1, 2);
                 var copyA = posA.addString("foo");
-                copyA.name.should.equal("abc");
-                copyA.line.should.equal(1);
-                copyA.column.should.equal(5);
+                expect(copyA).to.have.property("name", "abc");
+                expect(copyA).to.have.property("line", 1);
+                expect(copyA).to.have.property("column", 5);
 
                 var posB = new SourcePos("def", 1, 2);
                 var copyB = posB.addString("bar\nbaz");
-                copyB.name.should.equal("def");
-                copyB.line.should.equal(2);
-                copyB.column.should.equal(4);
+                expect(copyB).to.have.property("name", "def");
+                expect(copyB).to.have.property("line", 2);
+                expect(copyB).to.have.property("column", 4);
 
-                var posC = new SourcePos("def", 1, 2);
+                var posC = new SourcePos("ghi", 1, 2);
                 var copyC = posC.addString("hoge\nfuga\tpiyo");
-                copyC.name.should.equal("def");
-                copyC.line.should.equal(2);
-                copyC.column.should.equal(13);
+                expect(copyC).to.have.property("name", "ghi");
+                expect(copyC).to.have.property("line", 2);
+                expect(copyC).to.have.property("column", 13);
             });
         });
     });
