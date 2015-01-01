@@ -3,7 +3,8 @@
  * copyright (c) 2014 Susisu
  */
 
-var should = require("should");
+var chai   = require("chai"),
+    should = chai.should();
 
 var lq = Object.freeze({
     "string": require("../lib/string")
