@@ -4,7 +4,7 @@
  */
 
 var chai   = require("chai"),
-    should = chai.should();
+    expect = chai.expect;
 
 var lq = Object.freeze({
     "error": require("../lib/error"),
@@ -13,84 +13,90 @@ var lq = Object.freeze({
 });
 
 describe("error", function () {
+    ArrayUtil = lq.util.ArrayUtil;
+
     describe("ErrorMessage", function () {
         var ErrorMessage = lq.error.ErrorMessage;
         var ErrorMessageType = lq.error.ErrorMessageType;
 
         it("should have fields 'type' and 'message'", function () {
             var mes = new ErrorMessage(ErrorMessageType.MESSAGE, "foo");
-            mes.hasOwnProperty("type").should.be.ok;
-            mes.hasOwnProperty("message").should.be.ok;
+            expect(mes).to.have.property("type").that.is.a("string");
+            expect(mes).to.have.property("message").that.is.a("string");
         });
 
         describe("constructor(type, message)", function () {
             it("should create a new ErrorMessage object", function () {
                 var mes = new ErrorMessage(ErrorMessageType.MESSAGE, "foo");
-                mes.type.should.equal(ErrorMessageType.MESSAGE);
-                mes.message.should.equal("foo");
+                expect(mes).to.have.property("type", ErrorMessageType.MESSAGE);
+                expect(mes).to.have.property("message", "foo");
             });
         });
 
         describe(".equals(messageA, messageB)", function () {
             it("should return true when two messages represent the same message", function () {
-                ErrorMessage.equals(
-                    new ErrorMessage(ErrorMessageType.UNEXPECT, "foo"),
-                    new ErrorMessage(ErrorMessageType.UNEXPECT, "foo")
-                ).should.be.ok;
+                expect(
+                    ErrorMessage.equals(
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "foo"),
+                        new ErrorMessage(ErrorMessageType.UNEXPECT, "foo")
+                    )
+                ).to.be.true;
             });
 
             it("should return false when two messages represent different messages", function () {
-                ErrorMessage.equals(
-                    new ErrorMessage(ErrorMessageType.EXPECT, "foo"),
-                    new ErrorMessage(ErrorMessageType.EXPECT, "bar")
-                ).should.not.be.ok;
+                expect(
+                    ErrorMessage.equals(
+                        new ErrorMessage(ErrorMessageType.EXPECT, "foo"),
+                        new ErrorMessage(ErrorMessageType.EXPECT, "bar")
+                    )
+                ).to.be.false;
             });
         });
 
         describe(".messagesToString()", function () {
             it("should return the string representation of the array of error messages", function () {
                 var m1 = [];
-                ErrorMessage.messagesToString(m1).should.equal("unknown parse error");
+                expect(ErrorMessage.messagesToString(m1)).to.equal("unknown parse error");
                 var m2 = [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")];
-                ErrorMessage.messagesToString(m2).should.equal("foo");
+                expect(ErrorMessage.messagesToString(m2)).to.equal("foo");
                 var m3 = [
                     new ErrorMessage(ErrorMessageType.UNEXPECT, "foo"),
                     new ErrorMessage(ErrorMessageType.EXPECT, "bar"),
                     new ErrorMessage(ErrorMessageType.MESSAGE, "baz")
                 ];
-                ErrorMessage.messagesToString(m3).should.equal("unexpected foo\nexpecting bar\nbaz");
+                expect(ErrorMessage.messagesToString(m3)).to.equal("unexpected foo\nexpecting bar\nbaz");
                 var m4 = [
                     new ErrorMessage(ErrorMessageType.UNEXPECT, "foo"),
                     new ErrorMessage(ErrorMessageType.UNEXPECT, "bar")
                 ];
-                ErrorMessage.messagesToString(m4).should.equal("unexpected foo or bar");
+                expect(ErrorMessage.messagesToString(m4)).to.equal("unexpected foo or bar");
                 var m5 = [
                     new ErrorMessage(ErrorMessageType.UNEXPECT, "foo"),
                     new ErrorMessage(ErrorMessageType.UNEXPECT, "bar"),
                     new ErrorMessage(ErrorMessageType.UNEXPECT, "baz")
                 ];
-                ErrorMessage.messagesToString(m5).should.equal("unexpected foo, bar or baz");
+                expect(ErrorMessage.messagesToString(m5)).to.equal("unexpected foo, bar or baz");
                 var m6 = [
                     new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "foo"),
                     new ErrorMessage(ErrorMessageType.EXPECT, "bar")
                 ];
-                ErrorMessage.messagesToString(m6).should.equal("unexpected foo\nexpecting bar");
+                expect(ErrorMessage.messagesToString(m6)).to.equal("unexpected foo\nexpecting bar");
                 var m7 = [
                     new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "foo"),
                     new ErrorMessage(ErrorMessageType.UNEXPECT, "bar"),
                     new ErrorMessage(ErrorMessageType.EXPECT, "baz")
                 ];
-                ErrorMessage.messagesToString(m7).should.equal("unexpected bar\nexpecting baz");
+                expect(ErrorMessage.messagesToString(m7)).to.equal("unexpected bar\nexpecting baz");
                 var m8 = [
                     new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "foo"),
                     new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "")
                 ];
-                ErrorMessage.messagesToString(m8).should.equal("unexpected foo");
+                expect(ErrorMessage.messagesToString(m8)).to.equal("unexpected foo");
                 var m9 = [
                     new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
                     new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "foo")
                 ];
-                ErrorMessage.messagesToString(m9).should.equal("unexpected end of input");
+                expect(ErrorMessage.messagesToString(m9)).to.equal("unexpected end of input");
             });
         });
     });
@@ -106,8 +112,8 @@ describe("error", function () {
 
         it("should have fields 'position' and 'messages'", function () {
             var error = new ParseError(defaultPos, [defaultMessage]);
-            error.hasOwnProperty("position").should.be.ok;
-            error.hasOwnProperty("messages").should.be.ok;
+            expect(error).to.have.property("position").that.is.instanceOf(SourcePos);
+            expect(error).to.have.property("messages").that.is.instanceOf(Array);
         });
 
         describe("constructor(position, messages)", function () {
@@ -119,21 +125,23 @@ describe("error", function () {
                         new ErrorMessage(ErrorMessageType.EXPECT, "baz")
                     ]
                 );
-                SourcePos.equals(error.position, new SourcePos("foo", 1, 2)).should.be.ok;
-                lq.util.ArrayUtil.equals(
-                    error.messages,
-                    [
-                        new ErrorMessage(ErrorMessageType.UNEXPECT, "bar"),
-                        new ErrorMessage(ErrorMessageType.EXPECT, "baz")
-                    ],
-                    ErrorMessage.equals
-                ).should.be.ok;
+                expect(SourcePos.equals(error.position, new SourcePos("foo", 1, 2))).to.be.true;
+                expect(
+                    ArrayUtil.equals(
+                        error.messages,
+                        [
+                            new ErrorMessage(ErrorMessageType.UNEXPECT, "bar"),
+                            new ErrorMessage(ErrorMessageType.EXPECT, "baz")
+                        ],
+                        ErrorMessage.equals
+                    )
+                ).to.be.true;
             });
         });
 
         describe(".unknown(position)", function () {
             it("should return an error that represents unknown error", function () {
-                ParseError.unknown(defaultPos).isUnknown().should.be.ok;
+                expect(ParseError.unknown(defaultPos).isUnknown()).to.be.true;
             });
         });
 
@@ -147,7 +155,7 @@ describe("error", function () {
                     new SourcePos("test", 1, 2),
                     []
                 );
-                ParseError.equals(errorA, errorB).should.be.ok;
+                expect(ParseError.equals(errorA, errorB)).to.be.true;
 
                 var errorC = new ParseError(
                     new SourcePos("test", 3, 4),
@@ -163,7 +171,7 @@ describe("error", function () {
                         new ErrorMessage(ErrorMessageType.EXPECT, "bar")
                     ]
                 );
-                ParseError.equals(errorC, errorD).should.be.ok;
+                expect(ParseError.equals(errorC, errorD)).to.be.true;
             });
 
             it("should return false when two errors have different positions or different messages", function () {
@@ -181,7 +189,7 @@ describe("error", function () {
                         new ErrorMessage(ErrorMessageType.EXPECT, "bar")
                     ]
                 );
-                ParseError.equals(errorA, errorB).should.not.be.ok;
+                expect(ParseError.equals(errorA, errorB)).to.be.false;
 
                 var errorC = new ParseError(
                     new SourcePos("test", 3, 4),
@@ -197,7 +205,7 @@ describe("error", function () {
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "foo")
                     ]
                 );
-                ParseError.equals(errorC, errorD).should.not.be.ok;
+                expect(ParseError.equals(errorC, errorD)).to.be.false;
             });
         });
 
@@ -215,10 +223,12 @@ describe("error", function () {
                     new SourcePos("test", 3, 4),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
                 );
-                ParseError.equals(
-                    ParseError.merge(error1A, error1B),
-                    merged1
-                ).should.be.ok;
+                expect(
+                    ParseError.equals(
+                        ParseError.merge(error1A, error1B),
+                        merged1
+                    )
+                ).to.be.true;
 
                 var error2A = new ParseError(
                     new SourcePos("test", 1, 2),
@@ -232,10 +242,12 @@ describe("error", function () {
                     new SourcePos("test", 3, 4),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
                 );
-                ParseError.equals(
-                    ParseError.merge(error2A, error2B),
-                    merged2
-                ).should.be.ok;
+                expect(
+                    ParseError.equals(
+                        ParseError.merge(error2A, error2B),
+                        merged2
+                    )
+                ).to.be.true;
 
                 var error3A = new ParseError(
                     new SourcePos("test", 1, 2),
@@ -249,10 +261,12 @@ describe("error", function () {
                     new SourcePos("test", 3, 4),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                 );
-                ParseError.equals(
-                    ParseError.merge(error3A, error3B),
-                    merged3
-                ).should.be.ok;
+                expect(
+                    ParseError.equals(
+                        ParseError.merge(error3A, error3B),
+                        merged3
+                    )
+                ).to.be.true;
 
                 var error4A = new ParseError(
                     new SourcePos("test", 3, 4),
@@ -266,10 +280,12 @@ describe("error", function () {
                     new SourcePos("test", 3, 4),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
                 );
-                ParseError.equals(
-                    ParseError.merge(error4A, error4B),
-                    merged4
-                ).should.be.ok;
+                expect(
+                    ParseError.equals(
+                        ParseError.merge(error4A, error4B),
+                        merged4
+                    )
+                ).to.be.true;
 
                 var error5A = new ParseError(
                     new SourcePos("test", 1, 2),
@@ -286,10 +302,12 @@ describe("error", function () {
                         new ErrorMessage(ErrorMessageType.MESSAGE, "bar")
                     ]
                 );
-                ParseError.equals(
-                    ParseError.merge(error5A, error5B),
-                    merged5
-                ).should.be.ok;
+                expect(
+                    ParseError.equals(
+                        ParseError.merge(error5A, error5B),
+                        merged5
+                    )
+                ).to.be.true;
             });
         });
 
@@ -300,17 +318,19 @@ describe("error", function () {
                     new ErrorMessage(ErrorMessageType.EXPECT, "bar")
                 ];
                 var error = new ParseError(new SourcePos("test", 1, 2), messages);
-                error.toString().should.equal("\"test\" (line 1, column 2):\n" + ErrorMessage.messagesToString(messages));
+                expect(error.toString()).to.equal(
+                    "\"test\" (line 1, column 2):\n" + ErrorMessage.messagesToString(messages)
+                );
             });
         });
 
         describe("#isUnknown()", function () {
             it("should return true when the error has no message", function () {
-                new ParseError(defaultPos, []).isUnknown().should.be.ok;
+                expect(new ParseError(defaultPos, []).isUnknown()).to.be.true;
             });
 
             it("should return false when the error has some message", function () {
-                new ParseError(defaultPos, [defaultMessage]).isUnknown().should.not.be.ok;
+                expect(new ParseError(defaultPos, [defaultMessage]).isUnknown()).to.be.false;
             });
         });
 
@@ -318,10 +338,8 @@ describe("error", function () {
             it("should return a copy of the error", function () {
                 var error = new ParseError(defaultPos, [defaultMessage]);
                 var copy = error.clone();
-                SourcePos.equals(error.position, copy.position).should.be.ok;
-                copy.messages.forEach(function (message, index) {
-                    ErrorMessage.equals(message, error.messages[index]).should.be.ok;
-                });
+                expect(SourcePos.equals(copy.position, error.position)).to.be.true;
+                expect(ArrayUtil.equals(copy.messages, error.messages, ErrorMessage.equals)).to.be.true;
             });
         });
 
@@ -329,11 +347,11 @@ describe("error", function () {
             it("should return a copy of the error, the position of which is set to the specified position", function () {
                 var error = new ParseError(defaultPos, [defaultMessage]);
                 var copy = error.setPosition(new SourcePos("bar", 3, 4));
-                SourcePos.equals(copy.position, new SourcePos("bar", 3, 4)).should.be.ok;
+                expect(SourcePos.equals(copy.position, new SourcePos("bar", 3, 4))).to.be.true;
 
-                SourcePos.equals(copy.position, error.position).should.not.be.ok;
-                (copy.messages === error.messages).should.be.ok;
-                (copy === error).should.not.be.ok;
+                expect(SourcePos.equals(copy.position, error.position)).to.be.false;
+                expect(copy.messages).to.equal(error.messages);
+                expect(copy).not.to.equal(error);
             });
         });
 
@@ -345,13 +363,11 @@ describe("error", function () {
                     new ErrorMessage(ErrorMessageType.EXPECT, "bar")
                 ];
                 var copy = error.setMessages(messages);
-                copy.messages.forEach(function (message, index) {
-                    ErrorMessage.equals(message, messages[index]).should.be.ok;
-                });
+                expect(ArrayUtil.equals(copy.messages, messages, ErrorMessage.equals)).to.be.true;
 
-                SourcePos.equals(copy.position, error.position).should.be.ok;
-                (copy.messages === error.messages).should.not.be.ok;
-                (copy === error).should.not.be.ok;
+                expect(SourcePos.equals(copy.position, error.position)).to.be.true;
+                expect(copy.messages).not.to.equal(error.messages);
+                expect(copy).not.to.equal(error);
             });
         });
 
@@ -364,18 +380,23 @@ describe("error", function () {
                 var error = new ParseError(defaultPos, messages);
                 var copy = error.setSpecificTypeMessages(ErrorMessageType.EXPECT, ["baz"]);
                 var filtered = messages.filter(function (message) { return message.type !== ErrorMessageType.EXPECT; });
-                copy.messages.filter(function (message) { return message.type !== ErrorMessageType.EXPECT; })
-                    .map(function (message, index) {
-                        ErrorMessage.equals(message, filtered[index]).should.be.ok;
-                    });
-                ErrorMessage.equals(
-                    copy.messages.filter(function (message) { return message.type === ErrorMessageType.EXPECT; })[0],
-                    new ErrorMessage(ErrorMessageType.EXPECT, "baz")
-                ).should.be.ok;
+                expect(
+                    ArrayUtil.equals(
+                        copy.messages.filter(function (message) { return message.type !== ErrorMessageType.EXPECT; }),
+                        filtered,
+                        ErrorMessage.equals
+                    )
+                ).to.be.true;
+                expect(
+                    ErrorMessage.equals(
+                        copy.messages.filter(function (message) { return message.type === ErrorMessageType.EXPECT; })[0],
+                        new ErrorMessage(ErrorMessageType.EXPECT, "baz")
+                    )
+                ).to.be.true;
                 
-                SourcePos.equals(copy.position, error.position).should.be.ok;
-                (copy.messages === error.messages).should.not.be.ok;
-                (copy === error).should.not.be.ok;
+                expect(SourcePos.equals(copy.position, error.position)).to.be.true;
+                expect(copy.messages).not.to.equal(error.messages);
+                expect(copy).not.to.equal(error);
             });
         });
 
@@ -388,13 +409,11 @@ describe("error", function () {
                 ];
                 var copy = error.addMessages(messages);
                 var concatenated = [defaultMessage].concat(messages);
-                copy.messages.forEach(function (message, index) {
-                    ErrorMessage.equals(message, concatenated[index]).should.be.ok;
-                });
+                expect(ArrayUtil.equals(copy.messages, concatenated, ErrorMessage.equals)).to.be.true;
 
-                SourcePos.equals(copy.position, error.position).should.be.ok;
-                (copy.messages === error.messages).should.not.be.ok;
-                (copy === error).should.not.be.ok;
+                expect(SourcePos.equals(copy.position, error.position)).to.be.true;
+                expect(copy.messages).not.to.equal(error.messages);
+                expect(copy).not.to.equal(error);
             });
         });
     });
