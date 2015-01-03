@@ -4,7 +4,7 @@
  */
 
 var chai   = require("chai"),
-    should = chai.should();
+    expect = chai.expect;
 
 var lq = Object.freeze({
     "error": require("../lib/error"),
@@ -144,7 +144,7 @@ describe("sugar", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 3),
@@ -153,25 +153,25 @@ describe("sugar", function () {
                                     new ErrorMessage(ErrorMessageType.UNEXPECT, lq.util.show("."))
                                 ]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
 
                 p.notFollowedBy(end).run(
                     new State("a,abcd", SourcePos.init("test"), "some"),
                     function (value, state, error) {
-                        value.should.equal("a1");
-                        State.equals(
+                        expect(value).to.equal("a1");
+                        expect(State.equals(
                             state,
                             new State(",abcd", new SourcePos("test", 1, 2), "none")
-                        ).should.be.ok;
-                        ParseError.equals(
+                        )).to.be.true;
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 3),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "end_cerr")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError,
@@ -184,7 +184,7 @@ describe("sugar", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
@@ -194,19 +194,19 @@ describe("sugar", function () {
                                     new ErrorMessage(ErrorMessageType.UNEXPECT, lq.util.show(":"))
                                 ]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
 
                 p.notFollowedBy(end).run(
                     new State("a;abcd", SourcePos.init("test"), "some"),
                     function (value, state, error) {
-                        value.should.equal("a1");
-                        State.equals(
+                        expect(value).to.equal("a1");
+                        expect(State.equals(
                             state,
                             new State(";abcd", new SourcePos("test", 1, 2), "none")
-                        ).should.be.ok;
-                        ParseError.equals(
+                        )).to.be.true;
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
@@ -215,7 +215,7 @@ describe("sugar", function () {
                                     new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr")
                                 ]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError,
@@ -229,13 +229,13 @@ describe("sugar", function () {
                         throwError,
                         throwError,
                         function (error) {
-                            ParseError.equals(
+                            expect(ParseError.equals(
                                 error,
                                 new ParseError(
                                     new SourcePos("test", 1, 2),
                                     [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                                 )
-                            ).should.be.ok;
+                            )).to.be.true;
                         }
                     );
                 });
@@ -246,7 +246,7 @@ describe("sugar", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
@@ -255,7 +255,7 @@ describe("sugar", function () {
                                     new ErrorMessage(ErrorMessageType.UNEXPECT, lq.util.show("."))
                                 ]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
 
@@ -264,18 +264,18 @@ describe("sugar", function () {
                     throwError,
                     throwError,
                     function (value, state, error) {
-                        value.should.equal("c1");
-                        State.equals(
+                        expect(value).to.equal("c1");
+                        expect(State.equals(
                             state,
                             new State(",abcd", new SourcePos("test", 1, 1), "none")
-                        ).should.be.ok;
-                        ParseError.equals(
+                        )).to.be.true;
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "end_cerr")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError
                 );
@@ -286,7 +286,7 @@ describe("sugar", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 1),
@@ -296,7 +296,7 @@ describe("sugar", function () {
                                     new ErrorMessage(ErrorMessageType.UNEXPECT, lq.util.show(":"))
                                 ]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
 
@@ -305,12 +305,12 @@ describe("sugar", function () {
                     throwError,
                     throwError,
                     function (value, state, error) {
-                        value.should.equal("c1");
-                        State.equals(
+                        expect(value).to.equal("c1");
+                        expect(State.equals(
                             state,
                             new State(";abcd", new SourcePos("test", 1, 1), "none")
-                        ).should.be.ok;
-                        ParseError.equals(
+                        )).to.be.true;
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 1),
@@ -319,7 +319,7 @@ describe("sugar", function () {
                                     new ErrorMessage(ErrorMessageType.MESSAGE, "end_eerr")
                                 ]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError
                 );
@@ -331,13 +331,13 @@ describe("sugar", function () {
                         throwError,
                         throwError,
                         function (error) {
-                            ParseError.equals(
+                            expect(ParseError.equals(
                                 error,
                                 new ParseError(
                                     new SourcePos("test", 1, 1),
                                     [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                                 )
-                            ).should.be.ok;
+                            )).to.be.true;
                         }
                     );
                 });
