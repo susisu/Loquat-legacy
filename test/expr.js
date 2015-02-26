@@ -13,7 +13,6 @@ var lq = Object.freeze({
     "pos"   : require("../lib/pos"),
     "prim"  : require("../lib/prim"),
     "util"  : require("../lib/util"),
-    "string": require("../lib/string")
 });
 
 

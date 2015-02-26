@@ -11,7 +11,6 @@ var lq = Object.freeze({
     "error" : require("../lib/error"),
     "pos"   : require("../lib/pos"),
     "prim"  : require("../lib/prim"),
-    "string": require("../lib/string"),
     "token" : require("../lib/token"),
     "util"  : require("../lib/util")
 });

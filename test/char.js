@@ -7,12 +7,10 @@ var chai   = require("chai"),
     expect = chai.expect;
 
 var lq = Object.freeze({
-    "array" : require("../lib/array"),
     "char"  : require("../lib/char"),
     "error" : require("../lib/error"),
     "pos"   : require("../lib/pos"),
     "prim"  : require("../lib/prim"),
-    "string": require("../lib/string"),
     "util"  : require("../lib/util")
 });
 

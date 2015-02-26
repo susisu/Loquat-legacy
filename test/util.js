@@ -170,4 +170,43 @@ describe("util", function () {
             expect(show(undefined)).to.equal("undefined");
         });
     });
+
+    describe("uncons(value)", function () {
+        var uncons = lq.util.uncons;
+
+        it("should return an empty array when 'value' is an empty array", function () {
+            expect(uncons([])).to.be.empty;
+        });
+
+        it("should return an array, the first element of which is the head of the array 'value' and the secound is the rest", function () {
+            var u1 = uncons([1]);
+            expect(u1).to.deep.equal([1, []]);
+
+            var u2 = uncons([1, 2, 3, 4, 5]);
+            expect(u2).to.deep.equal([1, [2, 3, 4, 5]]);
+        });
+
+        it("should return an empty array when 'value' is an empty string", function () {
+            expect(uncons("")).to.be.empty;
+        });
+
+        it("should return an array, the first element of which is the head of the string 'value' and the secound is the rest", function () {
+            var u1 = uncons("a");
+            expect(u1).to.deep.equal(["a", ""]);
+
+            var u2 = uncons("abcde");
+            expect(u2).to.deep.equal(["a", "bcde"]);
+        });
+
+        it("should call 'uncons' method if 'value' is neither an array nor a string", function () {
+            var foo = {
+                "uncons": function () {
+                    return ["a", "bcde"];
+                }
+            };
+
+            var u = uncons(foo);
+            expect(u).to.deep.equal(["a", "bcde"]);
+        });
+    });
 });

@@ -4,7 +4,6 @@
  */
 
 var lq = Object.freeze({
-    "array"     : require("./array"),
     "char"      : require("./char"),
     "combinator": require("./combinator"),
     "error"     : require("./error"),
@@ -12,7 +11,6 @@ var lq = Object.freeze({
     "monad"     : require("./monad"),
     "pos"       : require("./pos"),
     "prim"      : require("./prim"),
-    "string"    : require("./string"),
     "sugar"     : require("./sugar"),
     "token"     : require("./token"),
     "util"      : require("./util")
