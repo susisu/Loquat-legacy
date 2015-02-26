@@ -3,7 +3,8 @@
  * copyright (c) 2014 Susisu
  */
 
-var should = require("should");
+var chai   = require("chai"),
+    expect = chai.expect;
 
 var lq = Object.freeze({
     "error": require("../lib/error"),
@@ -99,13 +100,13 @@ describe("monad", function () {
                 new State("aababcd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -115,13 +116,13 @@ describe("monad", function () {
                 new State("acbabcd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 3),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -131,13 +132,13 @@ describe("monad", function () {
                 new State("cababcd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 3),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -147,13 +148,13 @@ describe("monad", function () {
                 new State("ccbabcd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -163,7 +164,7 @@ describe("monad", function () {
                 new State("aadabcd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 3),
@@ -172,7 +173,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -182,7 +183,7 @@ describe("monad", function () {
                 new State("acdabcd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -192,7 +193,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -202,7 +203,7 @@ describe("monad", function () {
                 new State("cadabcd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -211,7 +212,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -223,7 +224,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 1),
@@ -233,7 +234,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -241,13 +242,13 @@ describe("monad", function () {
                 new State("babcd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -259,13 +260,13 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 1),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
         });
@@ -273,7 +274,7 @@ describe("monad", function () {
     
     describe("void(parser)", function () {
         it("should be a synonym for 'nullify'", function () {
-            (lq.monad.void === lq.monad.nullify).should.be.ok;
+            expect(lq.monad.void).to.equal(lq.monad.nullify);
         });
     });
 
@@ -289,18 +290,18 @@ describe("monad", function () {
             )).run(
                 new State("def", SourcePos.init("test"), "some"),
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("abc", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -316,13 +317,13 @@ describe("monad", function () {
                 new State("def", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -340,18 +341,18 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("abc", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -367,13 +368,13 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
         });
@@ -422,18 +423,18 @@ describe("monad", function () {
             )).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal("foo");
-                    State.equals(
+                    expect(value).to.equal("foo");
+                    expect(State.equals(
                         state,
                         new State("abc", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -451,13 +452,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -473,18 +474,18 @@ describe("monad", function () {
             )).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal("foo");
-                    State.equals(
+                    expect(value).to.equal("foo");
+                    expect(State.equals(
                         state,
                         new State("abc", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -502,13 +503,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -523,13 +524,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -545,18 +546,18 @@ describe("monad", function () {
             )).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal("foo");
-                    State.equals(
+                    expect(value).to.equal("foo");
+                    expect(State.equals(
                         state,
                         new State("abc", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -574,13 +575,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -598,18 +599,18 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal("foo");
-                    State.equals(
+                    expect(value).to.equal("foo");
+                    expect(State.equals(
                         state,
                         new State("abc", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -627,13 +628,13 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -648,13 +649,13 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
         });
@@ -675,18 +676,18 @@ describe("monad", function () {
             ).run(
                 new State("def", SourcePos.init("test"), "some"),
                 function (value, state, error) {
-                    value.should.equal("foo");
-                    State.equals(
+                    expect(value).to.equal("foo");
+                    expect(State.equals(
                         state,
                         new State("abc", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -705,13 +706,13 @@ describe("monad", function () {
                 new State("def", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -732,18 +733,18 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal("foo");
-                    State.equals(
+                    expect(value).to.equal("foo");
+                    expect(State.equals(
                         state,
                         new State("abc", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -762,13 +763,13 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
         });
@@ -789,15 +790,15 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", SourcePos.init("test"), "some")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.unknown(SourcePos.init("test"))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -815,15 +816,15 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", SourcePos.init("test"), "some")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.unknown(SourcePos.init("test"))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -843,15 +844,15 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", SourcePos.init("test"), "some")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.unknown(SourcePos.init("test"))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -869,15 +870,15 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", SourcePos.init("test"), "some")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.unknown(SourcePos.init("test"))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -899,18 +900,18 @@ describe("monad", function () {
             ).run(
                 new State("def", SourcePos.init("test"), "some"),
                 function (value, state, error) {
-                    value.should.equal("foo");
-                    State.equals(
+                    expect(value).to.equal("foo");
+                    expect(State.equals(
                         state,
                         new State("abc", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -929,13 +930,13 @@ describe("monad", function () {
                 new State("def", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -956,18 +957,18 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal("foo");
-                    State.equals(
+                    expect(value).to.equal("foo");
+                    expect(State.equals(
                         state,
                         new State("abc", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -986,13 +987,13 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
         });
@@ -1013,15 +1014,15 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", SourcePos.init("test"), "some")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.unknown(SourcePos.init("test"))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -1039,15 +1040,15 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", SourcePos.init("test"), "some")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.unknown(SourcePos.init("test"))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -1067,15 +1068,15 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", SourcePos.init("test"), "some")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.unknown(SourcePos.init("test"))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -1093,15 +1094,15 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", SourcePos.init("test"), "some")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.unknown(SourcePos.init("test"))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -1146,9 +1147,9 @@ describe("monad", function () {
             mf(acsuc1).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1.toUpperCase());
-                    State.equals(state, s_acsuc1).should.be.ok;
-                    ParseError.equals(error, e_acsuc1).should.be.ok;
+                    expect(value).to.equal(v_acsuc1.toUpperCase());
+                    expect(State.equals(state, s_acsuc1)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc1)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1160,9 +1161,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1.toUpperCase());
-                    State.equals(state, s_aesuc1).should.be.ok;
-                    ParseError.equals(error, e_aesuc1).should.be.ok;
+                    expect(value).to.equal(v_aesuc1.toUpperCase());
+                    expect(State.equals(state, s_aesuc1)).to.be.true;
+                    expect(ParseError.equals(error, e_aesuc1)).to.be.true;
                 },
                 throwError
             );
@@ -1171,7 +1172,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr1).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr1)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1183,7 +1184,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_aeerr1).should.be.ok;
+                    expect(ParseError.equals(error, e_aeerr1)).to.be.true;
                 }
             );
         });
@@ -1255,9 +1256,9 @@ describe("monad", function () {
             mf(acsuc1, acsuc2).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2);
-                    State.equals(state, s_acsuc2).should.be.ok;
-                    ParseError.equals(error, e_acsuc2).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2);
+                    expect(State.equals(state, s_acsuc2)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc2)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1267,9 +1268,9 @@ describe("monad", function () {
             mf(acsuc1, aesuc2).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2);
-                    State.equals(state, s_aesuc2).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc1, e_aesuc2)).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2);
+                    expect(State.equals(state, s_aesuc2)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc1, e_aesuc2))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1280,7 +1281,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr2).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr2)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1290,7 +1291,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc1, e_aeerr2)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc1, e_aeerr2))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1299,9 +1300,9 @@ describe("monad", function () {
             mf(aesuc1, acsuc2).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2);
-                    State.equals(state, s_acsuc2).should.be.ok;
-                    ParseError.equals(error, e_acsuc2).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_acsuc2);
+                    expect(State.equals(state, s_acsuc2)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc2)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1313,9 +1314,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2);
-                    State.equals(state, s_aesuc2).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_aesuc1, e_aesuc2)).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2);
+                    expect(State.equals(state, s_aesuc2)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_aesuc1, e_aesuc2))).to.be.true;
                 },
                 throwError
             );
@@ -1324,7 +1325,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr2).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr2)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1336,7 +1337,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_aesuc1, e_aeerr2)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_aesuc1, e_aeerr2))).to.be.true;
                 }
             );
 
@@ -1345,7 +1346,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr1).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr1)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -1357,7 +1358,7 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_aeerr1).should.be.ok;
+                        expect(ParseError.equals(error, e_aeerr1)).to.be.true;
                     }
                 );
             });
@@ -1458,9 +1459,9 @@ describe("monad", function () {
             mf(acsuc1, acsuc2, acsuc3).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2 + v_acsuc3);
-                    State.equals(state, s_acsuc3).should.be.ok;
-                    ParseError.equals(error, e_acsuc3).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2 + v_acsuc3);
+                    expect(State.equals(state, s_acsuc3)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc3)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1470,9 +1471,9 @@ describe("monad", function () {
             mf(acsuc1, acsuc2, aesuc3).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2 + v_aesuc3);
-                    State.equals(state, s_aesuc3).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc2, e_aesuc3)).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2 + v_aesuc3);
+                    expect(State.equals(state, s_aesuc3)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc2, e_aesuc3))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1483,7 +1484,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr3).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr3)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1493,7 +1494,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc2, e_aeerr3)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc2, e_aeerr3))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1502,9 +1503,9 @@ describe("monad", function () {
             mf(acsuc1, aesuc2, acsuc3).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2 + v_acsuc3);
-                    State.equals(state, s_acsuc3).should.be.ok;
-                    ParseError.equals(error, e_acsuc3).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2 + v_acsuc3);
+                    expect(State.equals(state, s_acsuc3)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc3)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1514,12 +1515,12 @@ describe("monad", function () {
             mf(acsuc1, aesuc2, aesuc3).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2 + v_aesuc3);
-                    State.equals(state, s_aesuc3).should.be.ok;
-                    ParseError.equals(
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2 + v_aesuc3);
+                    expect(State.equals(state, s_aesuc3)).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc1, ParseError.merge(e_aesuc2, e_aesuc3))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1530,7 +1531,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr3).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr3)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1540,10 +1541,10 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc1, ParseError.merge(e_aesuc2, e_aeerr3))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1552,9 +1553,9 @@ describe("monad", function () {
             mf(aesuc1, acsuc2, acsuc3).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2 + v_acsuc3);
-                    State.equals(state, s_acsuc3).should.be.ok;
-                    ParseError.equals(error, e_acsuc3).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_acsuc2 + v_acsuc3);
+                    expect(State.equals(state, s_acsuc3)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc3)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1564,9 +1565,9 @@ describe("monad", function () {
             mf(aesuc1, acsuc2, aesuc3).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2 + v_aesuc3);
-                    State.equals(state, s_aesuc3).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc2, e_aesuc3)).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_acsuc2 + v_aesuc3);
+                    expect(State.equals(state, s_aesuc3)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc2, e_aesuc3))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1577,7 +1578,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr3).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr3)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1587,7 +1588,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc2, e_aeerr3)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc2, e_aeerr3))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1596,9 +1597,9 @@ describe("monad", function () {
             mf(aesuc1, aesuc2, acsuc3).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2 + v_acsuc3);
-                    State.equals(state, s_acsuc3).should.be.ok;
-                    ParseError.equals(error, e_acsuc3).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2 + v_acsuc3);
+                    expect(State.equals(state, s_acsuc3)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc3)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1610,12 +1611,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2 + v_aesuc3);
-                    State.equals(state, s_aesuc3).should.be.ok;
-                    ParseError.equals(
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2 + v_aesuc3);
+                    expect(State.equals(state, s_aesuc3)).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_aesuc1, ParseError.merge(e_aesuc2, e_aesuc3))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -1624,7 +1625,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr3).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr3)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1636,10 +1637,10 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_aesuc1, ParseError.merge(e_aesuc2, e_aeerr3))
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -1648,7 +1649,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr2).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr2)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -1658,7 +1659,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, ParseError.merge(e_acsuc1, e_aeerr2)).should.be.ok;
+                        expect(ParseError.equals(error, ParseError.merge(e_acsuc1, e_aeerr2))).to.be.true;
                     },
                     throwError,
                     throwError
@@ -1668,7 +1669,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr2).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr2)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -1680,7 +1681,7 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, ParseError.merge(e_aesuc1, e_aeerr2)).should.be.ok;
+                        expect(ParseError.equals(error, ParseError.merge(e_aesuc1, e_aeerr2))).to.be.true;
                     }
                 );
 
@@ -1689,7 +1690,7 @@ describe("monad", function () {
                         initState,
                         throwError,
                         function (error) {
-                            ParseError.equals(error, e_acerr1).should.be.ok;
+                            expect(ParseError.equals(error, e_acerr1)).to.be.true;
                         },
                         throwError,
                         throwError
@@ -1701,7 +1702,7 @@ describe("monad", function () {
                         throwError,
                         throwError,
                         function (error) {
-                            ParseError.equals(error, e_aeerr1).should.be.ok;
+                            expect(ParseError.equals(error, e_aeerr1)).to.be.true;
                         }
                     );
                 });
@@ -1831,9 +1832,9 @@ describe("monad", function () {
             mf(acsuc1, acsuc2, acsuc3, acsuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4);
-                    State.equals(state, s_acsuc4).should.be.ok;
-                    ParseError.equals(error, e_acsuc4).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4);
+                    expect(State.equals(state, s_acsuc4)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc4)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1843,9 +1844,9 @@ describe("monad", function () {
             mf(acsuc1, acsuc2, acsuc3, aesuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4);
-                    State.equals(state, s_aesuc4).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc3, e_aesuc4)).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4);
+                    expect(State.equals(state, s_aesuc4)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc3, e_aesuc4))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1856,7 +1857,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr4).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr4)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1866,7 +1867,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1875,9 +1876,9 @@ describe("monad", function () {
             mf(acsuc1, acsuc2, aesuc3, acsuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4);
-                    State.equals(state, s_acsuc4).should.be.ok;
-                    ParseError.equals(error, e_acsuc4).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4);
+                    expect(State.equals(state, s_acsuc4)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc4)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1887,12 +1888,12 @@ describe("monad", function () {
             mf(acsuc1, acsuc2, aesuc3, aesuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4);
-                    State.equals(state, s_aesuc4).should.be.ok;
-                    ParseError.equals(
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4);
+                    expect(State.equals(state, s_aesuc4)).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, e_aesuc4))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1903,7 +1904,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr4).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr4)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1913,10 +1914,10 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, e_aeerr4))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1925,9 +1926,9 @@ describe("monad", function () {
             mf(acsuc1, aesuc2, acsuc3, acsuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4);
-                    State.equals(state, s_acsuc4).should.be.ok;
-                    ParseError.equals(error, e_acsuc4).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4);
+                    expect(State.equals(state, s_acsuc4)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc4)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1937,9 +1938,9 @@ describe("monad", function () {
             mf(acsuc1, aesuc2, acsuc3, aesuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4);
-                    State.equals(state, s_aesuc4).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc3, e_aesuc4)).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4);
+                    expect(State.equals(state, s_aesuc4)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc3, e_aesuc4))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1950,7 +1951,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr4).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr4)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1960,7 +1961,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1969,9 +1970,9 @@ describe("monad", function () {
             mf(acsuc1, aesuc2, aesuc3, acsuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4);
-                    State.equals(state, s_acsuc4).should.be.ok;
-                    ParseError.equals(error, e_acsuc4).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4);
+                    expect(State.equals(state, s_acsuc4)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc4)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1981,12 +1982,12 @@ describe("monad", function () {
             mf(acsuc1, aesuc2, aesuc3, aesuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4);
-                    State.equals(state, s_aesuc4).should.be.ok;
-                    ParseError.equals(
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4);
+                    expect(State.equals(state, s_aesuc4)).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, e_aesuc4)))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1997,7 +1998,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr4).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr4)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2007,10 +2008,10 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, e_aeerr4)))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2019,9 +2020,9 @@ describe("monad", function () {
             mf(aesuc1, acsuc2, acsuc3, acsuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4);
-                    State.equals(state, s_acsuc4).should.be.ok;
-                    ParseError.equals(error, e_acsuc4).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4);
+                    expect(State.equals(state, s_acsuc4)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc4)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2031,9 +2032,9 @@ describe("monad", function () {
             mf(aesuc1, acsuc2, acsuc3, aesuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4);
-                    State.equals(state, s_aesuc4).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc3, e_aesuc4)).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4);
+                    expect(State.equals(state, s_aesuc4)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc3, e_aesuc4))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2044,7 +2045,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr4).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr4)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2054,7 +2055,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2063,9 +2064,9 @@ describe("monad", function () {
             mf(aesuc1, acsuc2, aesuc3, acsuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4);
-                    State.equals(state, s_acsuc4).should.be.ok;
-                    ParseError.equals(error, e_acsuc4).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4);
+                    expect(State.equals(state, s_acsuc4)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc4)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2075,12 +2076,12 @@ describe("monad", function () {
             mf(aesuc1, acsuc2, aesuc3, aesuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4);
-                    State.equals(state, s_aesuc4).should.be.ok;
-                    ParseError.equals(
+                    expect(value).to.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4);
+                    expect(State.equals(state, s_aesuc4)).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, e_aesuc4))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2091,7 +2092,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr4).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr4)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2101,10 +2102,10 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, e_aeerr4))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2113,9 +2114,9 @@ describe("monad", function () {
             mf(aesuc1, aesuc2, acsuc3, acsuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4);
-                    State.equals(state, s_acsuc4).should.be.ok;
-                    ParseError.equals(error, e_acsuc4).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4);
+                    expect(State.equals(state, s_acsuc4)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc4)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2125,9 +2126,9 @@ describe("monad", function () {
             mf(aesuc1, aesuc2, acsuc3, aesuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4);
-                    State.equals(state, s_aesuc4).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc3, e_aesuc4)).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4);
+                    expect(State.equals(state, s_aesuc4)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc3, e_aesuc4))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2138,7 +2139,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr4).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr4)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2148,7 +2149,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2157,9 +2158,9 @@ describe("monad", function () {
             mf(aesuc1, aesuc2, aesuc3, acsuc4).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4);
-                    State.equals(state, s_acsuc4).should.be.ok;
-                    ParseError.equals(error, e_acsuc4).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4);
+                    expect(State.equals(state, s_acsuc4)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc4)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2171,12 +2172,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4);
-                    State.equals(state, s_aesuc4).should.be.ok;
-                    ParseError.equals(
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4);
+                    expect(State.equals(state, s_aesuc4)).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_aesuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, e_aesuc4)))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -2185,7 +2186,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr4).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr4)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2197,10 +2198,10 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_aesuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, e_aeerr4)))
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -2209,7 +2210,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr3).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr3)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -2219,7 +2220,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, ParseError.merge(e_acsuc2, e_aeerr3)).should.be.ok;
+                        expect(ParseError.equals(error, ParseError.merge(e_acsuc2, e_aeerr3))).to.be.true;
                     },
                     throwError,
                     throwError
@@ -2229,7 +2230,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr3).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr3)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -2239,10 +2240,10 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             ParseError.merge(e_acsuc1, ParseError.merge(e_aesuc2, e_aeerr3))
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -2252,7 +2253,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr3).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr3)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -2262,7 +2263,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, ParseError.merge(e_acsuc2, e_aeerr3)).should.be.ok;
+                        expect(ParseError.equals(error, ParseError.merge(e_acsuc2, e_aeerr3))).to.be.true;
                     },
                     throwError,
                     throwError
@@ -2272,7 +2273,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr3).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr3)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -2284,10 +2285,10 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             ParseError.merge(e_aesuc1, ParseError.merge(e_aesuc2, e_aeerr3))
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
 
@@ -2296,7 +2297,7 @@ describe("monad", function () {
                         initState,
                         throwError,
                         function (error) {
-                            ParseError.equals(error, e_acerr2).should.be.ok;
+                            expect(ParseError.equals(error, e_acerr2)).to.be.true;
                         },
                         throwError,
                         throwError
@@ -2306,7 +2307,7 @@ describe("monad", function () {
                         initState,
                         throwError,
                         function (error) {
-                            ParseError.equals(error, ParseError.merge(e_acsuc1, e_aeerr2)).should.be.ok;
+                            expect(ParseError.equals(error, ParseError.merge(e_acsuc1, e_aeerr2))).to.be.true;
                         },
                         throwError,
                         throwError
@@ -2316,7 +2317,7 @@ describe("monad", function () {
                         initState,
                         throwError,
                         function (error) {
-                            ParseError.equals(error, e_acerr2).should.be.ok;
+                            expect(ParseError.equals(error, e_acerr2)).to.be.true;
                         },
                         throwError,
                         throwError
@@ -2328,7 +2329,7 @@ describe("monad", function () {
                         throwError,
                         throwError,
                         function (error) {
-                            ParseError.equals(error, ParseError.merge(e_aesuc1, e_aeerr2)).should.be.ok;
+                            expect(ParseError.equals(error, ParseError.merge(e_aesuc1, e_aeerr2))).to.be.true;
                         }
                     );
 
@@ -2337,7 +2338,7 @@ describe("monad", function () {
                             initState,
                             throwError,
                             function (error) {
-                                ParseError.equals(error, e_acerr1).should.be.ok;
+                                expect(ParseError.equals(error, e_acerr1)).to.be.true;
                             },
                             throwError,
                             throwError
@@ -2349,7 +2350,7 @@ describe("monad", function () {
                             throwError,
                             throwError,
                             function (error) {
-                                ParseError.equals(error, e_aeerr1).should.be.ok;
+                                expect(ParseError.equals(error, e_aeerr1)).to.be.true;
                             }
                         );
                     });
@@ -2508,9 +2509,9 @@ describe("monad", function () {
             mf(acsuc1, acsuc2, acsuc3, acsuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2520,9 +2521,9 @@ describe("monad", function () {
             mf(acsuc1, acsuc2, acsuc3, acsuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2533,7 +2534,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2543,7 +2544,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2552,9 +2553,9 @@ describe("monad", function () {
             mf(acsuc1, acsuc2, acsuc3, aesuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2564,12 +2565,12 @@ describe("monad", function () {
             mf(acsuc1, acsuc2, acsuc3, aesuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc3, ParseError.merge(e_aesuc4, e_aesuc5))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2580,7 +2581,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2590,10 +2591,10 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc3, ParseError.merge(e_acsuc4, e_aeerr5))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2602,9 +2603,9 @@ describe("monad", function () {
             mf(acsuc1, acsuc2, aesuc3, acsuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2614,9 +2615,9 @@ describe("monad", function () {
             mf(acsuc1, acsuc2, aesuc3, acsuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2627,7 +2628,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2637,7 +2638,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2646,9 +2647,9 @@ describe("monad", function () {
             mf(acsuc1, acsuc2, aesuc3, aesuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2658,12 +2659,12 @@ describe("monad", function () {
             mf(acsuc1, acsuc2, aesuc3, aesuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(
+                    expect(value).to.equal(v_acsuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_aesuc4, e_aesuc5)))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2674,7 +2675,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2684,10 +2685,10 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_acsuc4, e_aeerr5)))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2696,9 +2697,9 @@ describe("monad", function () {
             mf(acsuc1, aesuc2, acsuc3, acsuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2708,9 +2709,9 @@ describe("monad", function () {
             mf(acsuc1, aesuc2, acsuc3, acsuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2721,7 +2722,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2731,7 +2732,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2740,9 +2741,9 @@ describe("monad", function () {
             mf(acsuc1, aesuc2, acsuc3, aesuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2752,12 +2753,12 @@ describe("monad", function () {
             mf(acsuc1, aesuc2, acsuc3, aesuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc3, ParseError.merge(e_aesuc4, e_aesuc5))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2768,7 +2769,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2778,10 +2779,10 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc3, ParseError.merge(e_acsuc4, e_aeerr5))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2790,9 +2791,9 @@ describe("monad", function () {
             mf(acsuc1, aesuc2, aesuc3, acsuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2802,9 +2803,9 @@ describe("monad", function () {
             mf(acsuc1, aesuc2, aesuc3, acsuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2815,7 +2816,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2825,7 +2826,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2834,9 +2835,9 @@ describe("monad", function () {
             mf(acsuc1, aesuc2, aesuc3, aesuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2846,12 +2847,12 @@ describe("monad", function () {
             mf(acsuc1, aesuc2, aesuc3, aesuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(
+                    expect(value).to.equal(v_acsuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_aesuc4, e_aesuc5))))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2862,7 +2863,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2872,10 +2873,10 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_acsuc4, e_aeerr5))))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2884,9 +2885,9 @@ describe("monad", function () {
             mf(aesuc1, acsuc2, acsuc3, acsuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2896,9 +2897,9 @@ describe("monad", function () {
             mf(aesuc1, acsuc2, acsuc3, acsuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_acsuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2909,7 +2910,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2919,7 +2920,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2928,9 +2929,9 @@ describe("monad", function () {
             mf(aesuc1, acsuc2, acsuc3, aesuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2940,12 +2941,12 @@ describe("monad", function () {
             mf(aesuc1, acsuc2, acsuc3, aesuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(
+                    expect(value).to.equal(v_aesuc1 + v_acsuc2 + v_acsuc3 + v_aesuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc3, ParseError.merge(e_aesuc4, e_aesuc5))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2956,7 +2957,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2966,10 +2967,10 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc3, ParseError.merge(e_acsuc4, e_aeerr5))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2978,9 +2979,9 @@ describe("monad", function () {
             mf(aesuc1, acsuc2, aesuc3, acsuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2990,9 +2991,9 @@ describe("monad", function () {
             mf(aesuc1, acsuc2, aesuc3, acsuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_acsuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3003,7 +3004,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3013,7 +3014,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3022,9 +3023,9 @@ describe("monad", function () {
             mf(aesuc1, acsuc2, aesuc3, aesuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3034,12 +3035,12 @@ describe("monad", function () {
             mf(aesuc1, acsuc2, aesuc3, aesuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(
+                    expect(value).to.equal(v_aesuc1 + v_acsuc2 + v_aesuc3 + v_aesuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_aesuc4, e_aesuc5)))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3050,7 +3051,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3060,10 +3061,10 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_acsuc4, e_aeerr5)))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3072,9 +3073,9 @@ describe("monad", function () {
             mf(aesuc1, aesuc2, acsuc3, acsuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3084,9 +3085,9 @@ describe("monad", function () {
             mf(aesuc1, aesuc2, acsuc3, acsuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_acsuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3097,7 +3098,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3107,7 +3108,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3116,9 +3117,9 @@ describe("monad", function () {
             mf(aesuc1, aesuc2, acsuc3, aesuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3128,12 +3129,12 @@ describe("monad", function () {
             mf(aesuc1, aesuc2, acsuc3, aesuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2 + v_acsuc3 + v_aesuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc3, ParseError.merge(e_aesuc4, e_aesuc5))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3144,7 +3145,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3154,10 +3155,10 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_acsuc3, ParseError.merge(e_acsuc4, e_aeerr5))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3166,9 +3167,9 @@ describe("monad", function () {
             mf(aesuc1, aesuc2, aesuc3, acsuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3178,9 +3179,9 @@ describe("monad", function () {
             mf(aesuc1, aesuc2, aesuc3, acsuc4, aesuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5)).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_acsuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aesuc5))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3191,7 +3192,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3201,7 +3202,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(e_acsuc4, e_aeerr5))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3210,9 +3211,9 @@ describe("monad", function () {
             mf(aesuc1, aesuc2, aesuc3, aesuc4, acsuc5).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4 + v_acsuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(error, e_acsuc5).should.be.ok;
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4 + v_acsuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(error, e_acsuc5)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3224,12 +3225,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4 + v_aesuc5);
-                    State.equals(state, s_acsuc5).should.be.ok;
-                    ParseError.equals(
+                    expect(value).to.equal(v_aesuc1 + v_aesuc2 + v_aesuc3 + v_aesuc4 + v_aesuc5);
+                    expect(State.equals(state, s_acsuc5)).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_aesuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_aesuc4, e_aesuc5))))
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -3238,7 +3239,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, e_acerr5).should.be.ok;
+                    expect(ParseError.equals(error, e_acerr5)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3250,10 +3251,10 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         ParseError.merge(e_aesuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, ParseError.merge(e_acsuc4, e_aeerr5))))
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -3262,7 +3263,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr4).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr4)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3272,7 +3273,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4)).should.be.ok;
+                        expect(ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4))).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3282,7 +3283,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr4).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr4)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3292,10 +3293,10 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, e_aeerr4))
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3305,7 +3306,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr4).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr4)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3315,7 +3316,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4)).should.be.ok;
+                        expect(ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4))).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3325,7 +3326,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr4).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr4)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3335,10 +3336,10 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             ParseError.merge(e_acsuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, e_aeerr4)))
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3348,7 +3349,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr4).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr4)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3358,7 +3359,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4)).should.be.ok;
+                        expect(ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4))).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3368,7 +3369,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr4).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr4)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3378,10 +3379,10 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             ParseError.merge(e_acsuc2, ParseError.merge(e_aesuc3, e_aeerr4))
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3391,7 +3392,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr4).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr4)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3401,7 +3402,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4)).should.be.ok;
+                        expect(ParseError.equals(error, ParseError.merge(e_acsuc3, e_aeerr4))).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3411,7 +3412,7 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, e_acerr4).should.be.ok;
+                        expect(ParseError.equals(error, e_acerr4)).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3423,10 +3424,10 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             ParseError.merge(e_aesuc1, ParseError.merge(e_aesuc2, ParseError.merge(e_aesuc3, e_aeerr4)))
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
 
@@ -3435,7 +3436,7 @@ describe("monad", function () {
                         initState,
                         throwError,
                         function (error) {
-                            ParseError.equals(error, e_acerr3).should.be.ok;
+                            expect(ParseError.equals(error, e_acerr3)).to.be.true;
                         },
                         throwError,
                         throwError
@@ -3445,7 +3446,7 @@ describe("monad", function () {
                         initState,
                         throwError,
                         function (error) {
-                            ParseError.equals(error, ParseError.merge(e_acsuc2, e_aeerr3)).should.be.ok;
+                            expect(ParseError.equals(error, ParseError.merge(e_acsuc2, e_aeerr3))).to.be.true;
                         },
                         throwError,
                         throwError
@@ -3455,7 +3456,7 @@ describe("monad", function () {
                         initState,
                         throwError,
                         function (error) {
-                            ParseError.equals(error, e_acerr3).should.be.ok;
+                            expect(ParseError.equals(error, e_acerr3)).to.be.true;
                         },
                         throwError,
                         throwError
@@ -3465,10 +3466,10 @@ describe("monad", function () {
                         initState,
                         throwError,
                         function (error) {
-                            ParseError.equals(
+                            expect(ParseError.equals(
                                 error,
                                 ParseError.merge(e_acsuc1, ParseError.merge(e_aesuc2, e_aeerr3))
-                            ).should.be.ok;
+                            )).to.be.true;
                         },
                         throwError,
                         throwError
@@ -3478,7 +3479,7 @@ describe("monad", function () {
                         initState,
                         throwError,
                         function (error) {
-                            ParseError.equals(error, e_acerr3).should.be.ok;
+                            expect(ParseError.equals(error, e_acerr3)).to.be.true;
                         },
                         throwError,
                         throwError
@@ -3488,7 +3489,7 @@ describe("monad", function () {
                         initState,
                         throwError,
                         function (error) {
-                            ParseError.equals(error, ParseError.merge(e_acsuc2, e_aeerr3)).should.be.ok;
+                            expect(ParseError.equals(error, ParseError.merge(e_acsuc2, e_aeerr3))).to.be.true;
                         },
                         throwError,
                         throwError
@@ -3498,7 +3499,7 @@ describe("monad", function () {
                         initState,
                         throwError,
                         function (error) {
-                            ParseError.equals(error, e_acerr3).should.be.ok;
+                            expect(ParseError.equals(error, e_acerr3)).to.be.true;
                         },
                         throwError,
                         throwError
@@ -3510,10 +3511,10 @@ describe("monad", function () {
                         throwError,
                         throwError,
                         function (error) {
-                            ParseError.equals(
+                            expect(ParseError.equals(
                                 error,
                                 ParseError.merge(e_aesuc1, ParseError.merge(e_aesuc2, e_aeerr3))
-                            ).should.be.ok;
+                            )).to.be.true;
                         }
                     );
 
@@ -3522,7 +3523,7 @@ describe("monad", function () {
                             initState,
                             throwError,
                             function (error) {
-                                ParseError.equals(error, e_acerr2).should.be.ok;
+                                expect(ParseError.equals(error, e_acerr2)).to.be.true;
                             },
                             throwError,
                             throwError
@@ -3532,7 +3533,7 @@ describe("monad", function () {
                             initState,
                             throwError,
                             function (error) {
-                                ParseError.equals(error, ParseError.merge(e_acsuc1, e_aeerr2)).should.be.ok;
+                                expect(ParseError.equals(error, ParseError.merge(e_acsuc1, e_aeerr2))).to.be.true;
                             },
                             throwError,
                             throwError
@@ -3542,7 +3543,7 @@ describe("monad", function () {
                             initState,
                             throwError,
                             function (error) {
-                                ParseError.equals(error, e_acerr2).should.be.ok;
+                                expect(ParseError.equals(error, e_acerr2)).to.be.true;
                             },
                             throwError,
                             throwError
@@ -3554,7 +3555,7 @@ describe("monad", function () {
                             throwError,
                             throwError,
                             function (error) {
-                                ParseError.equals(error, ParseError.merge(e_aesuc1, e_aeerr2)).should.be.ok;
+                                expect(ParseError.equals(error, ParseError.merge(e_aesuc1, e_aeerr2))).to.be.true;
                             }
                         );
 
@@ -3563,7 +3564,7 @@ describe("monad", function () {
                                 initState,
                                 throwError,
                                 function (error) {
-                                    ParseError.equals(error, e_acerr1).should.be.ok;
+                                    expect(ParseError.equals(error, e_acerr1)).to.be.true;
                                 },
                                 throwError,
                                 throwError
@@ -3575,7 +3576,7 @@ describe("monad", function () {
                                 throwError,
                                 throwError,
                                 function (error) {
-                                    ParseError.equals(error, e_aeerr1).should.be.ok;
+                                    expect(ParseError.equals(error, e_aeerr1)).to.be.true;
                                 }
                             );
                          });
@@ -3672,18 +3673,18 @@ describe("monad", function () {
             lq.monad.ltor(acsucf, acsucg)("foo").run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal("foobarbaz"),
-                    State.equals(
+                    expect(value).to.equal("foobarbaz"),
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3694,13 +3695,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3709,18 +3710,18 @@ describe("monad", function () {
             lq.monad.ltor(acsucf, aesucg)("foo").run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal("foobarbaz"),
-                    State.equals(
+                    expect(value).to.equal("foobarbaz"),
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3731,13 +3732,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3746,18 +3747,18 @@ describe("monad", function () {
             lq.monad.ltor(aesucf, acsucg)("foo").run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal("foobarbaz"),
-                    State.equals(
+                    expect(value).to.equal("foobarbaz"),
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3768,13 +3769,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3785,18 +3786,18 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal("foobarbaz"),
-                    State.equals(
+                    expect(value).to.equal("foobarbaz"),
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -3807,13 +3808,13 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -3822,13 +3823,13 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -3840,13 +3841,13 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
             });
@@ -3940,18 +3941,18 @@ describe("monad", function () {
             lq.monad.rtol(acsucg, acsucf)("foo").run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal("foobarbaz"),
-                    State.equals(
+                    expect(value).to.equal("foobarbaz"),
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3962,13 +3963,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3977,18 +3978,18 @@ describe("monad", function () {
             lq.monad.rtol(aesucg, acsucf)("foo").run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal("foobarbaz"),
-                    State.equals(
+                    expect(value).to.equal("foobarbaz"),
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3999,13 +4000,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -4014,18 +4015,18 @@ describe("monad", function () {
             lq.monad.rtol(acsucg, aesucf)("foo").run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal("foobarbaz"),
-                    State.equals(
+                    expect(value).to.equal("foobarbaz"),
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -4036,13 +4037,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -4053,18 +4054,18 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal("foobarbaz"),
-                    State.equals(
+                    expect(value).to.equal("foobarbaz"),
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -4075,13 +4076,13 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_baz")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -4090,13 +4091,13 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -4108,13 +4109,13 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
             });
@@ -4130,9 +4131,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (lq.util.ArrayUtil.equals(value, [])).should.be.ok;
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.deep.equal([]);
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -4204,18 +4205,18 @@ describe("monad", function () {
             lq.monad.sequence([acsuc1, acsuc2]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["foo", "bar"]);
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -4226,13 +4227,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -4241,18 +4242,18 @@ describe("monad", function () {
             lq.monad.sequence([acsuc1, aesuc2]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["foo", "bar"]);
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -4263,13 +4264,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -4278,18 +4279,18 @@ describe("monad", function () {
             lq.monad.sequence([aesuc1, acsuc2]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["foo", "bar"]);
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -4300,13 +4301,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -4317,18 +4318,18 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["foo", "bar"]);
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -4339,13 +4340,13 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -4354,13 +4355,13 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_foo")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -4372,13 +4373,13 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_foo")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
             });
@@ -4394,9 +4395,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.be.undefined;
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -4468,18 +4469,18 @@ describe("monad", function () {
             lq.monad.sequence_([acsuc1, acsuc2]).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -4490,13 +4491,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -4505,18 +4506,18 @@ describe("monad", function () {
             lq.monad.sequence_([acsuc1, aesuc2]).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -4527,13 +4528,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -4542,18 +4543,18 @@ describe("monad", function () {
             lq.monad.sequence_([aesuc1, acsuc2]).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -4564,13 +4565,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -4581,18 +4582,18 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("ghi", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -4603,13 +4604,13 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 3, 4),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -4618,13 +4619,13 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_foo")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -4636,13 +4637,13 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_foo")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
             });
@@ -4695,9 +4696,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (lq.util.ArrayUtil.equals(value, [])).should.be.ok;
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.deep.equal([]);
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -4705,18 +4706,18 @@ describe("monad", function () {
             lq.monad.mapM(f, ["foo", "FOO"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["csuc_foo", "csuc_FOO"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["csuc_foo", "csuc_FOO"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_FOO")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -4727,13 +4728,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_BAR")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -4742,12 +4743,12 @@ describe("monad", function () {
             lq.monad.mapM(f, ["foo", "BAZ"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["csuc_foo", "esuc_BAZ"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["csuc_foo", "esuc_BAZ"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -4756,7 +4757,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_BAZ")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -4767,7 +4768,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -4776,7 +4777,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_NYA")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -4785,18 +4786,18 @@ describe("monad", function () {
             lq.monad.mapM(f, ["baz", "FOO"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["esuc_baz", "csuc_FOO"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["esuc_baz", "csuc_FOO"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_FOO")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -4807,13 +4808,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_BAR")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -4824,12 +4825,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["esuc_baz", "esuc_BAZ"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["esuc_baz", "esuc_BAZ"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -4838,7 +4839,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_BAZ")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -4849,7 +4850,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -4858,7 +4859,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_NYA")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -4867,13 +4868,13 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -4885,13 +4886,13 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_nya")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
             });
@@ -4944,9 +4945,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.be.undefined;
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -4954,18 +4955,18 @@ describe("monad", function () {
             lq.monad.mapM_(f, ["foo", "FOO"]).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_FOO")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -4976,13 +4977,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_BAR")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -4991,12 +4992,12 @@ describe("monad", function () {
             lq.monad.mapM_(f, ["foo", "BAZ"]).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5005,7 +5006,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_BAZ")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5016,7 +5017,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5025,7 +5026,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_NYA")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -5034,18 +5035,18 @@ describe("monad", function () {
             lq.monad.mapM_(f, ["baz", "FOO"]).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_FOO")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5056,13 +5057,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_BAR")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -5073,12 +5074,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5087,7 +5088,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_BAZ")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -5098,7 +5099,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5107,7 +5108,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_NYA")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -5116,13 +5117,13 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -5134,13 +5135,13 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_nya")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
             });
@@ -5193,9 +5194,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (lq.util.ArrayUtil.equals(value, [])).should.be.ok;
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.deep.equal([]);
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -5203,18 +5204,18 @@ describe("monad", function () {
             lq.monad.forM(["foo", "FOO"], f).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["csuc_foo", "csuc_FOO"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["csuc_foo", "csuc_FOO"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_FOO")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5225,13 +5226,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_BAR")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -5240,12 +5241,12 @@ describe("monad", function () {
             lq.monad.forM(["foo", "BAZ"], f).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["csuc_foo", "esuc_BAZ"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["csuc_foo", "esuc_BAZ"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5254,7 +5255,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_BAZ")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5265,7 +5266,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5274,7 +5275,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_NYA")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -5283,18 +5284,18 @@ describe("monad", function () {
             lq.monad.forM(["baz", "FOO"], f).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["esuc_baz", "csuc_FOO"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["esuc_baz", "csuc_FOO"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_FOO")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5305,13 +5306,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_BAR")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -5322,12 +5323,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["esuc_baz", "esuc_BAZ"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["esuc_baz", "esuc_BAZ"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5336,7 +5337,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_BAZ")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -5347,7 +5348,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5356,7 +5357,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_NYA")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -5365,13 +5366,13 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -5383,13 +5384,13 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_nya")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
             });
@@ -5442,9 +5443,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.be.undefined;
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -5452,18 +5453,18 @@ describe("monad", function () {
             lq.monad.forM_(["foo", "FOO"], f).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_FOO")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5474,13 +5475,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_BAR")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -5489,12 +5490,12 @@ describe("monad", function () {
             lq.monad.forM_(["foo", "BAZ"], f).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5503,7 +5504,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_BAZ")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5514,7 +5515,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5523,7 +5524,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_NYA")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -5532,18 +5533,18 @@ describe("monad", function () {
             lq.monad.forM_(["baz", "FOO"], f).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_FOO")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5554,13 +5555,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_BAR")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -5571,12 +5572,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5585,7 +5586,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_BAZ")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -5596,7 +5597,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5605,7 +5606,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_NYA")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -5614,13 +5615,13 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr_bar")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -5632,13 +5633,13 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr_nya")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
             });
@@ -5715,9 +5716,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.deep.equal([]);
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -5725,18 +5726,18 @@ describe("monad", function () {
             lq.monad.filterM(f, ["foo", "foo"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["foo", "foo"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["foo", "foo"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_true")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5746,18 +5747,18 @@ describe("monad", function () {
             lq.monad.filterM(f, ["foo", "FOO"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["foo"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["foo"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_false")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5767,12 +5768,12 @@ describe("monad", function () {
             lq.monad.filterM(f, ["foo", "bar"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["foo", "bar"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5781,7 +5782,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_true")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5791,12 +5792,12 @@ describe("monad", function () {
             lq.monad.filterM(f, ["foo", "BAR"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["foo"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["foo"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5805,7 +5806,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_false")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5816,13 +5817,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -5832,7 +5833,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5841,7 +5842,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -5850,18 +5851,18 @@ describe("monad", function () {
             lq.monad.filterM(f, ["FOO", "foo"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["foo"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["foo"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_true")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5871,18 +5872,18 @@ describe("monad", function () {
             lq.monad.filterM(f, ["FOO", "FOO"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal([]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_false")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5892,12 +5893,12 @@ describe("monad", function () {
             lq.monad.filterM(f, ["FOO", "bar"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["bar"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["bar"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5906,7 +5907,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_true")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5916,12 +5917,12 @@ describe("monad", function () {
             lq.monad.filterM(f, ["FOO", "BAR"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal([]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5930,7 +5931,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_false")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5941,13 +5942,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -5957,7 +5958,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -5966,7 +5967,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -5975,18 +5976,18 @@ describe("monad", function () {
             lq.monad.filterM(f, ["bar", "foo"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["bar", "foo"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["bar", "foo"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_true")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -5996,18 +5997,18 @@ describe("monad", function () {
             lq.monad.filterM(f, ["bar", "FOO"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["bar"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["bar"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_false")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -6019,12 +6020,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["bar", "bar"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["bar", "bar"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6033,7 +6034,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_true")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -6043,12 +6044,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["bar"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["bar"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6057,7 +6058,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_false")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -6066,13 +6067,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -6084,7 +6085,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6093,25 +6094,25 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
             lq.monad.filterM(f, ["BAR", "foo"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["foo"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["foo"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_true")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -6121,18 +6122,18 @@ describe("monad", function () {
             lq.monad.filterM(f, ["BAR", "FOO"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal([]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_false")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -6144,12 +6145,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["bar"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["bar"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6158,7 +6159,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_true")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -6168,12 +6169,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal([]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6182,7 +6183,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_false")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -6191,13 +6192,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -6209,7 +6210,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6218,7 +6219,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -6227,13 +6228,13 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -6245,13 +6246,13 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
             });
@@ -6300,9 +6301,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.deep.equal([]);
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -6312,9 +6313,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.deep.equal([]);
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -6324,9 +6325,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.deep.equal([]);
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -6334,18 +6335,18 @@ describe("monad", function () {
             lq.monad.zipWithM(f, ["csuc", "csuc"], ["foo", "bar"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["foo", "bar"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -6356,13 +6357,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -6371,12 +6372,12 @@ describe("monad", function () {
             lq.monad.zipWithM(f, ["csuc", "esuc"], ["foo", "bar"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["foo", "bar"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6385,7 +6386,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -6396,7 +6397,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6405,7 +6406,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -6414,18 +6415,18 @@ describe("monad", function () {
             lq.monad.zipWithM(f, ["esuc", "csuc"], ["foo", "bar"]).run(
                 initState,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["foo", "bar"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -6436,13 +6437,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -6453,12 +6454,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["foo", "bar"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["foo", "bar"]);
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6467,7 +6468,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -6478,7 +6479,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6487,7 +6488,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -6496,13 +6497,13 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -6514,13 +6515,13 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
             });
@@ -6569,9 +6570,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.be.undefined;
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -6581,9 +6582,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.be.undefined;
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -6593,9 +6594,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.be.undefined;
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -6603,18 +6604,18 @@ describe("monad", function () {
             lq.monad.zipWithM_(f, ["csuc", "csuc"], ["foo", "bar"]).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -6625,13 +6626,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -6640,12 +6641,12 @@ describe("monad", function () {
             lq.monad.zipWithM_(f, ["csuc", "esuc"], ["foo", "bar"]).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6654,7 +6655,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -6665,7 +6666,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6674,7 +6675,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -6683,18 +6684,18 @@ describe("monad", function () {
             lq.monad.zipWithM_(f, ["esuc", "csuc"], ["foo", "bar"]).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -6705,13 +6706,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -6722,12 +6723,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6736,7 +6737,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -6747,7 +6748,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6756,7 +6757,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -6765,13 +6766,13 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -6783,13 +6784,13 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
             });
@@ -6838,9 +6839,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal("say");
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.equal("say");
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -6848,18 +6849,18 @@ describe("monad", function () {
             lq.monad.foldM(f, "say", ["foo", "foo"]).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal("say foo foo");
-                    State.equals(
+                    expect(value).to.equal("say foo foo");
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -6870,13 +6871,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -6885,12 +6886,12 @@ describe("monad", function () {
             lq.monad.foldM(f, "say", ["foo", "baz"]).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal("say foo baz");
-                    State.equals(
+                    expect(value).to.equal("say foo baz");
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6899,7 +6900,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -6910,7 +6911,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6919,7 +6920,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -6928,18 +6929,18 @@ describe("monad", function () {
             lq.monad.foldM(f, "say", ["baz", "foo"]).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal("say baz foo");
-                    State.equals(
+                    expect(value).to.equal("say baz foo");
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -6950,13 +6951,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -6967,12 +6968,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal("say baz baz");
-                    State.equals(
+                    expect(value).to.equal("say baz baz");
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -6981,7 +6982,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -6992,7 +6993,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -7001,7 +7002,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -7010,13 +7011,13 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -7028,13 +7029,13 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
             });
@@ -7083,9 +7084,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(state, initState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.be.undefined;
+                    expect(State.equals(state, initState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -7093,18 +7094,18 @@ describe("monad", function () {
             lq.monad.foldM_(f, "say", ["foo", "foo"]).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -7115,13 +7116,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -7130,12 +7131,12 @@ describe("monad", function () {
             lq.monad.foldM_(f, "say", ["foo", "baz"]).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -7144,7 +7145,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -7155,7 +7156,7 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -7164,7 +7165,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -7173,18 +7174,18 @@ describe("monad", function () {
             lq.monad.foldM_(f, "say", ["baz", "foo"]).run(
                 initState,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -7195,13 +7196,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -7212,12 +7213,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -7226,7 +7227,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -7237,7 +7238,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -7246,7 +7247,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -7255,13 +7256,13 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -7273,13 +7274,13 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     }
                 );
             });
@@ -7334,9 +7335,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
-                    State.equals(state, new State("abcd", SourcePos.init("test"), "some")).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.deep.equal([]);
+                    expect(State.equals(state, new State("abcd", SourcePos.init("test"), "some"))).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -7344,18 +7345,18 @@ describe("monad", function () {
             lq.monad.replicateM(2, p).run(
                 new State("aaabcd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["a1", "a2"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["a1", "a2"]);
+                    expect(State.equals(
                         state,
                         new State("abcd", new SourcePos("test", 1, 3), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 3),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -7366,13 +7367,13 @@ describe("monad", function () {
                 new State("ababcd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 3),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -7381,12 +7382,12 @@ describe("monad", function () {
             lq.monad.replicateM(2, p).run(
                 new State("acabcd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["a1", "c2"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["a1", "c2"]);
+                    expect(State.equals(
                         state,
                         new State("cabcd", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -7395,7 +7396,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -7406,7 +7407,7 @@ describe("monad", function () {
                 new State("adabcd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -7415,7 +7416,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -7426,12 +7427,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["c1", "c1"]).should.be.ok;
-                    State.equals(
+                    expect(value).to.deep.equal(["c1", "c1"]);
+                    expect(State.equals(
                         state,
                         new State("cabcd", new SourcePos("test", 1, 1), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 1),
@@ -7440,7 +7441,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -7449,13 +7450,13 @@ describe("monad", function () {
                 new State("babcd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -7467,13 +7468,13 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 1),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
         });
@@ -7527,9 +7528,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(state, new State("abcd", SourcePos.init("test"), "some")).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.be.undefined;
+                    expect(State.equals(state, new State("abcd", SourcePos.init("test"), "some"))).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -7537,18 +7538,18 @@ describe("monad", function () {
             lq.monad.replicateM_(2, p).run(
                 new State("aaabcd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("abcd", new SourcePos("test", 1, 3), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 3),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -7559,13 +7560,13 @@ describe("monad", function () {
                 new State("ababcd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 3),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -7574,12 +7575,12 @@ describe("monad", function () {
             lq.monad.replicateM_(2, p).run(
                 new State("acabcd", SourcePos.init("test"), "some"),
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("cabcd", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -7588,7 +7589,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -7599,7 +7600,7 @@ describe("monad", function () {
                 new State("adabcd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -7608,7 +7609,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -7619,12 +7620,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
+                    expect(value).to.be.undefined;
+                    expect(State.equals(
                         state,
                         new State("cabcd", new SourcePos("test", 1, 1), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 1),
@@ -7633,7 +7634,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -7642,13 +7643,13 @@ describe("monad", function () {
                 new State("babcd", SourcePos.init("test"), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -7660,13 +7661,13 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 1),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
         });
@@ -7679,9 +7680,9 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(state, new State("abc", SourcePos.init("test"), "some")).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.be.undefined;
+                    expect(State.equals(state, new State("abc", SourcePos.init("test"), "some"))).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -7694,7 +7695,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 }
             );
         });
@@ -7742,7 +7743,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 }
             );
 
@@ -7750,18 +7751,18 @@ describe("monad", function () {
                 lq.monad.msum([acsuc, a2]).run(
                     initState,
                     function (value, state, error) {
-                        value.should.equal("foo");
-                        State.equals(
+                        expect(value).to.equal("foo");
+                        expect(State.equals(
                             state,
                             new State("def", new SourcePos("test", 1, 2), "none")
-                        ).should.be.ok;
-                        ParseError.equals(
+                        )).to.be.true;
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError,
@@ -7772,13 +7773,13 @@ describe("monad", function () {
                     initState,
                     throwError,
                     function (error) {
-                        ParseError.equals(
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError,
                     throwError
@@ -7789,18 +7790,18 @@ describe("monad", function () {
                     throwError,
                     throwError,
                     function (value, state, error) {
-                        value.should.equal("bar");
-                        State.equals(
+                        expect(value).to.equal("bar");
+                        expect(State.equals(
                             state,
                             new State("def", new SourcePos("test", 1, 2), "none")
-                        ).should.be.ok;
-                        ParseError.equals(
+                        )).to.be.true;
+                        expect(ParseError.equals(
                             error,
                             new ParseError(
                                 new SourcePos("test", 1, 2),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
                             )
-                        ).should.be.ok;
+                        )).to.be.true;
                     },
                     throwError
                 );
@@ -7809,18 +7810,18 @@ describe("monad", function () {
             lq.monad.msum([aeerr, acsuc]).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal("foo");
-                    State.equals(
+                    expect(value).to.equal("foo");
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -7831,13 +7832,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -7848,12 +7849,12 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal("bar");
-                    State.equals(
+                    expect(value).to.equal("bar");
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -7862,7 +7863,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -7873,7 +7874,7 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
@@ -7882,7 +7883,7 @@ describe("monad", function () {
                                 new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
                             ]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
         });
@@ -7949,18 +7950,18 @@ describe("monad", function () {
             lq.monad.mfilter(f, acsucf).run(
                 initState,
                 function (value, state, error) {
-                    value.should.equal("foo");
-                    State.equals(
+                    expect(value).to.equal("foo");
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_foo")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -7971,13 +7972,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -7987,13 +7988,13 @@ describe("monad", function () {
                 initState,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError,
                 throwError
@@ -8004,18 +8005,18 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal("foo");
-                    State.equals(
+                    expect(value).to.equal("foo");
+                    expect(State.equals(
                         state,
                         new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
+                    )).to.be.true;
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_foo")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 },
                 throwError
             );
@@ -8026,13 +8027,13 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc_bar")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
 
@@ -8042,13 +8043,13 @@ describe("monad", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
+                    expect(ParseError.equals(
                         error,
                         new ParseError(
                             new SourcePos("test", 1, 2),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                         )
-                    ).should.be.ok;
+                    )).to.be.true;
                 }
             );
         });

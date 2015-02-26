@@ -3,15 +3,14 @@
  * copyright (c) 2014 Susisu
  */
 
-var should = require("should");
+var chai   = require("chai"),
+    expect = chai.expect;
 
 var lq = Object.freeze({
-    "array" : require("../lib/array"),
     "error" : require("../lib/error"),
     "pos"   : require("../lib/pos"),
     "prim"  : require("../lib/prim"),
     "util"  : require("../lib/util"),
-    "string": require("../lib/string")
 });
 
 
@@ -28,17 +27,17 @@ describe("prim", function () {
     describe("State", function () {
         it("should have fields 'input', 'position' and 'userState'", function () {
             var state = new State("foo", new SourcePos("test", 1, 2), {});
-            state.hasOwnProperty("input").should.be.ok;
-            state.hasOwnProperty("position").should.be.ok;
-            state.hasOwnProperty("userState").should.be.ok;
+            expect(state).to.have.property("input");
+            expect(state).to.have.property("position").that.is.instanceOf(SourcePos);
+            expect(state).to.have.property("userState");
         });
 
         describe("coustructor(input, position, userState)", function () {
             it("should create a new State object that represents state of parser", function () {
                 var state = new State("foo", new SourcePos("test", 1, 2), "none");
-                state.input.should.equal("foo");
-                SourcePos.equals(state.position, new SourcePos("test", 1, 2)).should.be.ok;
-                state.userState.should.equal("none");
+                expect(state.input).to.equal("foo");
+                expect(SourcePos.equals(state.position, new SourcePos("test", 1, 2))).to.be.true;
+                expect(state.userState).to.equal("none");
             });
         });
 
@@ -46,29 +45,29 @@ describe("prim", function () {
             it("should return true when 'stateA' and 'stateB' represent the same state", function () {
                 var stateA = new State("foo", new SourcePos("test", 1, 2), "none");
                 var stateB = new State("foo", new SourcePos("test", 1, 2), "none");
-                State.equals(stateA, stateB).should.be.ok;
+                expect(State.equals(stateA, stateB)).to.be.true;
 
                 var stateC = new State(["f", "o", "o"], new SourcePos("test", 1, 2), "none");
                 var stateD = new State(["f", "o", "o"], new SourcePos("test", 1, 2), "none");
-                State.equals(stateC, stateD, lq.util.ArrayUtil.equals).should.be.ok;
+                expect(State.equals(stateC, stateD, lq.util.ArrayUtil.equals)).to.be.true;
 
                 var stateE = new State("foo", new SourcePos("test", 1, 2), [1, 2, 3]);
                 var stateF = new State("foo", new SourcePos("test", 1, 2), [1, 2, 3]);
-                State.equals(stateE, stateF, undefined, lq.util.ArrayUtil.equals).should.be.ok;
+                expect(State.equals(stateE, stateF, undefined, lq.util.ArrayUtil.equals)).to.be.true;
             });
 
             it("should return false when 'stateA' and 'stateB' represent different states", function () {
                 var stateA = new State("foo", new SourcePos("test", 1, 2), "none");
                 var stateB = new State("bar", new SourcePos("test", 1, 2), "none");
-                State.equals(stateA, stateB).should.not.be.ok;
+                expect(State.equals(stateA, stateB)).to.be.false;
 
                 var stateC = new State("foo", new SourcePos("test", 1, 2), "none");
                 var stateD = new State("foo", new SourcePos("test", 3, 4), "none");
-                State.equals(stateC, stateD).should.not.be.ok;
+                expect(State.equals(stateC, stateD)).to.be.false;
 
                 var stateE = new State("foo", new SourcePos("test", 1, 2), "bar");
                 var stateF = new State("foo", new SourcePos("test", 3, 4), "baz");
-                State.equals(stateE, stateF).should.not.be.ok;
+                expect(State.equals(stateE, stateF)).to.be.false;
             });
         });
 
@@ -76,10 +75,10 @@ describe("prim", function () {
             it("should return a copy of the state, the input of which is set to the specified input", function () {
                 var state = new State("foo", new SourcePos("test", 1, 2), "none");
                 var copy = state.setInput("bar");
-                (state === copy).should.not.be.ok;
-                copy.input.should.equal("bar");
-                SourcePos.equals(state.position, copy.position).should.be.ok;
-                copy.userState.should.equal(state.userState);
+                expect(copy).not.to.equal(state);
+                expect(copy.input).to.equal("bar");
+                expect(SourcePos.equals(copy.position, state.position)).to.be.true;
+                expect(copy.userState).to.equal(state.userState);
             });
         });
 
@@ -87,10 +86,10 @@ describe("prim", function () {
             it("should return a copy of the state, the position of which is set to the specified position", function () {
                 var state = new State("foo", new SourcePos("test", 1, 2), "none");
                 var copy = state.setPosition(new SourcePos("test", 3, 4));
-                (state === copy).should.not.be.ok;
-                copy.input.should.equal(state.input);
-                SourcePos.equals(new SourcePos("test", 3, 4), copy.position).should.be.ok;
-                copy.userState.should.equal(state.userState);
+                expect(copy).not.to.equal(state);
+                expect(copy.input).to.equal(state.input);
+                expect(SourcePos.equals(copy.position, new SourcePos("test", 3, 4))).to.be.true;
+                expect(copy.userState).to.equal(state.userState);
             });
         });
 
@@ -98,10 +97,10 @@ describe("prim", function () {
             it("should return a copy of the state, the user state of which is set to the specified user state", function () {
                 var state = new State("foo", new SourcePos("test", 1, 2), "none");
                 var copy = state.setUserState("some");
-                (state === copy).should.not.be.ok;
-                copy.input.should.equal(state.input);
-                SourcePos.equals(state.position, copy.position).should.be.ok;
-                copy.userState.should.equal("some");
+                expect(copy).not.to.equal(state);
+                expect(copy.input).to.equal(state.input);
+                expect(SourcePos.equals(copy.position, state.position)).to.be.true;
+                expect(copy.userState).to.equal("some");
             });
         });
     });
@@ -116,11 +115,11 @@ describe("prim", function () {
                     new ErrorMessage(ErrorMessageType.EXPECT, "def")
                 ])
             );
-            res.hasOwnProperty("consumed").should.be.ok;
-            res.hasOwnProperty("succeeded").should.be.ok;
-            res.hasOwnProperty("value").should.be.ok;
-            res.hasOwnProperty("state").should.be.ok;
-            res.hasOwnProperty("error").should.be.ok;
+            expect(res).to.have.property("consumed").that.is.a("boolean");
+            expect(res).to.have.property("succeeded").that.is.a("boolean");
+            expect(res).to.have.property("value");
+            expect(res).to.have.property("state");
+            expect(res).to.have.property("error");
         });
 
         describe("coustructor(consumed, succeeded, value, state, error)", function () {
@@ -133,16 +132,18 @@ describe("prim", function () {
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
                     ])
                 );
-                res.consumed.should.equal(true);
-                res.succeeded.should.equal(true);
-                res.value.should.equal("foo");
-                State.equals(res.state, new State("some", pos, "none")).should.be.ok;
-                ParseError.equals(res.error,
-                    new ParseError(pos, [
-                        new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
-                        new ErrorMessage(ErrorMessageType.EXPECT, "def")
-                    ])
-                ).should.be.ok;
+                expect(res.consumed).to.be.true;
+                expect(res.succeeded).to.be.true;
+                expect(res.value).to.equal("foo");
+                expect(State.equals(res.state, new State("some", pos, "none"))).to.be.true;
+                expect(
+                    ParseError.equals(res.error,
+                        new ParseError(pos, [
+                            new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
+                            new ErrorMessage(ErrorMessageType.EXPECT, "def")
+                        ])
+                    )
+                ).to.be.true;
             });
         });
 
@@ -164,7 +165,7 @@ describe("prim", function () {
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
                     ])
                 );
-                Result.equals(resA, resB).should.be.ok;
+                expect(Result.equals(resA, resB)).to.be.true;
 
                 var posC = new SourcePos("test", 1, 2);
                 var resC = new Result(true, true, ["f", "o", "o"],
@@ -182,7 +183,7 @@ describe("prim", function () {
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
                     ])
                 );
-                Result.equals(resC, resD, lq.util.ArrayUtil.equals).should.be.ok;
+                expect(Result.equals(resC, resD, lq.util.ArrayUtil.equals)).to.be.true;
             });
 
             it("should return false when 'resultA' and 'resultB' represent different results", function () {
@@ -202,7 +203,7 @@ describe("prim", function () {
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
                     ])
                 );
-                Result.equals(resA, resB).should.not.be.ok;
+                expect(Result.equals(resA, resB)).to.be.false;
 
                 var posC = new SourcePos("test", 1, 2);
                 var resC = new Result(true, true, "foo",
@@ -220,7 +221,7 @@ describe("prim", function () {
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
                     ])
                 );
-                Result.equals(resC, resD).should.not.be.ok;
+                expect(Result.equals(resC, resD)).to.be.false;
 
                 var posE = new SourcePos("test", 1, 2);
                 var resE = new Result(true, true, "foo",
@@ -238,7 +239,7 @@ describe("prim", function () {
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
                     ])
                 );
-                Result.equals(resE, resF).should.not.be.ok;
+                expect(Result.equals(resE, resF)).to.be.false;
 
                 var posG = new SourcePos("test", 1, 2);
                 var resG = new Result(true, true, "foo",
@@ -256,7 +257,7 @@ describe("prim", function () {
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
                     ])
                 );
-                Result.equals(resG, resH).should.not.be.ok;
+                expect(Result.equals(resG, resH)).to.be.false;
 
                 var posI = new SourcePos("test", 1, 2);
                 var resI = new Result(true, true, "foo",
@@ -274,7 +275,7 @@ describe("prim", function () {
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
                     ])
                 );
-                Result.equals(resI, resJ).should.not.be.ok;
+                expect(Result.equals(resI, resJ)).to.be.false;
             });
         });
     });
@@ -310,9 +311,11 @@ describe("prim", function () {
     describe("Parser", function () {
         describe("constructor(parserFunc)", function () {
             it("should create a new Parser object", function () {
-                var parser = new Parser(function (state, csuc, cerr, esuc, eerr) {
+                expect(function () {
+                    var parser = new Parser(function (state, csuc, cerr, esuc, eerr) {
                     /* parser */
-                });
+                    });
+                }).not.to.throw(Error);
             });
         });
 
@@ -324,9 +327,9 @@ describe("prim", function () {
                 alwaysCSuc("foo", new State("abc", posA, "none"), new ParseError(posA, [])).run(
                     new State("def", posB, "some"),
                     function (value, state, error) {
-                        value.should.equal("foo");
-                        State.equals(state, new State("abc", posA, "none")).should.be.ok;
-                        ParseError.equals(error, new ParseError(posA, [])).should.be.ok;
+                        expect(value).to.equal("foo");
+                        expect(State.equals(state, new State("abc", posA, "none"))).to.be.true;
+                        expect(ParseError.equals(error, new ParseError(posA, []))).to.be.true;
                     },
                     throwError,
                     throwError,
@@ -337,7 +340,7 @@ describe("prim", function () {
                     new State("def", posB, "some"),
                     throwError,
                     function (error) {
-                        ParseError.equals(error, new ParseError(posA, [])).should.be.ok;
+                        expect(ParseError.equals(error, new ParseError(posA, []))).to.be.true;
                     },
                     throwError,
                     throwError
@@ -348,9 +351,9 @@ describe("prim", function () {
                     throwError,
                     throwError,
                     function (value, state, error) {
-                        value.should.equal("foo");
-                        State.equals(state, new State("abc", posA, "none")).should.be.ok;
-                        ParseError.equals(error, new ParseError(posA, [])).should.be.ok;
+                        expect(value).to.equal("foo");
+                        expect(State.equals(state, new State("abc", posA, "none"))).to.be.true;
+                        expect(ParseError.equals(error, new ParseError(posA, []))).to.be.true;
                     },
                     throwError
                 );
@@ -361,7 +364,7 @@ describe("prim", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, new ParseError(posA, [])).should.be.ok;
+                        expect(ParseError.equals(error, new ParseError(posA, []))).to.be.true;
                     }
                 );
             });
@@ -374,31 +377,39 @@ describe("prim", function () {
 
                 var resCSuc = alwaysCSuc("foo", new State("abc", posA, "none"), new ParseError(posA, []))
                     .parse(new State("def", posB, "some"));
-                Result.equals(
-                    resCSuc,
-                    new Result(true, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        resCSuc,
+                        new Result(true, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
+                    )
+                ).to.be.true;
 
                 var resCErr = alwaysCErr(new ParseError(posA, []))
                     .parse(new State("def", posB, "some"));
-                Result.equals(
-                    resCErr,
-                    new Result(true, false, undefined, undefined, new ParseError(posA, []))
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        resCErr,
+                        new Result(true, false, undefined, undefined, new ParseError(posA, []))
+                    )
+                ).to.be.true;
 
                 var resESuc = alwaysESuc("foo", new State("abc", posA, "none"), new ParseError(posA, []))
                     .parse(new State("def", posB, "some"));
-                Result.equals(
-                    resESuc,
-                    new Result(false, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        resESuc,
+                        new Result(false, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
+                    )
+                ).to.be.true;
 
                 var resEErr = alwaysEErr(new ParseError(posA, []))
                     .parse(new State("def", posB, "some"));
-                Result.equals(
-                    resEErr,
-                    new Result(false, false, undefined, undefined, new ParseError(posA, []))
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        resEErr,
+                        new Result(false, false, undefined, undefined, new ParseError(posA, []))
+                    )
+                ).to.be.true;
             });
         });
     });
@@ -406,9 +417,11 @@ describe("prim", function () {
     describe("LazyParser", function () {
         describe("constructor(generator)", function () {
             it("should create a new LazyParser object that contains a parser generated by 'generator'", function () {
-                var parser = new LazyParser(function () {
-                    /* return a parser */
-                });
+                expect(function () {
+                    var parser = new LazyParser(function () {
+                        /* return a parser */
+                    });
+                }).not.to.throw(Error);
             });
         });
 
@@ -425,10 +438,12 @@ describe("prim", function () {
                 parserA.init();
                 t = alwaysCErr(new ParseError(posA, []));
                 var res = parserA.parse(new State("def", posB, "some"));
-                Result.equals(
-                    res,
-                    new Result(true, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        res,
+                        new Result(true, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
+                    )
+                ).to.be.true;
 
                 var u;
                 var parserB = new LazyParser(function () {
@@ -438,10 +453,12 @@ describe("prim", function () {
                 u = alwaysCErr(new ParseError(posA, []));
                 parserB.init();
                 var res = parserB.parse(new State("def", posB, "some"));
-                Result.equals(
-                    res,
-                    new Result(true, false, undefined, undefined, new ParseError(posA, []))
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        res,
+                        new Result(true, false, undefined, undefined, new ParseError(posA, []))
+                    )
+                ).to.be.true;
             });
         });
 
@@ -456,9 +473,9 @@ describe("prim", function () {
                 lazyCSuc.run(
                     new State("def", posB, "some"),
                     function (value, state, error) {
-                        value.should.equal("foo");
-                        State.equals(state, new State("abc", posA, "none")).should.be.ok;
-                        ParseError.equals(error, new ParseError(posA, [])).should.be.ok;
+                        expect(value).to.equal("foo");
+                        expect(State.equals(state, new State("abc", posA, "none"))).to.be.true;
+                        expect(ParseError.equals(error, new ParseError(posA, []))).to.be.true;
                     },
                     throwError,
                     throwError,
@@ -472,7 +489,7 @@ describe("prim", function () {
                     new State("def", posB, "some"),
                     throwError,
                     function (error) {
-                        ParseError.equals(error, new ParseError(posA, [])).should.be.ok;
+                        expect(ParseError.equals(error, new ParseError(posA, []))).to.be.true;
                     },
                     throwError,
                     throwError
@@ -486,9 +503,9 @@ describe("prim", function () {
                     throwError,
                     throwError,
                     function (value, state, error) {
-                        value.should.equal("foo");
-                        State.equals(state, new State("abc", posA, "none")).should.be.ok;
-                        ParseError.equals(error, new ParseError(posA, [])).should.be.ok;
+                        expect(value).to.equal("foo");
+                        expect(State.equals(state, new State("abc", posA, "none"))).to.be.true;
+                        expect(ParseError.equals(error, new ParseError(posA, []))).to.be.true;
                     },
                     throwError
                 );
@@ -502,7 +519,7 @@ describe("prim", function () {
                     throwError,
                     throwError,
                     function (error) {
-                        ParseError.equals(error, new ParseError(posA, [])).should.be.ok;
+                        expect(ParseError.equals(error, new ParseError(posA, []))).to.be.true;
                     }
                 );
             });
@@ -517,37 +534,45 @@ describe("prim", function () {
                     return alwaysCSuc("foo", new State("abc", posA, "none"), new ParseError(posA, []));
                 });
                 var resCSuc = lazyCSuc.parse(new State("def", posB, "some"));
-                Result.equals(
-                    resCSuc,
-                    new Result(true, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        resCSuc,
+                        new Result(true, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
+                    )
+                ).to.be.true;
 
                 var lazyCErr = new LazyParser(function () {
                     return alwaysCErr(new ParseError(posA, []));
                 });
                 var resCErr = lazyCErr.parse(new State("def", posB, "some"));
-                Result.equals(
-                    resCErr,
-                    new Result(true, false, undefined, undefined, new ParseError(posA, []))
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        resCErr,
+                        new Result(true, false, undefined, undefined, new ParseError(posA, []))
+                    )
+                ).to.be.true;
 
                 var lazyESuc = new LazyParser(function () {
                     return alwaysESuc("foo", new State("abc", posA, "none"), new ParseError(posA, []));
                 });
                 var resESuc = lazyESuc.parse(new State("def", posB, "some"));
-                Result.equals(
-                    resESuc,
-                    new Result(false, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        resESuc,
+                        new Result(false, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
+                    )
+                ).to.be.true;
 
                 var lazyEErr = new LazyParser(function () {
                     return alwaysEErr(new ParseError(posA, []));
                 });
                 var resEErr = lazyEErr.parse(new State("def", posB, "some"));
-                Result.equals(
-                    resEErr,
-                    new Result(false, false, undefined, undefined, new ParseError(posA, []))
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        resEErr,
+                        new Result(false, false, undefined, undefined, new ParseError(posA, []))
+                    )
+                ).to.be.true;
             });
         });
     });
@@ -559,19 +584,21 @@ describe("prim", function () {
                 return esuc("foo", state, ParseError.unknown(state.position));
             });
             var resSuc = lq.prim.parse(suc, "test", "abc", "none");
-            resSuc.succeeded.should.be.ok;
-            resSuc.value.should.equal("foo");
+            expect(resSuc.succeeded).to.be.true;
+            expect(resSuc.value).to.equal("foo");
 
             var err = new Parser(function (state, csuc, cerr, esuc, eerr) {
                 State.equals(state, new State("abc", new SourcePos("test", 1, 1), "none"));
                 return eerr(new ParseError(state.position, [new ErrorMessage(ErrorMessageType.UNEXPECT, "bar")]));
             });
             var resErr = lq.prim.parse(err, "test", "abc", "none");
-            resErr.succeeded.should.not.be.ok;
-            ParseError.equals(
-                resErr.error,
-                new ParseError(new SourcePos("test", 1, 1), [new ErrorMessage(ErrorMessageType.UNEXPECT, "bar")])
-            ).should.be.ok;
+            expect(resErr.succeeded).to.be.false;
+            expect(
+                ParseError.equals(
+                    resErr.error,
+                    new ParseError(new SourcePos("test", 1, 1), [new ErrorMessage(ErrorMessageType.UNEXPECT, "bar")])
+                )
+            ).to.be.true;
         });
     });
 
@@ -586,9 +613,9 @@ describe("prim", function () {
             lq.prim.fmap(toUpperCase)(alwaysCSuc("foo", stateA, ParseError.unknown(pos))).run(
                 stateB,
                 function (value, newState, error) {
-                    value.should.equal("FOO");
-                    State.equals(stateA, newState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(pos)).should.be.ok;
+                    expect(value).to.equal("FOO");
+                    expect(State.equals(stateA, newState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(pos))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -599,7 +626,7 @@ describe("prim", function () {
                 stateB,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.unknown(pos)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.unknown(pos))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -610,9 +637,9 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, newState, error) {
-                    value.should.equal("FOO");
-                    State.equals(stateA, newState).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(pos)).should.be.ok;
+                    expect(value).to.equal("FOO");
+                    expect(State.equals(stateA, newState)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(pos))).to.be.true;
                 },
                 throwError
             );
@@ -623,7 +650,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.unknown(pos)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.unknown(pos))).to.be.true;
                 }
             );
         });
@@ -662,25 +689,33 @@ describe("prim", function () {
             var id = function (x) { return x; };
             var fid = lq.prim.fmap(id);
 
-            Result.equals(
-                id(acsuc).parse(initState),
-                fid(acsuc).parse(initState)
-            ).should.be.ok;
+            expect(
+                Result.equals(
+                    id(acsuc).parse(initState),
+                    fid(acsuc).parse(initState)
+                )
+            ).to.be.true;
 
-            Result.equals(
-                id(acerr).parse(initState),
-                fid(acerr).parse(initState)
-            ).should.be.ok;
+            expect(
+                Result.equals(
+                    id(acerr).parse(initState),
+                    fid(acerr).parse(initState)
+                )
+            ).to.be.true;
 
-            Result.equals(
-                id(aesuc).parse(initState),
-                fid(aesuc).parse(initState)
-            ).should.be.ok;
+            expect(
+                Result.equals(
+                    id(aesuc).parse(initState),
+                    fid(aesuc).parse(initState)
+                )
+            ).to.be.true;
 
-            Result.equals(
-                id(aeerr).parse(initState),
-                fid(aeerr).parse(initState)
-            ).should.be.ok;
+            expect(
+                Result.equals(
+                    id(aeerr).parse(initState),
+                    fid(aeerr).parse(initState)
+                )
+            ).to.be.true;
 
             function f (str) {
                 return str.toUpperCase();
@@ -699,25 +734,33 @@ describe("prim", function () {
             var f1 = lq.prim.fmap(compose(f, g));
             var f2 = compose(lq.prim.fmap(f), lq.prim.fmap(g));
 
-            Result.equals(
-                f1(acsuc).parse(initState),
-                f2(acsuc).parse(initState)
-            ).should.be.ok;
+            expect(
+                Result.equals(
+                    f1(acsuc).parse(initState),
+                    f2(acsuc).parse(initState)
+                )
+            ).to.be.true;
 
-            Result.equals(
-                f1(acerr).parse(initState),
-                f2(acerr).parse(initState)
-            ).should.be.ok;
+            expect(
+                Result.equals(
+                    f1(acerr).parse(initState),
+                    f2(acerr).parse(initState)
+                )
+            ).to.be.true;
 
-            Result.equals(
-                f1(aesuc).parse(initState),
-                f2(aesuc).parse(initState)
-            ).should.be.ok;
+            expect(
+                Result.equals(
+                    f1(aesuc).parse(initState),
+                    f2(aesuc).parse(initState)
+                )
+            ).to.be.true;
 
-            Result.equals(
-                f1(aeerr).parse(initState),
-                f2(aeerr).parse(initState)
-            ).should.be.ok;
+            expect(
+                Result.equals(
+                    f1(aeerr).parse(initState),
+                    f2(aeerr).parse(initState)
+                )
+            ).to.be.true;
         });
     });
 
@@ -728,9 +771,9 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal("foo");
-                    State.equals(state, new State("abc", new SourcePos("test", 1, 2), "none")).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2))).should.be.ok;
+                    expect(value).to.equal("foo");
+                    expect(State.equals(state, new State("abc", new SourcePos("test", 1, 2), "none"))).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2)))).to.be.true;
                 },
                 throwError
             );
@@ -756,9 +799,9 @@ describe("prim", function () {
             lq.prim.ap(alwaysCSuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueB.toUpperCase());
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueB.toUpperCase());
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -769,7 +812,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -778,9 +821,9 @@ describe("prim", function () {
             lq.prim.ap(alwaysCSuc(valueA, stateA, errorA), alwaysESuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueB.toUpperCase());
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(value).to.equal(valueB.toUpperCase());
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -791,7 +834,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -800,9 +843,9 @@ describe("prim", function () {
             lq.prim.ap(alwaysESuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueB.toUpperCase());
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueB.toUpperCase());
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -813,7 +856,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -824,9 +867,9 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueB.toUpperCase());
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(value).to.equal(valueB.toUpperCase());
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError
             );
@@ -837,7 +880,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 }
             );
         });
@@ -847,7 +890,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -857,7 +900,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -867,7 +910,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -877,7 +920,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -889,7 +932,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
@@ -899,7 +942,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
@@ -909,7 +952,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
@@ -919,7 +962,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
         });
@@ -974,10 +1017,12 @@ describe("prim", function () {
             var id = function (x) { return x; };
 
             [acsucv, acerr, aesucv, aeerr].forEach(function (v) {
-                Result.equals(
-                    lq.prim.ap(lq.prim.pure(id), v).parse(initState),
-                    v.parse(initState)
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        lq.prim.ap(lq.prim.pure(id), v).parse(initState),
+                        v.parse(initState)
+                    )
+                ).to.be.true;
             });
 
             var compose = function (f) {
@@ -991,19 +1036,21 @@ describe("prim", function () {
             [acsucf, acerr, aesucf, aeerr].forEach(function (u) {
                 [acsucf, acerr, aesucf, aeerr].forEach(function (v) {
                     [acsucv, acerr, aesucv, aeerr].forEach(function (w) {
-                        Result.equals(
-                            lq.prim.ap(
+                        expect(
+                            Result.equals(
                                 lq.prim.ap(
                                     lq.prim.ap(
-                                        lq.prim.pure(compose),
-                                        u
+                                        lq.prim.ap(
+                                            lq.prim.pure(compose),
+                                            u
+                                        ),
+                                        v
                                     ),
-                                    v
-                                ),
-                                w
-                            ).parse(initState),
-                            lq.prim.ap(u, lq.prim.ap(v, w)).parse(initState)
-                        ).should.be.ok;
+                                    w
+                                ).parse(initState),
+                                lq.prim.ap(u, lq.prim.ap(v, w)).parse(initState)
+                            )
+                        ).to.be.true;
                     });
                 });
             });
@@ -1011,10 +1058,12 @@ describe("prim", function () {
             var f = function (str) { str.toUpperCase(); };
             var x = "foo";
 
-            Result.equals(
-                lq.prim.ap(lq.prim.pure(f), lq.prim.pure(x)).parse(initState),
-                lq.prim.pure(f(x)).parse(initState)
-            ).should.be.ok;
+            expect(
+                Result.equals(
+                    lq.prim.ap(lq.prim.pure(f), lq.prim.pure(x)).parse(initState),
+                    lq.prim.pure(f(x)).parse(initState)
+                )
+            ).to.be.true;
 
             var y = "bar";
             var fapply = function (x) {
@@ -1024,10 +1073,12 @@ describe("prim", function () {
             };
 
             [acsucf, acerr, aesucf, aeerr].forEach(function (u) {
-                Result.equals(
-                    lq.prim.ap(u, lq.prim.pure(y)).parse(initState),
-                    lq.prim.ap(lq.prim.pure(fapply(y)), u).parse(initState)
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        lq.prim.ap(u, lq.prim.pure(y)).parse(initState),
+                        lq.prim.ap(lq.prim.pure(fapply(y)), u).parse(initState)
+                    )
+                ).to.be.true;
             });
         });
     });
@@ -1051,9 +1102,9 @@ describe("prim", function () {
             lq.prim.left(alwaysCSuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1064,7 +1115,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1073,9 +1124,9 @@ describe("prim", function () {
             lq.prim.left(alwaysCSuc(valueA, stateA, errorA), alwaysESuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1086,7 +1137,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1095,9 +1146,9 @@ describe("prim", function () {
             lq.prim.left(alwaysESuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1108,7 +1159,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1119,9 +1170,9 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError
             );
@@ -1132,7 +1183,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 }
             );
         });
@@ -1142,7 +1193,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1152,7 +1203,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1162,7 +1213,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1172,7 +1223,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1184,7 +1235,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
@@ -1194,7 +1245,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
@@ -1204,7 +1255,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
@@ -1214,7 +1265,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
         });
@@ -1239,9 +1290,9 @@ describe("prim", function () {
             lq.prim.right(alwaysCSuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1252,7 +1303,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1261,9 +1312,9 @@ describe("prim", function () {
             lq.prim.right(alwaysCSuc(valueA, stateA, errorA), alwaysESuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1274,7 +1325,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1283,9 +1334,9 @@ describe("prim", function () {
             lq.prim.right(alwaysESuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1296,7 +1347,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1307,9 +1358,9 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError
             );
@@ -1320,7 +1371,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 }
             );
         });
@@ -1330,7 +1381,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1340,7 +1391,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1350,7 +1401,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1360,7 +1411,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1372,7 +1423,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
@@ -1382,7 +1433,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
@@ -1392,7 +1443,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
@@ -1402,7 +1453,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
         });
@@ -1425,14 +1476,14 @@ describe("prim", function () {
         );
         it("should return a parser that runs 'parserA', then applies the value to 'func' and run the returned parser when 'parserA' succeeded", function () {
             lq.prim.bind(alwaysCSuc(valueA, stateA, errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysCSuc(valueB, stateB, errorB);
             }).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1440,27 +1491,27 @@ describe("prim", function () {
             );
 
             lq.prim.bind(alwaysCSuc(valueA, stateA, errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysCErr(errorB);
             }).run(
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError
             );
 
             lq.prim.bind(alwaysCSuc(valueA, stateA, errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysESuc(valueB, stateB, errorB);
             }).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1468,27 +1519,27 @@ describe("prim", function () {
             );
 
             lq.prim.bind(alwaysCSuc(valueA, stateA, errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysEErr(errorB);
             }).run(
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError,
                 throwError
             );
 
             lq.prim.bind(alwaysESuc(valueA, stateA, errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysCSuc(valueB, stateB, errorB);
             }).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1496,35 +1547,35 @@ describe("prim", function () {
             );
 
             lq.prim.bind(alwaysESuc(valueA, stateA, errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysCErr(errorB);
             }).run(
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError
             );
 
             lq.prim.bind(alwaysESuc(valueA, stateA, errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysESuc(valueB, stateB, errorB);
             }).run(
                 SourcePos.init("test"),
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError
             );
 
             lq.prim.bind(alwaysESuc(valueA, stateA, errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysEErr(errorB);
             }).run(
                 SourcePos.init("test"),
@@ -1532,66 +1583,66 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 }
             );
         });
 
         it("should return a parser that fails when 'parserA' failed", function () {
             lq.prim.bind(alwaysCErr(errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysCSuc(valueB, stateB, errorB);
             }).run(
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
             );
 
             lq.prim.bind(alwaysCErr(errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysCErr(errorB);
             }).run(
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
             );
 
             lq.prim.bind(alwaysCErr(errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysESuc(valueB, stateB, errorB);
             }).run(
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
             );
 
             lq.prim.bind(alwaysCErr(errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysEErr(errorB);
             }).run(
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
             );
 
             lq.prim.bind(alwaysEErr(errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysCSuc(valueB, stateB, errorB);
             }).run(
                 SourcePos.init("test"),
@@ -1599,12 +1650,12 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
             lq.prim.bind(alwaysEErr(errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysCErr(errorB);
             }).run(
                 SourcePos.init("test"),
@@ -1612,12 +1663,12 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
             lq.prim.bind(alwaysEErr(errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysESuc(valueB, stateB, errorB);
             }).run(
                 SourcePos.init("test"),
@@ -1625,12 +1676,12 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
             lq.prim.bind(alwaysEErr(errorA), function (value) {
-                value.should.equal(valueA);
+                expect(value).to.equal(valueA);
                 return alwaysEErr(errorB);
             }).run(
                 SourcePos.init("test"),
@@ -1638,7 +1689,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
         });
@@ -1712,31 +1763,37 @@ describe("prim", function () {
 
             [fcsuc, fcerr, fesuc, feerr].forEach(function (f) {
                 var x = "foo";
-                Result.equals(
-                    lq.prim.bind(lq.prim.pure(x), f).parse(initState),
-                    f(x).parse(initState)
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        lq.prim.bind(lq.prim.pure(x), f).parse(initState),
+                        f(x).parse(initState)
+                    )
+                ).to.be.true;
             });
 
             [acsuc, acerr, aesuc, aeerr].forEach(function (m) {
-                Result.equals(
-                    lq.prim.bind(m, lq.prim.pure).parse(initState),
-                    m.parse(initState)
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        lq.prim.bind(m, lq.prim.pure).parse(initState),
+                        m.parse(initState)
+                    )
+                ).to.be.true;
             });
 
             [acsuc, acerr, aesuc, aeerr].forEach(function (m) {
                 [fcsuc, fcerr, fesuc, feerr].forEach(function (f) {
                      [fcsuc, fcerr, fesuc, feerr].forEach(function (g) {
-                        Result.equals(
-                            lq.prim.bind(lq.prim.bind(m, f), g).parse(initState),
-                            lq.prim.bind(
-                                m,
-                                function (x) {
-                                    return lq.prim.bind(f(x), g);
-                                }
-                            ).parse(initState)
-                        ).should.be.ok;
+                        expect(
+                            Result.equals(
+                                lq.prim.bind(lq.prim.bind(m, f), g).parse(initState),
+                                lq.prim.bind(
+                                    m,
+                                    function (x) {
+                                        return lq.prim.bind(f(x), g);
+                                    }
+                                ).parse(initState)
+                            )
+                        ).to.be.true;
                      });
                 });
             });
@@ -1762,9 +1819,9 @@ describe("prim", function () {
             lq.prim.then(alwaysCSuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1775,7 +1832,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1784,9 +1841,9 @@ describe("prim", function () {
             lq.prim.then(alwaysCSuc(valueA, stateA, errorA), alwaysESuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1797,7 +1854,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1806,9 +1863,9 @@ describe("prim", function () {
             lq.prim.then(alwaysESuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1819,7 +1876,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1830,9 +1887,9 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError
             );
@@ -1843,7 +1900,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 }
             );
         });
@@ -1853,7 +1910,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1863,7 +1920,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1873,7 +1930,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1883,7 +1940,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -1895,7 +1952,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
@@ -1905,7 +1962,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
@@ -1915,7 +1972,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
@@ -1925,7 +1982,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
         });
@@ -1939,13 +1996,15 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 }
             );
         });
@@ -1959,7 +2018,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2))).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2)))).to.be.true;
                 }
             );
         });
@@ -1984,9 +2043,9 @@ describe("prim", function () {
             lq.prim.mplus(alwaysCSuc(valueA, stateA, errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateA).should.be.ok;
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateA)).to.be.true;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -1996,9 +2055,9 @@ describe("prim", function () {
             lq.prim.mplus(alwaysCSuc(valueA, stateA, errorA), alwaysCErr(errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateA).should.be.ok;
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateA)).to.be.true;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2008,9 +2067,9 @@ describe("prim", function () {
             lq.prim.mplus(alwaysCSuc(valueA, stateA, errorA), alwaysESuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateA).should.be.ok;
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateA)).to.be.true;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2020,9 +2079,9 @@ describe("prim", function () {
             lq.prim.mplus(alwaysCSuc(valueA, stateA, errorA), alwaysEErr(errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateA).should.be.ok;
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateA)).to.be.true;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2034,9 +2093,9 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateA).should.be.ok;
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateA)).to.be.true;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError
             );
@@ -2046,9 +2105,9 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateA).should.be.ok;
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateA)).to.be.true;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError
             );
@@ -2058,9 +2117,9 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateA).should.be.ok;
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateA)).to.be.true;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError
             );
@@ -2070,9 +2129,9 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateA).should.be.ok;
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateA)).to.be.true;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError
             );
@@ -2083,7 +2142,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2093,7 +2152,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2103,7 +2162,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2113,7 +2172,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                     ParseError.equals(error, errorA).should.be.ok;
+                     expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2122,9 +2181,9 @@ describe("prim", function () {
             lq.prim.mplus(alwaysEErr(errorA), alwaysCSuc(valueB, stateB, errorB)).run(
                 SourcePos.init("test"),
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2135,7 +2194,7 @@ describe("prim", function () {
                 SourcePos.init("test"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2146,9 +2205,9 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 },
                 throwError
             );
@@ -2159,7 +2218,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, ParseError.merge(errorA, errorB)).should.be.ok;
+                    expect(ParseError.equals(error, ParseError.merge(errorA, errorB))).to.be.true;
                 }
             );
         });
@@ -2198,24 +2257,30 @@ describe("prim", function () {
             [acsuc, acerr, aesuc, aeerr].forEach(function (x) {
                 [acsuc, acerr, aesuc, aeerr].forEach(function (y) {
                     [acsuc, acerr, aesuc, aeerr].forEach(function (z) {
-                        Result.equals(
-                            lq.prim.mplus(lq.prim.mplus(x, y), z).parse(initState),
-                            lq.prim.mplus(x, lq.prim.mplus(y, z)).parse(initState)
-                        ).should.be.ok;
+                        expect(
+                            Result.equals(
+                                lq.prim.mplus(lq.prim.mplus(x, y), z).parse(initState),
+                                lq.prim.mplus(x, lq.prim.mplus(y, z)).parse(initState)
+                            )
+                        ).to.be.true;
                     });
                 });
             });
 
             [acsuc, acerr, aesuc, aeerr].forEach(function (x) {
-                Result.equals(
-                    lq.prim.mplus(x, lq.prim.mzero).parse(initState),
-                    x.parse(initState)
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        lq.prim.mplus(x, lq.prim.mzero).parse(initState),
+                        x.parse(initState)
+                    )
+                ).to.be.true;
 
-                Result.equals(
-                    lq.prim.mplus(lq.prim.mzero, x).parse(initState),
-                    x.parse(initState)
-                ).should.be.ok;
+                expect(
+                    Result.equals(
+                        lq.prim.mplus(lq.prim.mzero, x).parse(initState),
+                        x.parse(initState)
+                    )
+                ).to.be.true;
             });
         });
     });
@@ -2232,9 +2297,9 @@ describe("prim", function () {
             lq.prim.label(alwaysCSuc(valueA, stateA, errorA), "baz").run(
                 new State("def", new SourcePos("test", 3, 4), "some"),
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateA).should.be.ok;
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateA)).to.be.true;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2245,7 +2310,7 @@ describe("prim", function () {
                 new State("def", new SourcePos("test", 3, 4), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2256,18 +2321,20 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateA).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            posA,
-                            [
-                                new ErrorMessage(ErrorMessageType.MESSAGE, "bar"),
-                                new ErrorMessage(ErrorMessageType.EXPECT, "baz")
-                            ]
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateA)).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                posA,
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "bar"),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "baz")
+                                ]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 },
                 throwError
             );
@@ -2278,18 +2345,21 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            posA,
-                            [
-                                new ErrorMessage(ErrorMessageType.MESSAGE, "bar"),
-                                new ErrorMessage(ErrorMessageType.EXPECT, "baz")
-                            ]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                posA,
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "bar"),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "baz")
+                                ]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 }
             );
+
             var valueB = "foo"
             var posB = new SourcePos("test", 1, 2);
             var stateB = new State("abc", posB, "none");
@@ -2297,9 +2367,9 @@ describe("prim", function () {
             lq.prim.label(alwaysCSuc(valueB, stateB, errorB), "baz").run(
                 new State("def", new SourcePos("test", 3, 4), "some"),
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2310,7 +2380,7 @@ describe("prim", function () {
                 new State("def", new SourcePos("test", 3, 4), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2321,9 +2391,9 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError
             );
@@ -2334,13 +2404,15 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            posB,
-                            [new ErrorMessage(ErrorMessageType.EXPECT, "baz")]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                posB,
+                                [new ErrorMessage(ErrorMessageType.EXPECT, "baz")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 }
             );
         });
@@ -2358,9 +2430,9 @@ describe("prim", function () {
             lq.prim.labels(alwaysCSuc(valueA, stateA, errorA), ["uno", "dos", "tres"]).run(
                 new State("def", new SourcePos("test", 3, 4), "some"),
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateA).should.be.ok;
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateA)).to.be.true;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2371,7 +2443,7 @@ describe("prim", function () {
                 new State("def", new SourcePos("test", 3, 4), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2382,20 +2454,22 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateA).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            posA,
-                            [
-                                new ErrorMessage(ErrorMessageType.MESSAGE, "bar"),
-                                new ErrorMessage(ErrorMessageType.EXPECT, "uno"),
-                                new ErrorMessage(ErrorMessageType.EXPECT, "dos"),
-                                new ErrorMessage(ErrorMessageType.EXPECT, "tres")
-                            ]
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateA)).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                posA,
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "bar"),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "uno"),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "dos"),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "tres")
+                                ]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 },
                 throwError
             );
@@ -2406,20 +2480,23 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            posA,
-                            [
-                                new ErrorMessage(ErrorMessageType.MESSAGE, "bar"),
-                                new ErrorMessage(ErrorMessageType.EXPECT, "uno"),
-                                new ErrorMessage(ErrorMessageType.EXPECT, "dos"),
-                                new ErrorMessage(ErrorMessageType.EXPECT, "tres")
-                            ]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                posA,
+                                [
+                                    new ErrorMessage(ErrorMessageType.MESSAGE, "bar"),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "uno"),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "dos"),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "tres")
+                                ]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 }
             );
+
             var valueB = "foo"
             var posB = new SourcePos("test", 1, 2);
             var stateB = new State("abc", posB, "none");
@@ -2427,9 +2504,9 @@ describe("prim", function () {
             lq.prim.labels(alwaysCSuc(valueB, stateB, errorB), ["uno", "dos", "tres"]).run(
                 new State("def", new SourcePos("test", 3, 4), "some"),
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2440,7 +2517,7 @@ describe("prim", function () {
                 new State("def", new SourcePos("test", 3, 4), "some"),
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2451,9 +2528,9 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueB);
-                    State.equals(state, stateB).should.be.ok;
-                    ParseError.equals(error, errorB).should.be.ok;
+                    expect(value).to.equal(valueB);
+                    expect(State.equals(state, stateB)).to.be.true;
+                    expect(ParseError.equals(error, errorB)).to.be.true;
                 },
                 throwError
             );
@@ -2464,17 +2541,19 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            posB,
-                            [
-                                new ErrorMessage(ErrorMessageType.EXPECT, "uno"),
-                                new ErrorMessage(ErrorMessageType.EXPECT, "dos"),
-                                new ErrorMessage(ErrorMessageType.EXPECT, "tres")
-                            ]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                posB,
+                                [
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "uno"),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "dos"),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "tres")
+                                ]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 }
             );
         });
@@ -2488,13 +2567,15 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            new SourcePos("test", 1, 2),
-                            [new ErrorMessage(ErrorMessageType.UNEXPECT, "foo")]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 2),
+                                [new ErrorMessage(ErrorMessageType.UNEXPECT, "foo")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 }
             );
         });
@@ -2502,7 +2583,7 @@ describe("prim", function () {
 
     describe("try(parser)", function () {
         it("should be a synonym for 'attempt'", function () {
-            (lq.prim.try === lq.prim.attempt).should.be.ok;
+            expect(lq.prim.try).to.equal(lq.prim.attempt);
         });
     });
 
@@ -2519,9 +2600,9 @@ describe("prim", function () {
             lq.prim.attempt(alwaysCSuc(valueA, stateA, errorA)).run(
                 new State("def", SourcePos.init("test"), "some"),
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateA).should.be.ok;
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateA)).to.be.true;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2534,7 +2615,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
 
@@ -2543,9 +2624,9 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, stateA).should.be.ok;
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, stateA)).to.be.true;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError
             );
@@ -2556,7 +2637,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
         });
@@ -2572,17 +2653,20 @@ describe("prim", function () {
                 [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
             );
             var origState = new State("def", SourcePos.init("test"), "some");
+
             lq.prim.lookAhead(alwaysCSuc(valueA, stateA, errorA)).run(
                 origState,
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, origState).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        ParseError.unknown(SourcePos.init("test"))
-                    ).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, origState)).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(SourcePos.init("test"))
+                        )
+                    ).to.be.true;
                 },
                 throwError
             );
@@ -2591,7 +2675,7 @@ describe("prim", function () {
                 origState,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2602,12 +2686,14 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal(valueA);
-                    State.equals(state, origState).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        ParseError.unknown(SourcePos.init("test"))
-                    ).should.be.ok;
+                    expect(value).to.equal(valueA);
+                    expect(State.equals(state, origState)).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(SourcePos.init("test"))
+                        )
+                    ).to.be.true;
                 },
                 throwError
             );
@@ -2618,7 +2704,7 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(error, errorA).should.be.ok;
+                    expect(ParseError.equals(error, errorA)).to.be.true;
                 }
             );
         });
@@ -2651,15 +2737,17 @@ describe("prim", function () {
             ).run(
                 new State("aaab", SourcePos.init("test"), "none"),
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["a", "a", "a"]).should.be.ok;
-                    State.equals(state, new State("b", new SourcePos("test", 1, 4), "none")).should.be.ok;
-                    ParseError.equals(
-                        error,
-                         new ParseError(
-                            new SourcePos("test", 1, 4),
-                            [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                    expect(value).to.deep.equal(["a", "a", "a"]);
+                    expect(State.equals(state, new State("b", new SourcePos("test", 1, 4), "none"))).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                             new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2692,13 +2780,15 @@ describe("prim", function () {
                 new State("aaab", SourcePos.init("test"), "none"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            new SourcePos("test", 1, 4),
-                            [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2718,13 +2808,15 @@ describe("prim", function () {
                 new State("aaab", SourcePos.init("test"), "none"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            new SourcePos("test", 100, 200),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 100, 200),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2745,103 +2837,73 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
-                    State.equals(state, new State("aaab", SourcePos.init("test"), "none")).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            new SourcePos("test", 100, 200),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
-                        )
-                    ).should.be.ok;
-                },
-                throwError
-            );
-
-            (function () {
-                var caughtError;
-                try {
-                    lq.prim.manyAccum(
-                        function (value, accum) {
-                            return accum.concat(value);
-                        },
-                        new Parser(function (state, csuc, cerr, esuc, eerr) {
-                            if (state.input[0] === "a") {
-                                var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
-                                return csuc(
-                                    "a",
-                                    new State(state.input.substr(1), newPosition, state.userState),
-                                    ParseError.unknown(newPosition)
-                                );
-                            }
-                            else {
-                                return esuc(
-                                    state.input[0],
-                                    state,
-                                    ParseError.unknown(state.position)
-                                );
-                            }
-                        })
-                    ).run(
-                        new State("aaab", SourcePos.init("test"), "none"),
-                        throwError,
-                        throwError,
-                        throwError,
-                        throwError
-                    );
-                }
-                catch (error) {
-                    caughtError = error;
-                }
-                finally {
-                    if (caughtError) {
-                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
-                            throw caughtError;
-                        }
-                    }
-                    else {
-                        throw new Error("no error was thrown");
-                    }
-                }
-            })();
-
-            (function () {
-                var caughtError;
-                try {
-                    lq.prim.manyAccum(
-                        function (value, accum) {
-                            return accum.concat(value);
-                        },
-                        alwaysESuc(
-                            "foo",
-                            new State("def", new SourcePos("test", 100, 200), "some"),
+                    expect(value).to.deep.equal([]);
+                    expect(State.equals(state, new State("aaab", SourcePos.init("test"), "none"))).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
                             new ParseError(
                                 new SourcePos("test", 100, 200),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
                             )
                         )
-                    ).run(
-                        new State("aaab", SourcePos.init("test"), "none"),
-                        throwError,
-                        throwError,
-                        throwError,
-                        throwError
-                    );
-                }
-                catch (error) {
-                    caughtError = error;
-                }
-                finally {
-                    if (caughtError) {
-                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
-                            throw caughtError;
+                    ).to.be.true;
+                },
+                throwError
+            );
+
+            expect(function () {
+                lq.prim.manyAccum(
+                    function (value, accum) {
+                        return accum.concat(value);
+                    },
+                    new Parser(function (state, csuc, cerr, esuc, eerr) {
+                        if (state.input[0] === "a") {
+                            var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
+                            return csuc(
+                                "a",
+                                new State(state.input.substr(1), newPosition, state.userState),
+                                ParseError.unknown(newPosition)
+                            );
                         }
-                    }
-                    else {
-                        throw new Error("no error was thrown");
-                    }
-                }
-            })();
+                        else {
+                            return esuc(
+                                state.input[0],
+                                state,
+                                ParseError.unknown(state.position)
+                            );
+                        }
+                    })
+                ).run(
+                    new State("aaab", SourcePos.init("test"), "none"),
+                    function () {},
+                    function () {},
+                    function () {},
+                    function () {}
+                );
+            }).to.throw(Error);
+
+            expect(function () {
+                lq.prim.manyAccum(
+                    function (value, accum) {
+                        return accum.concat(value);
+                    },
+                    alwaysESuc(
+                        "foo",
+                        new State("def", new SourcePos("test", 100, 200), "some"),
+                        new ParseError(
+                            new SourcePos("test", 100, 200),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                        )
+                    )
+                ).run(
+                    new State("aaab", SourcePos.init("test"), "none"),
+                    function () {},
+                    function () {},
+                    function () {},
+                    function () {}
+                );
+            }).to.throw(Error);
         });
     });
 
@@ -2869,15 +2931,17 @@ describe("prim", function () {
             ).run(
                 new State("aaab", SourcePos.init("test"), "none"),
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, ["a", "a", "a"]).should.be.ok;
-                    State.equals(state, new State("b", new SourcePos("test", 1, 4), "none")).should.be.ok;
-                    ParseError.equals(
-                        error,
-                         new ParseError(
-                            new SourcePos("test", 1, 4),
-                            [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                    expect(value).to.deep.equal(["a", "a", "a"]);
+                    expect(State.equals(state, new State("b", new SourcePos("test", 1, 4), "none"))).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                             new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -2907,13 +2971,15 @@ describe("prim", function () {
                 new State("aaab", SourcePos.init("test"), "none"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            new SourcePos("test", 1, 4),
-                            [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2930,13 +2996,15 @@ describe("prim", function () {
                 new State("aaab", SourcePos.init("test"), "none"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            new SourcePos("test", 100, 200),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 100, 200),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 },
                 throwError,
                 throwError
@@ -2954,97 +3022,67 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, []).should.be.ok;
-                    State.equals(state, new State("aaab", SourcePos.init("test"), "none")).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            new SourcePos("test", 100, 200),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
-                        )
-                    ).should.be.ok;
-                },
-                throwError
-            );
-
-            (function () {
-                var caughtError;
-                try {
-                    lq.prim.many(
-                        new Parser(function (state, csuc, cerr, esuc, eerr) {
-                            if (state.input[0] === "a") {
-                                var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
-                                return csuc(
-                                    "a",
-                                    new State(state.input.substr(1), newPosition, state.userState),
-                                    ParseError.unknown(newPosition)
-                                );
-                            }
-                            else {
-                                return esuc(
-                                    state.input[0],
-                                    state,
-                                    ParseError.unknown(state.position)
-                                );
-                            }
-                        })
-                    ).run(
-                        new State("aaab", SourcePos.init("test"), "none"),
-                        throwError,
-                        throwError,
-                        throwError,
-                        throwError
-                    );
-                }
-                catch (error) {
-                    caughtError = error;
-                }
-                finally {
-                    if (caughtError) {
-                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
-                            throw caughtError;
-                        }
-                    }
-                    else {
-                        throw new Error("no error was thrown");
-                    }
-                }
-            })();
-
-            (function () {
-                var caughtError;
-                try {
-                    lq.prim.many(
-                        alwaysESuc(
-                            "foo",
-                            new State("def", new SourcePos("test", 100, 200), "some"),
+                    expect(value).to.deep.equal([]);
+                    expect(State.equals(state, new State("aaab", SourcePos.init("test"), "none"))).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
                             new ParseError(
                                 new SourcePos("test", 100, 200),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
                             )
                         )
-                    ).run(
-                        new State("aaab", SourcePos.init("test"), "none"),
-                        throwError,
-                        throwError,
-                        throwError,
-                        throwError
-                    );
-                }
-                catch (error) {
-                    caughtError = error;
-                }
-                finally {
-                    if (caughtError) {
-                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
-                            throw caughtError;
+                    ).to.be.true;
+                },
+                throwError
+            );
+
+            expect(function () {
+                lq.prim.many(
+                    new Parser(function (state, csuc, cerr, esuc, eerr) {
+                        if (state.input[0] === "a") {
+                            var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
+                            return csuc(
+                                "a",
+                                new State(state.input.substr(1), newPosition, state.userState),
+                                ParseError.unknown(newPosition)
+                            );
                         }
-                    }
-                    else {
-                        throw new Error("no error was thrown");
-                    }
-                }
-            })();
+                        else {
+                            return esuc(
+                                state.input[0],
+                                state,
+                                ParseError.unknown(state.position)
+                            );
+                        }
+                    })
+                ).run(
+                    new State("aaab", SourcePos.init("test"), "none"),
+                    function () {},
+                    function () {},
+                    function () {},
+                    function () {}
+                );
+            }).to.throw(Error);
+
+            expect(function () {
+                lq.prim.many(
+                    alwaysESuc(
+                        "foo",
+                        new State("def", new SourcePos("test", 100, 200), "some"),
+                        new ParseError(
+                            new SourcePos("test", 100, 200),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                        )
+                    )
+                ).run(
+                    new State("aaab", SourcePos.init("test"), "none"),
+                    function () {},
+                    function () {},
+                    function () {},
+                    function () {}
+                );
+            }).to.throw(Error);
         });
     });
 
@@ -3072,15 +3110,17 @@ describe("prim", function () {
             ).run(
                 new State("aaab", SourcePos.init("test"), "none"),
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(state, new State("b", new SourcePos("test", 1, 4), "none")).should.be.ok;
-                    ParseError.equals(
-                        error,
-                         new ParseError(
-                            new SourcePos("test", 1, 4),
-                            [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                    expect(value).to.be.undefined;
+                    expect(State.equals(state, new State("b", new SourcePos("test", 1, 4), "none"))).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                             new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3110,13 +3150,15 @@ describe("prim", function () {
                 new State("aaab", SourcePos.init("test"), "none"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            new SourcePos("test", 1, 4),
-                            [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 1, 4),
+                                [new ErrorMessage(ErrorMessageType.UNEXPECT, "b")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3133,13 +3175,15 @@ describe("prim", function () {
                 new State("aaab", SourcePos.init("test"), "none"),
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            new SourcePos("test", 100, 200),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                new SourcePos("test", 100, 200),
+                                [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3157,97 +3201,67 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(state, new State("aaab", SourcePos.init("test"), "none")).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            new SourcePos("test", 100, 200),
-                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
-                        )
-                    ).should.be.ok;
-                },
-                throwError
-            );
-
-            (function () {
-                var caughtError;
-                try {
-                    lq.prim.skipMany(
-                        new Parser(function (state, csuc, cerr, esuc, eerr) {
-                            if (state.input[0] === "a") {
-                                var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
-                                return csuc(
-                                    "a",
-                                    new State(state.input.substr(1), newPosition, state.userState),
-                                    ParseError.unknown(newPosition)
-                                );
-                            }
-                            else {
-                                return esuc(
-                                    state.input[0],
-                                    state,
-                                    ParseError.unknown(state.position)
-                                );
-                            }
-                        })
-                    ).run(
-                        new State("aaab", SourcePos.init("test"), "none"),
-                        throwError,
-                        throwError,
-                        throwError,
-                        throwError
-                    );
-                }
-                catch (error) {
-                    caughtError = error;
-                }
-                finally {
-                    if (caughtError) {
-                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
-                            throw caughtError;
-                        }
-                    }
-                    else {
-                        throw new Error("no error was thrown");
-                    }
-                }
-            })();
-
-            (function () {
-                var caughtError;
-                try {
-                    lq.prim.skipMany(
-                        alwaysESuc(
-                            "foo",
-                            new State("def", new SourcePos("test", 100, 200), "some"),
+                    expect(value).to.be.undefined;
+                    expect(State.equals(state, new State("aaab", SourcePos.init("test"), "none"))).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
                             new ParseError(
                                 new SourcePos("test", 100, 200),
                                 [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
                             )
                         )
-                    ).run(
-                        new State("aaab", SourcePos.init("test"), "none"),
-                        throwError,
-                        throwError,
-                        throwError,
-                        throwError
-                    );
-                }
-                catch (error) {
-                    caughtError = error;
-                }
-                finally {
-                    if (caughtError) {
-                        if (caughtError.message !== "'many' is applied to a parser that accepts an empty string") {
-                            throw caughtError;
+                    ).to.be.true;
+                },
+                throwError
+            );
+
+            expect(function () {
+                lq.prim.skipMany(
+                    new Parser(function (state, csuc, cerr, esuc, eerr) {
+                        if (state.input[0] === "a") {
+                            var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
+                            return csuc(
+                                "a",
+                                new State(state.input.substr(1), newPosition, state.userState),
+                                ParseError.unknown(newPosition)
+                            );
                         }
-                    }
-                    else {
-                        throw new Error("no error was thrown");
-                    }
-                }
-            })();
+                        else {
+                            return esuc(
+                                state.input[0],
+                                state,
+                                ParseError.unknown(state.position)
+                            );
+                        }
+                    })
+                ).run(
+                    new State("aaab", SourcePos.init("test"), "none"),
+                    function () {},
+                    function () {},
+                    function () {},
+                    function () {}
+                );
+            }).to.throw(Error);
+
+            expect(function () {
+                lq.prim.skipMany(
+                    alwaysESuc(
+                        "foo",
+                        new State("def", new SourcePos("test", 100, 200), "some"),
+                        new ParseError(
+                            new SourcePos("test", 100, 200),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
+                        )
+                    )
+                ).run(
+                    new State("aaab", SourcePos.init("test"), "none"),
+                    function () {},
+                    function () {},
+                    function () {},
+                    function () {}
+                );
+            }).to.throw(Error);
         });
     });
 
@@ -3273,18 +3287,22 @@ describe("prim", function () {
             ).run(
                 stateA,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, tokensA, lq.util.ArrayUtil.equals).should.be.ok;
-                    State.equals(
-                        state,
-                        new State([[5, 6, "baz"]], new SourcePos("test", 3, 4), "none"),
-                        function (inputA, inputB) {
-                            return lq.util.ArrayUtil.equals(inputA, inputB, lq.util.ArrayUtil.equals);
-                        }
-                    ).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        ParseError.unknown(new SourcePos("test", 3, 4))
-                    ).should.be.ok;
+                    expect(value).to.deep.equal(tokensA);
+                    expect(
+                        State.equals(
+                            state,
+                            new State([[5, 6, "baz"]], new SourcePos("test", 3, 4), "none"),
+                            function (inputA, inputB) {
+                                return lq.util.ArrayUtil.equals(inputA, inputB, lq.util.ArrayUtil.equals);
+                            }
+                        )
+                    ).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 3, 4))
+                        )
+                    ).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3312,16 +3330,18 @@ describe("prim", function () {
                 stateB,
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            SourcePos.init("test"),
-                            [
-                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
-                                new ErrorMessage(ErrorMessageType.EXPECT, "line 1, column 2: foo; line 3, column 4: bar")
-                            ]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                SourcePos.init("test"),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "line 1, column 2: foo; line 3, column 4: bar")
+                                ]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3348,16 +3368,18 @@ describe("prim", function () {
                 stateC,
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            SourcePos.init("test"),
-                            [
-                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "line 5, column 6: baz"),
-                                new ErrorMessage(ErrorMessageType.EXPECT, "line 1, column 2: foo; line 3, column 4: bar")
-                            ]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                SourcePos.init("test"),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "line 5, column 6: baz"),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "line 1, column 2: foo; line 3, column 4: bar")
+                                ]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 },
                 throwError,
                 throwError
@@ -3386,16 +3408,18 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            SourcePos.init("test"),
-                            [
-                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
-                                new ErrorMessage(ErrorMessageType.EXPECT, "line 1, column 2: foo; line 3, column 4: bar")
-                            ]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                SourcePos.init("test"),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, ""),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "line 1, column 2: foo; line 3, column 4: bar")
+                                ]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 }
             );
 
@@ -3422,16 +3446,18 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            SourcePos.init("test"),
-                            [
-                                new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "line 5, column 6: baz"),
-                                new ErrorMessage(ErrorMessageType.EXPECT, "line 1, column 2: foo; line 3, column 4: bar")
-                            ]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                SourcePos.init("test"),
+                                [
+                                    new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "line 5, column 6: baz"),
+                                    new ErrorMessage(ErrorMessageType.EXPECT, "line 1, column 2: foo; line 3, column 4: bar")
+                                ]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 }
             );
 
@@ -3457,19 +3483,21 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    lq.util.ArrayUtil.equals(value, [], lq.util.ArrayUtil.equals).should.be.ok;
-                    State.equals(
-                        state,
-                        new State(
-                            [[1, 2, "foo"], [3, 4, "bar"], [5, 6, "baz"]],
-                            SourcePos.init("test"),
-                            "none"
-                        ),
-                        function (inputA, inputB) {
-                            return lq.util.ArrayUtil.equals(inputA, inputB, lq.util.ArrayUtil.equals);
-                        }
-                    ).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(SourcePos.init("test"))).should.be.ok;
+                    expect(value).to.deep.equal([]);
+                    expect(
+                        State.equals(
+                            state,
+                            new State(
+                                [[1, 2, "foo"], [3, 4, "bar"], [5, 6, "baz"]],
+                                SourcePos.init("test"),
+                                "none"
+                            ),
+                            function (inputA, inputB) {
+                                return lq.util.ArrayUtil.equals(inputA, inputB, lq.util.ArrayUtil.equals);
+                            }
+                        )
+                    ).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(SourcePos.init("test")))).to.be.true;
                 },
                 throwError
             );
@@ -3495,19 +3523,21 @@ describe("prim", function () {
             ).run(
                 stateA,
                 function (value, state, error) {
-                    value.should.equal("foo");
-                    State.equals(
-                        state,
-                        new State(
-                            [[3, 4, "bar"], [5, 6, "baz"]],
-                            new SourcePos("test", 3, 4),
-                            "none"
-                        ),
-                        function (inputA, inputB) {
-                            return lq.util.ArrayUtil.equals(inputA, inputB, lq.util.ArrayUtil.equals);
-                        }
-                    ).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(new SourcePos("test", 3, 4))).should.be.ok;
+                    expect(value).to.equal("foo");
+                    expect(
+                        State.equals(
+                            state,
+                            new State(
+                                [[3, 4, "bar"], [5, 6, "baz"]],
+                                new SourcePos("test", 3, 4),
+                                "none"
+                            ),
+                            function (inputA, inputB) {
+                                return lq.util.ArrayUtil.equals(inputA, inputB, lq.util.ArrayUtil.equals);
+                            }
+                        )
+                    ).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(new SourcePos("test", 3, 4)))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3531,19 +3561,21 @@ describe("prim", function () {
             ).run(
                 stateB,
                 function (value, state, error) {
-                    value.should.equal("foo");
-                    State.equals(
-                        state,
-                        new State(
-                            [],
-                            new SourcePos("test", 1, 2),
-                            "none"
-                        ),
-                        function (inputA, inputB) {
-                            return lq.util.ArrayUtil.equals(inputA, inputB, lq.util.ArrayUtil.equals);
-                        }
-                    ).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2))).should.be.ok;
+                    expect(value).to.equal("foo");
+                    expect(
+                        State.equals(
+                            state,
+                            new State(
+                                [],
+                                new SourcePos("test", 1, 2),
+                                "none"
+                            ),
+                            function (inputA, inputB) {
+                                return lq.util.ArrayUtil.equals(inputA, inputB, lq.util.ArrayUtil.equals);
+                            }
+                        )
+                    ).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2)))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3570,13 +3602,15 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            SourcePos.init("test"),
-                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "line 1, column 2: foo")]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                SourcePos.init("test"),
+                                [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "line 1, column 2: foo")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 }
             );
 
@@ -3600,13 +3634,15 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            SourcePos.init("test"),
-                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "")]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                SourcePos.init("test"),
+                                [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 }
             );
         });
@@ -3636,14 +3672,16 @@ describe("prim", function () {
             ).run(
                 stateA,
                 function (value, state, error) {
-                    value.should.equal(10);
-                    State.equals(
-                        state,
-                        new State(["20", "30"], new SourcePos("test", 1, 2), ["10"]),
-                        lq.util.ArrayUtil.equals,
-                        lq.util.ArrayUtil.equals
-                    ).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2))).should.be.ok;
+                    expect(value).to.equal(10);
+                    expect(
+                        State.equals(
+                            state,
+                            new State(["20", "30"], new SourcePos("test", 1, 2), ["10"]),
+                            lq.util.ArrayUtil.equals,
+                            lq.util.ArrayUtil.equals
+                        )
+                    ).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2)))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3675,13 +3713,15 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            SourcePos.init("test"),
-                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("abc"))]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                SourcePos.init("test"),
+                                [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, lq.util.show("abc"))]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 }
             );
 
@@ -3710,13 +3750,15 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (error) {
-                    ParseError.equals(
-                        error,
-                        new ParseError(
-                            SourcePos.init("test"),
-                            [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "")]
+                    expect(
+                        ParseError.equals(
+                            error,
+                            new ParseError(
+                                SourcePos.init("test"),
+                                [new ErrorMessage(ErrorMessageType.SYSTEM_UNEXPECT, "")]
+                            )
                         )
-                    ).should.be.ok;
+                    ).to.be.true;
                 }
             );
 
@@ -3739,14 +3781,16 @@ describe("prim", function () {
             ).run(
                 stateD,
                 function (value, state, error) {
-                    value.should.equal(10);
-                    State.equals(
-                        state,
-                        new State(["20", "30"], new SourcePos("test", 1, 2), []),
-                        lq.util.ArrayUtil.equals,
-                        lq.util.ArrayUtil.equals
-                    ).should.be.ok;
-                    ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2))).should.be.ok;
+                    expect(value).to.equal(10);
+                    expect(
+                        State.equals(
+                            state,
+                            new State(["20", "30"], new SourcePos("test", 1, 2), []),
+                            lq.util.ArrayUtil.equals,
+                            lq.util.ArrayUtil.equals
+                        )
+                    ).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2)))).to.be.true;
                 },
                 throwError,
                 throwError,
@@ -3762,18 +3806,24 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    State.equals(
-                        value,
-                        new State("abc", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    State.equals(
-                        state,
-                        new State("abc", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        ParseError.unknown(new SourcePos("test", 1, 2))
-                    ).should.be.ok;
+                    expect(
+                        State.equals(
+                            value,
+                            new State("abc", new SourcePos("test", 1, 2), "none")
+                        )
+                    ).to.be.true;
+                    expect(
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 2), "none")
+                        )
+                    ).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        )
+                    ).to.be.true;
                 },
                 throwError
             );
@@ -3787,18 +3837,24 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    State.equals(
-                        value,
-                        new State("def", new SourcePos("test", 3, 4), "some")
-                    ).should.be.ok;
-                    State.equals(
-                        state,
-                        new State("def", new SourcePos("test", 3, 4), "some")
-                    ).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        ParseError.unknown(new SourcePos("test", 3, 4))
-                    ).should.be.ok;
+                    expect(
+                        State.equals(
+                            value,
+                            new State("def", new SourcePos("test", 3, 4), "some")
+                        )
+                    ).to.be.true;
+                    expect(
+                        State.equals(
+                            state,
+                            new State("def", new SourcePos("test", 3, 4), "some")
+                        )
+                    ).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 3, 4))
+                        )
+                    ).to.be.true;
                 },
                 throwError
             );
@@ -3816,18 +3872,24 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    State.equals(
-                        value,
-                        new State("def", new SourcePos("test", 3, 4), "some")
-                    ).should.be.ok;
-                    State.equals(
-                        state,
-                        new State("def", new SourcePos("test", 3, 4), "some")
-                    ).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        ParseError.unknown(new SourcePos("test", 3, 4))
-                    ).should.be.ok;
+                    expect(
+                        State.equals(
+                            value,
+                            new State("def", new SourcePos("test", 3, 4), "some")
+                        )
+                    ).to.be.true;
+                    expect(
+                        State.equals(
+                            state,
+                            new State("def", new SourcePos("test", 3, 4), "some")
+                        )
+                    ).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 3, 4))
+                        )
+                    ).to.be.true;
                 },
                 throwError
             );
@@ -3841,15 +3903,19 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal("abc");
-                    State.equals(
-                        state,
-                        new State("abc", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        ParseError.unknown(new SourcePos("test", 1, 2))
-                    ).should.be.ok;
+                    expect(value).to.equal("abc");
+                    expect(
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 2), "none")
+                        )
+                    ).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        )
+                    ).to.be.true;
                 },
                 throwError
             );
@@ -3863,15 +3929,19 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
-                        state,
-                        new State("def", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        ParseError.unknown(new SourcePos("test", 1, 2))
-                    ).should.be.ok;
+                    expect(value).to.be.undefined;
+                    expect(
+                        State.equals(
+                            state,
+                            new State("def", new SourcePos("test", 1, 2), "none")
+                        )
+                    ).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        )
+                    ).to.be.true;
                 },
                 throwError
             );
@@ -3885,15 +3955,19 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    SourcePos.equals(value, new SourcePos("test", 1, 2)).should.be.ok;
-                    State.equals(
-                        state,
-                        new State("abc", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        ParseError.unknown(new SourcePos("test", 1, 2))
-                    ).should.be.ok;
+                    expect(SourcePos.equals(value, new SourcePos("test", 1, 2))).to.be.true;
+                    expect(
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 2), "none")
+                        )
+                    ).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        )
+                    ).to.be.true;
                 },
                 throwError
             );
@@ -3907,15 +3981,19 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
-                        state,
-                        new State("abc", new SourcePos("test", 3, 4), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        ParseError.unknown(new SourcePos("test", 3, 4))
-                    ).should.be.ok;
+                    expect(value).to.be.undefined;
+                    expect(
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 3, 4), "none")
+                        )
+                    ).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 3, 4))
+                        )
+                    ).to.be.true;
                 },
                 throwError
             );
@@ -3929,15 +4007,19 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    value.should.equal("none");
-                    State.equals(
-                        state,
-                        new State("abc", new SourcePos("test", 1, 2), "none")
-                    ).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        ParseError.unknown(new SourcePos("test", 1, 2))
-                    ).should.be.ok;
+                    expect(value).to.equal("none");
+                    expect(
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 2), "none")
+                        )
+                    ).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        )
+                    ).to.be.true;
                 },
                 throwError
             );
@@ -3951,15 +4033,19 @@ describe("prim", function () {
                 throwError,
                 throwError,
                 function (value, state, error) {
-                    (value === undefined).should.be.ok;
-                    State.equals(
-                        state,
-                        new State("abc", new SourcePos("test", 1, 2), "some")
-                    ).should.be.ok;
-                    ParseError.equals(
-                        error,
-                        ParseError.unknown(new SourcePos("test", 1, 2))
-                    ).should.be.ok;
+                    expect(value).to.be.undefined;
+                    expect(
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 2), "some")
+                        )
+                    ).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        )
+                    ).to.be.true;
                 },
                 throwError
             );
