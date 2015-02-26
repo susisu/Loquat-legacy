@@ -3,7 +3,7 @@ var gulp    = require("gulp"),
     webpack = require("gulp-webpack");
 
 var packageInfo = require("./package.json");
-var banner = "Loquat\ncopyright (c) 2014 Susisu | MIT License\nhttps://github.com/susisu/Loquat";
+var banner = "Loquat\ncopyright (c) 2014-2015 Susisu | MIT License\nhttps://github.com/susisu/Loquat";
 
 gulp.task("test", function () {
     return gulp.src("./test/loquat.js")

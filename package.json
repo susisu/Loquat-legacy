@@ -1,6 +1,6 @@
 {
   "name": "loquat",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Monadic parser combinators",
   "main": "index.js",
   "directories": {
@@ -24,9 +24,9 @@
   },
   "homepage": "https://github.com/susisu/Loquat",
   "devDependencies": {
-    "chai": "^1.10.0",
+    "chai": "^2.1.0",
     "gulp": "^3.8.11",
     "gulp-mocha": "^2.0.0",
-    "gulp-webpack": "^1.1.2"
+    "gulp-webpack": "^1.2.0"
   }
 }
