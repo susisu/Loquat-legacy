@@ -1,0 +1,22 @@
+{
+  "name": "loquat",
+  "main": "dist/loquat.min.js",
+  "version": "1.2.1",
+  "homepage": "https://github.com/susisu/Loquat",
+  "authors": [
+    "Susisu <susisu2413@yahoo.co.jp>"
+  ],
+  "description": "Monadic parser combinators",
+  "keywords": [
+    "parsing"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "dev"
+  ]
+}
