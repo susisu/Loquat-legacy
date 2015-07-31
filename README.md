@@ -19,18 +19,14 @@ else {
 ```
 
 ### Browsers
-Pack the library for browsers:
+Install with `bower`:
 ``` shell
-$ git clone https://github.com/susisu/Loquat.git
-$ npm install
-$ gulp
+$ bower install susisu/Loquat
 ```
-Then `loquat.{version}.js` and `loquat.{version}.min.js` will be placed in `/build`.
-You can use them as below:
 ``` html
-<script type="text/javascript" src="./loquat.{version}.min.js"></script>
+<script type="text/javascript" src="./bower_components/loquat/dist/loquat.min.js"></script>
 <script type="text/javascript">
-var result = lq.parse(lq.string("foo"), "name", "foobar");
+var result = loquat.parse(loquat.string("foo"), "name", "foobar");
 if (result.succeeded) {
     console.log(result.value);
 }

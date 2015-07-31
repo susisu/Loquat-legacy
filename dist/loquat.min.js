@@ -1,5 +1,5 @@
 /*!
- * Loquat 1.2.1
+ * Loquat 1.2.2
  * copyright (c) 2014-2015 Susisu | MIT License
  * https://github.com/susisu/Loquat
  */
