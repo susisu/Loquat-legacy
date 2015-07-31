@@ -3,7 +3,8 @@ var gulp    = require("gulp"),
     webpack = require("gulp-webpack");
 
 var packageInfo = require("./package.json");
-var banner = "Loquat\ncopyright (c) 2014-2015 Susisu | MIT License\nhttps://github.com/susisu/Loquat";
+var banner = "Loquat " + packageInfo.version +
+    "\ncopyright (c) 2014-2015 Susisu | MIT License\nhttps://github.com/susisu/Loquat";
 
 gulp.task("test", function () {
     return gulp.src("./test/loquat.js")
@@ -17,7 +18,7 @@ gulp.task("webpack", function () {
                 "libraryTarget": "var",
                 "library": "loquat",
                 "sourcePrefix": "    ",
-                "filename": "loquat." + packageInfo.version + ".js"
+                "filename": "loquat.js"
             },
             "plugins": [
                 new webpack.webpack.BannerPlugin(
@@ -26,7 +27,7 @@ gulp.task("webpack", function () {
                 )
             ]
         }))
-        .pipe(gulp.dest("./build"));
+        .pipe(gulp.dest("./dist"));
 });
 
 gulp.task("webpack-min", function () {
@@ -36,7 +37,7 @@ gulp.task("webpack-min", function () {
                 "libraryTarget": "var",
                 "library": "loquat",
                 "sourcePrefix": "    ",
-                "filename": "loquat." + packageInfo.version + ".min.js",
+                "filename": "loquat.min.js",
             },
             "plugins": [
                 new webpack.webpack.optimize.UglifyJsPlugin(),
@@ -46,7 +47,7 @@ gulp.task("webpack-min", function () {
                 )
             ]
         }))
-        .pipe(gulp.dest("./build"));
+        .pipe(gulp.dest("./dist"));
 });
 
 gulp.task("build", ["webpack", "webpack-min"]);
