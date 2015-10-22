@@ -127,6 +127,7 @@ describe("expr", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position.setColumn(state.position.column + 1),
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -145,6 +146,7 @@ describe("expr", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position,
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -164,12 +166,12 @@ describe("expr", function () {
                 var parser = lq.expr.buildExpressionParser([], term);
 
                 parser.run(
-                    new State("aabcd", SourcePos.init("test"), "none"),
+                    new State("aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("a1");
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 2), "none")
+                            new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -185,7 +187,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("babcd", SourcePos.init("test"), "none"),
+                    new State("babcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -201,14 +203,14 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("cabcd", SourcePos.init("test"), "none"),
+                    new State("cabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value.toString()).to.equal("c1");
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 1), "none")
+                            new State("abcd", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -222,7 +224,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("dabcd", SourcePos.init("test"), "none"),
+                    new State("dabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -251,12 +253,12 @@ describe("expr", function () {
                 var parser = lq.expr.buildExpressionParser([[preop, postop]], term);
 
                 parser.run(
-                    new State("a", SourcePos.init("test"), "none"),
+                    new State("a", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("a");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 2), "none")
+                            new State("", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -275,12 +277,12 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("+a", SourcePos.init("test"), "none"),
+                    new State("+a", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(+a)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 3), "none")
+                            new State("", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -299,12 +301,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a-", SourcePos.init("test"), "none"),
+                    new State("a-", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a-)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 3), "none")
+                            new State("", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -320,12 +322,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("+a-", SourcePos.init("test"), "none"),
+                    new State("+a-", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("((+a)-)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -341,7 +343,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("+", SourcePos.init("test"), "none"),
+                    new State("+", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -375,12 +377,12 @@ describe("expr", function () {
                 var parser3 = lq.expr.buildExpressionParser([[postop2, postop1]], term);
 
                 parser1.run(
-                    new State("a+-", SourcePos.init("test"), "none"),
+                    new State("a+-", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("((a+)-)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -396,12 +398,12 @@ describe("expr", function () {
                 );
 
                 parser1.run(
-                    new State("a-+", SourcePos.init("test"), "none"),
+                    new State("a-+", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a-)");
                         expect(State.equals(
                             state,
-                            new State("+", new SourcePos("test", 1, 3), "none")
+                            new State("+", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -417,12 +419,12 @@ describe("expr", function () {
                 );
 
                 parser2.run(
-                    new State("a+-", SourcePos.init("test"), "none"),
+                    new State("a+-", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a+)");
                         expect(State.equals(
                             state,
-                            new State("-", new SourcePos("test", 1, 3), "none")
+                            new State("-", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -438,12 +440,12 @@ describe("expr", function () {
                 );
 
                 parser2.run(
-                    new State("a-+", SourcePos.init("test"), "none"),
+                    new State("a-+", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("((a-)+)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -459,12 +461,12 @@ describe("expr", function () {
                 );
 
                 parser3.run(
-                    new State("a+-", SourcePos.init("test"), "none"),
+                    new State("a+-", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a+)");
                         expect(State.equals(
                             state,
-                            new State("-", new SourcePos("test", 1, 3), "none")
+                            new State("-", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -480,12 +482,12 @@ describe("expr", function () {
                 );
                 
                 parser3.run(
-                    new State("a-+", SourcePos.init("test"), "none"),
+                    new State("a-+", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a-)");
                         expect(State.equals(
                             state,
-                            new State("+", new SourcePos("test", 1, 3), "none")
+                            new State("+", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -511,12 +513,12 @@ describe("expr", function () {
                 var parser = lq.expr.buildExpressionParser([[op]], term);
 
                 parser.run(
-                    new State("a", SourcePos.init("test"), "none"),
+                    new State("a", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("a");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 2), "none")
+                            new State("", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -538,7 +540,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a:", SourcePos.init("test"), "none"),
+                    new State("a:", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -558,12 +560,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:b", SourcePos.init("test"), "none"),
+                    new State("a:b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a:b)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -583,12 +585,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:b:", SourcePos.init("test"), "none"),
+                    new State("a:b:", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a:b)");
                         expect(State.equals(
                             state,
-                            new State(":", new SourcePos("test", 1, 4), "none")
+                            new State(":", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -614,12 +616,12 @@ describe("expr", function () {
                 var parser = lq.expr.buildExpressionParser([[op]], term);
 
                 parser.run(
-                    new State("a", SourcePos.init("test"), "none"),
+                    new State("a", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("a");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 2), "none")
+                            new State("", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -640,7 +642,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a:", SourcePos.init("test"), "none"),
+                    new State("a:", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -660,12 +662,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:b", SourcePos.init("test"), "none"),
+                    new State("a:b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a:b)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -685,7 +687,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:b:", SourcePos.init("test"), "none"),
+                    new State("a:b:", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -705,12 +707,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:b:c", SourcePos.init("test"), "none"),
+                    new State("a:b:c", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a:(b:c))");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 6), "none")
+                            new State("", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -740,12 +742,12 @@ describe("expr", function () {
                 var parser = lq.expr.buildExpressionParser([[op]], term);
 
                 parser.run(
-                    new State("a", SourcePos.init("test"), "none"),
+                    new State("a", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("a");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 2), "none")
+                            new State("", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -766,7 +768,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a:", SourcePos.init("test"), "none"),
+                    new State("a:", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -786,12 +788,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:b", SourcePos.init("test"), "none"),
+                    new State("a:b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a:b)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -811,7 +813,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:b:", SourcePos.init("test"), "none"),
+                    new State("a:b:", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -831,12 +833,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:b:c", SourcePos.init("test"), "none"),
+                    new State("a:b:c", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("((a:b):c)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 6), "none")
+                            new State("", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -871,12 +873,12 @@ describe("expr", function () {
                 var parser = lq.expr.buildExpressionParser([[op1], [op2]], term);
 
                 parser.run(
-                    new State("a", SourcePos.init("test"), "none"),
+                    new State("a", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("a");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 2), "none")
+                            new State("", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -903,7 +905,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a:", SourcePos.init("test"), "none"),
+                    new State("a:", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -923,12 +925,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:b", SourcePos.init("test"), "none"),
+                    new State("a:b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a:b)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -953,12 +955,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:b:", SourcePos.init("test"), "none"),
+                    new State("a:b:", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a:b)");
                         expect(State.equals(
                             state,
-                            new State(":", new SourcePos("test", 1, 4), "none")
+                            new State(":", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -974,7 +976,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a=", SourcePos.init("test"), "none"),
+                    new State("a=", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -995,12 +997,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a=b", SourcePos.init("test"), "none"),
+                    new State("a=b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a=b)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1025,12 +1027,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a=b=", SourcePos.init("test"), "none"),
+                    new State("a=b=", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a=b)");
                         expect(State.equals(
                             state,
-                            new State("=", new SourcePos("test", 1, 4), "none")
+                            new State("=", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1046,7 +1048,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:=", SourcePos.init("test"), "none"),
+                    new State("a:=", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1066,7 +1068,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:b=", SourcePos.init("test"), "none"),
+                    new State("a:b=", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1087,7 +1089,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:=b", SourcePos.init("test"), "none"),
+                    new State("a:=b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1107,12 +1109,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:b=c", SourcePos.init("test"), "none"),
+                    new State("a:b=c", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("((a:b)=c)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 6), "none")
+                            new State("", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1137,7 +1139,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a=b:", SourcePos.init("test"), "none"),
+                    new State("a=b:", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1157,12 +1159,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a=b:c", SourcePos.init("test"), "none"),
+                    new State("a=b:c", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a=(b:c))");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 6), "none")
+                            new State("", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1185,7 +1187,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a:b=c:", SourcePos.init("test"), "none"),
+                    new State("a:b=c:", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1205,12 +1207,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a:b=c:d", SourcePos.init("test"), "none"),
+                    new State("a:b=c:d", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("((a:b)=(c:d))");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 8), "none")
+                            new State("", new SourcePos("test", 1, 8), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1248,12 +1250,12 @@ describe("expr", function () {
                 var parser = lq.expr.buildExpressionParser([[op1], [op2]], term);
 
                 parser.run(
-                    new State("a", SourcePos.init("test"), "none"),
+                    new State("a", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("a");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 2), "none")
+                            new State("", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1278,7 +1280,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a.", SourcePos.init("test"), "none"),
+                    new State("a.", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1298,12 +1300,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a.b", SourcePos.init("test"), "none"),
+                    new State("a.b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a.b)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1327,7 +1329,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a.b.", SourcePos.init("test"), "none"),
+                    new State("a.b.", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1347,7 +1349,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a$", SourcePos.init("test"), "none"),
+                    new State("a$", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1368,12 +1370,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a$b", SourcePos.init("test"), "none"),
+                    new State("a$b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a$b)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1397,7 +1399,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a$b$", SourcePos.init("test"), "none"),
+                    new State("a$b$", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1418,7 +1420,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a.$", SourcePos.init("test"), "none"),
+                    new State("a.$", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1438,7 +1440,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a.b$", SourcePos.init("test"), "none"),
+                    new State("a.b$", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1459,7 +1461,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a.$b", SourcePos.init("test"), "none"),
+                    new State("a.$b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1479,12 +1481,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a.b$c", SourcePos.init("test"), "none"),
+                    new State("a.b$c", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("((a.b)$c)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 6), "none")
+                            new State("", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1508,7 +1510,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a$b.", SourcePos.init("test"), "none"),
+                    new State("a$b.", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1528,12 +1530,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a$b.c", SourcePos.init("test"), "none"),
+                    new State("a$b.c", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a$(b.c))");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 6), "none")
+                            new State("", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1556,7 +1558,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a.b$c.", SourcePos.init("test"), "none"),
+                    new State("a.b$c.", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1576,12 +1578,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a.b$c.d", SourcePos.init("test"), "none"),
+                    new State("a.b$c.d", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("((a.b)$(c.d))");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 8), "none")
+                            new State("", new SourcePos("test", 1, 8), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1619,12 +1621,12 @@ describe("expr", function () {
                 var parser = lq.expr.buildExpressionParser([[op1], [op2]], term);
 
                 parser.run(
-                    new State("a", SourcePos.init("test"), "none"),
+                    new State("a", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("a");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 2), "none")
+                            new State("", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1649,7 +1651,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a*", SourcePos.init("test"), "none"),
+                    new State("a*", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1669,12 +1671,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a*b", SourcePos.init("test"), "none"),
+                    new State("a*b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a*b)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1698,7 +1700,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a*b*", SourcePos.init("test"), "none"),
+                    new State("a*b*", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1718,7 +1720,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a+", SourcePos.init("test"), "none"),
+                    new State("a+", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1739,12 +1741,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a+b", SourcePos.init("test"), "none"),
+                    new State("a+b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a+b)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1768,7 +1770,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a+b+", SourcePos.init("test"), "none"),
+                    new State("a+b+", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1789,7 +1791,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a*+", SourcePos.init("test"), "none"),
+                    new State("a*+", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1809,7 +1811,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a*b+", SourcePos.init("test"), "none"),
+                    new State("a*b+", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1830,7 +1832,7 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a*+b", SourcePos.init("test"), "none"),
+                    new State("a*+b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1850,12 +1852,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a*b+c", SourcePos.init("test"), "none"),
+                    new State("a*b+c", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("((a*b)+c)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 6), "none")
+                            new State("", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1879,7 +1881,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a+b*", SourcePos.init("test"), "none"),
+                    new State("a+b*", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1899,12 +1901,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a+b*c", SourcePos.init("test"), "none"),
+                    new State("a+b*c", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a+(b*c))");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 6), "none")
+                            new State("", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1927,7 +1929,7 @@ describe("expr", function () {
                 );
                 
                 parser.run(
-                    new State("a*b+c*", SourcePos.init("test"), "none"),
+                    new State("a*b+c*", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1947,12 +1949,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a*b+c*d", SourcePos.init("test"), "none"),
+                    new State("a*b+c*d", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("((a*b)+(c*d))");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 8), "none")
+                            new State("", new SourcePos("test", 1, 8), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1995,12 +1997,12 @@ describe("expr", function () {
                 var parser = lq.expr.buildExpressionParser([[opN, opR, opL]], term);
 
                 parser.run(
-                    new State("a=b", SourcePos.init("test"), "none"),
+                    new State("a=b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a=b)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2024,12 +2026,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a$b", SourcePos.init("test"), "none"),
+                    new State("a$b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a$b)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2053,12 +2055,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a+b", SourcePos.init("test"), "none"),
+                    new State("a+b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a+b)");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2082,12 +2084,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a=b$c", SourcePos.init("test"), "none"),
+                    new State("a=b$c", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a=b)");
                         expect(State.equals(
                             state,
-                            new State("$c", new SourcePos("test", 1, 4), "none")
+                            new State("$c", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2103,12 +2105,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a=b+c", SourcePos.init("test"), "none"),
+                    new State("a=b+c", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a=b)");
                         expect(State.equals(
                             state,
-                            new State("+c", new SourcePos("test", 1, 4), "none")
+                            new State("+c", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2124,12 +2126,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a$b=c", SourcePos.init("test"), "none"),
+                    new State("a$b=c", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a$b)");
                         expect(State.equals(
                             state,
-                            new State("=c", new SourcePos("test", 1, 4), "none")
+                            new State("=c", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2145,12 +2147,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a$b+c", SourcePos.init("test"), "none"),
+                    new State("a$b+c", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a$b)");
                         expect(State.equals(
                             state,
-                            new State("+c", new SourcePos("test", 1, 4), "none")
+                            new State("+c", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2166,12 +2168,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a+b=c", SourcePos.init("test"), "none"),
+                    new State("a+b=c", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a+b)");
                         expect(State.equals(
                             state,
-                            new State("=c", new SourcePos("test", 1, 4), "none")
+                            new State("=c", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2187,12 +2189,12 @@ describe("expr", function () {
                 );
 
                 parser.run(
-                    new State("a+b$c", SourcePos.init("test"), "none"),
+                    new State("a+b$c", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value.toString()).to.equal("(a+b)");
                         expect(State.equals(
                             state,
-                            new State("$c", new SourcePos("test", 1, 4), "none")
+                            new State("$c", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
