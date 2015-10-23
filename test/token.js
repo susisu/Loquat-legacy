@@ -181,7 +181,7 @@ describe("token", function () {
                 var parser2 = makeTokenParser(def2);
 
                 parser1.identifier.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -200,7 +200,7 @@ describe("token", function () {
                 );
 
                 parser1.identifier.run(
-                    new State("0foo", SourcePos.init("test"), "none"),
+                    new State("0foo", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -219,12 +219,12 @@ describe("token", function () {
                 );
 
                 parser1.identifier.run(
-                    new State("foo", SourcePos.init("test"), "none"),
+                    new State("foo", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("foo");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -247,12 +247,12 @@ describe("token", function () {
                 );
 
                 parser1.identifier.run(
-                    new State("f00", SourcePos.init("test"), "none"),
+                    new State("f00", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("f00");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -275,12 +275,12 @@ describe("token", function () {
                 );
 
                 parser1.identifier.run(
-                    new State("foo bar", SourcePos.init("test"), "none"),
+                    new State("foo bar", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("foo");
                         expect(State.equals(
                             state,
-                            new State("bar", new SourcePos("test", 1, 5), "none")
+                            new State("bar", new SourcePos("test", 1, 5), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -301,7 +301,7 @@ describe("token", function () {
                 );
 
                 parser1.identifier.run(
-                    new State("var", SourcePos.init("test"), "none"),
+                    new State("var", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -321,7 +321,7 @@ describe("token", function () {
                 );
 
                 parser1.identifier.run(
-                    new State("function", SourcePos.init("test"), "none"),
+                    new State("function", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -341,12 +341,12 @@ describe("token", function () {
                 );
 
                 parser1.identifier.run(
-                    new State("Var", SourcePos.init("test"), "none"),
+                    new State("Var", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("Var");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -369,7 +369,7 @@ describe("token", function () {
                 );
 
                 parser2.identifier.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -388,7 +388,7 @@ describe("token", function () {
                 );
 
                 parser2.identifier.run(
-                    new State("0foo", SourcePos.init("test"), "none"),
+                    new State("0foo", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -407,12 +407,12 @@ describe("token", function () {
                 );
 
                 parser2.identifier.run(
-                    new State("foo", SourcePos.init("test"), "none"),
+                    new State("foo", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("foo");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -435,12 +435,12 @@ describe("token", function () {
                 );
 
                 parser2.identifier.run(
-                    new State("f00", SourcePos.init("test"), "none"),
+                    new State("f00", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("f00");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -463,12 +463,12 @@ describe("token", function () {
                 );
 
                 parser2.identifier.run(
-                    new State("foo bar", SourcePos.init("test"), "none"),
+                    new State("foo bar", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("foo");
                         expect(State.equals(
                             state,
-                            new State("bar", new SourcePos("test", 1, 5), "none")
+                            new State("bar", new SourcePos("test", 1, 5), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -489,7 +489,7 @@ describe("token", function () {
                 );
 
                 parser2.identifier.run(
-                    new State("var", SourcePos.init("test"), "none"),
+                    new State("var", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -509,7 +509,7 @@ describe("token", function () {
                 );
 
                 parser2.identifier.run(
-                    new State("function", SourcePos.init("test"), "none"),
+                    new State("function", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -529,7 +529,7 @@ describe("token", function () {
                 );
 
                 parser2.identifier.run(
-                    new State("Var", SourcePos.init("test"), "none"),
+                    new State("Var", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -582,7 +582,7 @@ describe("token", function () {
                 var parser2 = makeTokenParser(def2);
 
                 parser1.reserved("var").run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -601,7 +601,7 @@ describe("token", function () {
                 );
 
                 parser1.reserved("var").run(
-                    new State("foo", SourcePos.init("test"), "none"),
+                    new State("foo", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -620,7 +620,7 @@ describe("token", function () {
                 );
 
                 parser1.reserved("var").run(
-                    new State("val", SourcePos.init("test"), "none"),
+                    new State("val", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -639,12 +639,12 @@ describe("token", function () {
                 );
 
                 parser1.reserved("var").run(
-                    new State("var", SourcePos.init("test"), "none"),
+                    new State("var", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -667,12 +667,12 @@ describe("token", function () {
                 );
 
                 parser1.reserved("var").run(
-                    new State("var const", SourcePos.init("test"), "none"),
+                    new State("var const", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("const", new SourcePos("test", 1, 5), "none")
+                            new State("const", new SourcePos("test", 1, 5), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -693,7 +693,7 @@ describe("token", function () {
                 );
 
                 parser1.reserved("var").run(
-                    new State("varvar", SourcePos.init("test"), "none"),
+                    new State("varvar", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -712,7 +712,7 @@ describe("token", function () {
                 );
 
                 parser1.reserved("var").run(
-                    new State("VAR", SourcePos.init("test"), "none"),
+                    new State("VAR", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -731,12 +731,12 @@ describe("token", function () {
                 );
 
                 parser1.reserved("const").run(
-                    new State("const", SourcePos.init("test"), "none"),
+                    new State("const", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 6), "none")
+                            new State("", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -759,7 +759,7 @@ describe("token", function () {
                 );
 
                 parser2.reserved("var").run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -779,7 +779,7 @@ describe("token", function () {
                 );
 
                 parser2.reserved("var").run(
-                    new State("foo", SourcePos.init("test"), "none"),
+                    new State("foo", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -799,7 +799,7 @@ describe("token", function () {
                 );
 
                 parser2.reserved("var").run(
-                    new State("val", SourcePos.init("test"), "none"),
+                    new State("val", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -819,12 +819,12 @@ describe("token", function () {
                 );
 
                 parser2.reserved("var").run(
-                    new State("var", SourcePos.init("test"), "none"),
+                    new State("var", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -847,12 +847,12 @@ describe("token", function () {
                 );
 
                 parser2.reserved("var").run(
-                    new State("var const", SourcePos.init("test"), "none"),
+                    new State("var const", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("const", new SourcePos("test", 1, 5), "none")
+                            new State("const", new SourcePos("test", 1, 5), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -873,7 +873,7 @@ describe("token", function () {
                 );
 
                 parser2.reserved("var").run(
-                    new State("varvar", SourcePos.init("test"), "none"),
+                    new State("varvar", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -892,12 +892,12 @@ describe("token", function () {
                 );
 
                 parser2.reserved("var").run(
-                    new State("VAR", SourcePos.init("test"), "none"),
+                    new State("VAR", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -920,12 +920,12 @@ describe("token", function () {
                 );
 
                 parser2.reserved("const").run(
-                    new State("const", SourcePos.init("test"), "none"),
+                    new State("const", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 6), "none")
+                            new State("", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -967,7 +967,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.operator.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -986,7 +986,7 @@ describe("token", function () {
                 );
 
                 parser.operator.run(
-                    new State(":+", SourcePos.init("test"), "none"),
+                    new State(":+", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -1005,12 +1005,12 @@ describe("token", function () {
                 );
 
                 parser.operator.run(
-                    new State("++", SourcePos.init("test"), "none"),
+                    new State("++", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("++");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 3), "none")
+                            new State("", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1032,12 +1032,12 @@ describe("token", function () {
                 );
 
                 parser.operator.run(
-                    new State("+:", SourcePos.init("test"), "none"),
+                    new State("+:", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("+:");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 3), "none")
+                            new State("", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1059,12 +1059,12 @@ describe("token", function () {
                 );
 
                 parser.operator.run(
-                    new State("++ ==", SourcePos.init("test"), "none"),
+                    new State("++ ==", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("++");
                         expect(State.equals(
                             state,
-                            new State("==", new SourcePos("test", 1, 4), "none")
+                            new State("==", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1085,7 +1085,7 @@ describe("token", function () {
                 );
 
                 parser.operator.run(
-                    new State("=", SourcePos.init("test"), "none"),
+                    new State("=", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -1104,7 +1104,7 @@ describe("token", function () {
                 );
 
                 parser.operator.run(
-                    new State("@", SourcePos.init("test"), "none"),
+                    new State("@", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -1142,7 +1142,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.reservedOp("=").run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -1161,7 +1161,7 @@ describe("token", function () {
                 );
 
                 parser.reservedOp("=").run(
-                    new State("+", SourcePos.init("test"), "none"),
+                    new State("+", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -1180,12 +1180,12 @@ describe("token", function () {
                 );
 
                 parser.reservedOp("=").run(
-                    new State("=", SourcePos.init("test"), "none"),
+                    new State("=", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 2), "none")
+                            new State("", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1208,12 +1208,12 @@ describe("token", function () {
                 );
 
                 parser.reservedOp("=").run(
-                    new State("= +", SourcePos.init("test"), "none"),
+                    new State("= +", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("+", new SourcePos("test", 1, 3), "none")
+                            new State("+", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1234,7 +1234,7 @@ describe("token", function () {
                 );
 
                 parser.reservedOp("=").run(
-                    new State("==", SourcePos.init("test"), "none"),
+                    new State("==", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -1253,12 +1253,12 @@ describe("token", function () {
                 );
 
                 parser.reservedOp("->").run(
-                    new State("->", SourcePos.init("test"), "none"),
+                    new State("->", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 3), "none")
+                            new State("", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1281,7 +1281,7 @@ describe("token", function () {
                 );
 
                 parser.reservedOp("->").run(
-                    new State("-+", SourcePos.init("test"), "none"),
+                    new State("-+", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -1319,7 +1319,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.stringLiteral.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -1338,12 +1338,12 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"\"", SourcePos.init("test"), "none"),
+                    new State("\"\"", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 3), "none")
+                            new State("", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1364,12 +1364,12 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"foo\"", SourcePos.init("test"), "none"),
+                    new State("\"foo\"", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("foo");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 6), "none")
+                            new State("", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1390,7 +1390,7 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"\\\"", SourcePos.init("test"), "none"),
+                    new State("\"\\\"", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1412,7 +1412,7 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"a\\        b\"", SourcePos.init("test"), "none"),
+                    new State("\"a\\        b\"", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1433,12 +1433,12 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"a\\        \\b\"", SourcePos.init("test"), "none"),
+                    new State("\"a\\        \\b\"", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("ab");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 15), "none")
+                            new State("", new SourcePos("test", 1, 15), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1459,12 +1459,12 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"a\\&b\"", SourcePos.init("test"), "none"),
+                    new State("\"a\\&b\"", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("ab");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 7), "none")
+                            new State("", new SourcePos("test", 1, 7), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1485,7 +1485,7 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"\\?\"", SourcePos.init("test"), "none"),
+                    new State("\"\\?\"", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1526,12 +1526,12 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"a\\\"b\"", SourcePos.init("test"), "none"),
+                    new State("\"a\\\"b\"", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a\"b");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 7), "none")
+                            new State("", new SourcePos("test", 1, 7), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1552,12 +1552,12 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"a\\nb\"", SourcePos.init("test"), "none"),
+                    new State("\"a\\nb\"", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a\nb");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 7), "none")
+                            new State("", new SourcePos("test", 1, 7), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1578,12 +1578,12 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"a\\65b\"", SourcePos.init("test"), "none"),
+                    new State("\"a\\65b\"", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("aAb");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 8), "none")
+                            new State("", new SourcePos("test", 1, 8), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1604,7 +1604,7 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"\\o\"", SourcePos.init("test"), "none"),
+                    new State("\"\\o\"", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1623,12 +1623,12 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"a\\o101b\"", SourcePos.init("test"), "none"),
+                    new State("\"a\\o101b\"", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("aAb");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 10), "none")
+                            new State("", new SourcePos("test", 1, 10), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1649,7 +1649,7 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"\\x\"", SourcePos.init("test"), "none"),
+                    new State("\"\\x\"", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1668,12 +1668,12 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"y\\x41z\"", SourcePos.init("test"), "none"),
+                    new State("\"y\\x41z\"", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("yAz");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 9), "none")
+                            new State("", new SourcePos("test", 1, 9), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1694,12 +1694,12 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"a\\BSb\"", SourcePos.init("test"), "none"),
+                    new State("\"a\\BSb\"", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a\u0008b");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 8), "none")
+                            new State("", new SourcePos("test", 1, 8), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1720,12 +1720,12 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"a\\NULb\"", SourcePos.init("test"), "none"),
+                    new State("\"a\\NULb\"", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a\u0000b");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 9), "none")
+                            new State("", new SourcePos("test", 1, 9), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1746,7 +1746,7 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"\\^\"", SourcePos.init("test"), "none"),
+                    new State("\"\\^\"", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1765,12 +1765,12 @@ describe("token", function () {
                 );
 
                 parser.stringLiteral.run(
-                    new State("\"a\\^Ab\"", SourcePos.init("test"), "none"),
+                    new State("\"a\\^Ab\"", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a\u0001b");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 8), "none")
+                            new State("", new SourcePos("test", 1, 8), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1810,7 +1810,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.charLiteral.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -1829,12 +1829,12 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'a'", SourcePos.init("test"), "none"),
+                    new State("'a'", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 4), "none")
+                            new State("", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1855,7 +1855,7 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'ab'", SourcePos.init("test"), "none"),
+                    new State("'ab'", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1874,7 +1874,7 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("''", SourcePos.init("test"), "none"),
+                    new State("''", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1894,7 +1894,7 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'\\'", SourcePos.init("test"), "none"),
+                    new State("'\\'", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1913,7 +1913,7 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'\\?'", SourcePos.init("test"), "none"),
+                    new State("'\\?'", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1946,12 +1946,12 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'\\''", SourcePos.init("test"), "none"),
+                    new State("'\\''", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("'");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 5), "none")
+                            new State("", new SourcePos("test", 1, 5), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1972,12 +1972,12 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'\\n'", SourcePos.init("test"), "none"),
+                    new State("'\\n'", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("\n");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 5), "none")
+                            new State("", new SourcePos("test", 1, 5), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1998,12 +1998,12 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'\\65'", SourcePos.init("test"), "none"),
+                    new State("'\\65'", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("A");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 6), "none")
+                            new State("", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2024,7 +2024,7 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'\\o'", SourcePos.init("test"), "none"),
+                    new State("'\\o'", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -2043,12 +2043,12 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'\\o101'", SourcePos.init("test"), "none"),
+                    new State("'\\o101'", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("A");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 8), "none")
+                            new State("", new SourcePos("test", 1, 8), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2069,7 +2069,7 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'\\x'", SourcePos.init("test"), "none"),
+                    new State("'\\x'", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -2088,12 +2088,12 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'\\x41'", SourcePos.init("test"), "none"),
+                    new State("'\\x41'", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("A");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 7), "none")
+                            new State("", new SourcePos("test", 1, 7), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2114,12 +2114,12 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'\\BS'", SourcePos.init("test"), "none"),
+                    new State("'\\BS'", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("\u0008");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 6), "none")
+                            new State("", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2140,12 +2140,12 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'\\NUL'", SourcePos.init("test"), "none"),
+                    new State("'\\NUL'", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("\u0000");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 7), "none")
+                            new State("", new SourcePos("test", 1, 7), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2166,7 +2166,7 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'\\^'", SourcePos.init("test"), "none"),
+                    new State("'\\^'", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -2185,12 +2185,12 @@ describe("token", function () {
                 );
 
                 parser.charLiteral.run(
-                    new State("'\\^A'", SourcePos.init("test"), "none"),
+                    new State("'\\^A'", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("\u0001");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 6), "none")
+                            new State("", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2230,7 +2230,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.natural.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -2250,12 +2250,12 @@ describe("token", function () {
                 );
 
                 parser.natural.run(
-                    new State("0x123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("0x123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(parseInt("123456789ABCDEF", 16));
                         expect(State.equals(
                             state,
-                            new State("G", new SourcePos("test", 1, 18), "none")
+                            new State("G", new SourcePos("test", 1, 18), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2278,12 +2278,12 @@ describe("token", function () {
                 );
                 
                 parser.natural.run(
-                    new State("0o123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("0o123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(parseInt("1234567", 8));
                         expect(State.equals(
                             state,
-                            new State("89ABCDEFG", new SourcePos("test", 1, 10), "none")
+                            new State("89ABCDEFG", new SourcePos("test", 1, 10), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2306,12 +2306,12 @@ describe("token", function () {
                 );
 
                 parser.natural.run(
-                    new State("0123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("0123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(0123456789);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 11), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 11), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2334,12 +2334,12 @@ describe("token", function () {
                 );
 
                 parser.natural.run(
-                    new State("0.1", SourcePos.init("test"), "none"),
+                    new State("0.1", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(0);
                         expect(State.equals(
                             state,
-                            new State(".1", new SourcePos("test", 1, 2), "none")
+                            new State(".1", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2364,12 +2364,12 @@ describe("token", function () {
                 );
 
                 parser.natural.run(
-                    new State("123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(123456789);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 10), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 10), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2411,7 +2411,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.integer.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -2436,7 +2436,7 @@ describe("token", function () {
                 );
 
                 parser.integer.run(
-                    new State("-", SourcePos.init("test"), "none"),
+                    new State("-", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -2461,7 +2461,7 @@ describe("token", function () {
                 );
 
                 parser.integer.run(
-                    new State("+", SourcePos.init("test"), "none"),
+                    new State("+", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -2486,12 +2486,12 @@ describe("token", function () {
                 );
 
                 parser.integer.run(
-                    new State("-0x123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("-0x123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(-parseInt("123456789ABCDEF", 16));
                         expect(State.equals(
                             state,
-                            new State("G", new SourcePos("test", 1, 19), "none")
+                            new State("G", new SourcePos("test", 1, 19), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2514,12 +2514,12 @@ describe("token", function () {
                 );
                 
                 parser.integer.run(
-                    new State("-0o123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("-0o123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(-parseInt("1234567", 8));
                         expect(State.equals(
                             state,
-                            new State("89ABCDEFG", new SourcePos("test", 1, 11), "none")
+                            new State("89ABCDEFG", new SourcePos("test", 1, 11), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2542,12 +2542,12 @@ describe("token", function () {
                 );
 
                 parser.integer.run(
-                    new State("-0123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("-0123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(-0123456789);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 12), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 12), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2570,12 +2570,12 @@ describe("token", function () {
                 );
 
                 parser.integer.run(
-                    new State("-0.1", SourcePos.init("test"), "none"),
+                    new State("-0.1", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(-0);
                         expect(State.equals(
                             state,
-                            new State(".1", new SourcePos("test", 1, 3), "none")
+                            new State(".1", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2600,12 +2600,12 @@ describe("token", function () {
                 );
 
                 parser.integer.run(
-                    new State("-123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("-123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(-123456789);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 11), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 11), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2628,12 +2628,12 @@ describe("token", function () {
                 );
 
                 parser.integer.run(
-                    new State("+0x123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("+0x123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(parseInt("123456789ABCDEF", 16));
                         expect(State.equals(
                             state,
-                            new State("G", new SourcePos("test", 1, 19), "none")
+                            new State("G", new SourcePos("test", 1, 19), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2656,12 +2656,12 @@ describe("token", function () {
                 );
                 
                 parser.integer.run(
-                    new State("+0o123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("+0o123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(parseInt("1234567", 8));
                         expect(State.equals(
                             state,
-                            new State("89ABCDEFG", new SourcePos("test", 1, 11), "none")
+                            new State("89ABCDEFG", new SourcePos("test", 1, 11), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2684,12 +2684,12 @@ describe("token", function () {
                 );
 
                 parser.integer.run(
-                    new State("+0123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("+0123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(0123456789);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 12), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 12), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2712,12 +2712,12 @@ describe("token", function () {
                 );
 
                 parser.integer.run(
-                    new State("+0.1", SourcePos.init("test"), "none"),
+                    new State("+0.1", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(0);
                         expect(State.equals(
                             state,
-                            new State(".1", new SourcePos("test", 1, 3), "none")
+                            new State(".1", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2742,12 +2742,12 @@ describe("token", function () {
                 );
 
                 parser.integer.run(
-                    new State("+123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("+123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(123456789);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 11), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 11), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2770,12 +2770,12 @@ describe("token", function () {
                 );
 
                 parser.integer.run(
-                    new State("0x123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("0x123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(parseInt("123456789ABCDEF", 16));
                         expect(State.equals(
                             state,
-                            new State("G", new SourcePos("test", 1, 18), "none")
+                            new State("G", new SourcePos("test", 1, 18), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2798,12 +2798,12 @@ describe("token", function () {
                 );
                 
                 parser.integer.run(
-                    new State("0o123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("0o123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(parseInt("1234567", 8));
                         expect(State.equals(
                             state,
-                            new State("89ABCDEFG", new SourcePos("test", 1, 10), "none")
+                            new State("89ABCDEFG", new SourcePos("test", 1, 10), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2826,12 +2826,12 @@ describe("token", function () {
                 );
 
                 parser.integer.run(
-                    new State("0123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("0123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(0123456789);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 11), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 11), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2854,12 +2854,12 @@ describe("token", function () {
                 );
 
                 parser.integer.run(
-                    new State("0.1", SourcePos.init("test"), "none"),
+                    new State("0.1", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(0);
                         expect(State.equals(
                             state,
-                            new State(".1", new SourcePos("test", 1, 2), "none")
+                            new State(".1", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2884,12 +2884,12 @@ describe("token", function () {
                 );
 
                 parser.integer.run(
-                    new State("123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(123456789);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 10), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 10), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2931,7 +2931,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.float.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -2950,7 +2950,7 @@ describe("token", function () {
                 );
 
                 parser.float.run(
-                    new State("1234567890A", SourcePos.init("test"), "none"),
+                    new State("1234567890A", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -2973,7 +2973,7 @@ describe("token", function () {
                 );
 
                 parser.float.run(
-                    new State("1234567890.A", SourcePos.init("test"), "none"),
+                    new State("1234567890.A", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -2992,12 +2992,12 @@ describe("token", function () {
                 );
 
                 parser.float.run(
-                    new State("1234567890.5A", SourcePos.init("test"), "none"),
+                    new State("1234567890.5A", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(1234567890.5);
                         expect(State.equals(
                             state,
-                            new State("A", new SourcePos("test", 1, 13), "none")
+                            new State("A", new SourcePos("test", 1, 13), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3022,7 +3022,7 @@ describe("token", function () {
                 );
 
                 parser.float.run(
-                    new State("1234567890eA", SourcePos.init("test"), "none"),
+                    new State("1234567890eA", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -3045,12 +3045,12 @@ describe("token", function () {
                 );
 
                 parser.float.run(
-                    new State("1234567890e-1A", SourcePos.init("test"), "none"),
+                    new State("1234567890e-1A", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(1234567890e-1);
                         expect(State.equals(
                             state,
-                            new State("A", new SourcePos("test", 1, 14), "none")
+                            new State("A", new SourcePos("test", 1, 14), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3073,12 +3073,12 @@ describe("token", function () {
                 );
 
                 parser.float.run(
-                    new State("1234567890e+1A", SourcePos.init("test"), "none"),
+                    new State("1234567890e+1A", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(1234567890e+1);
                         expect(State.equals(
                             state,
-                            new State("A", new SourcePos("test", 1, 14), "none")
+                            new State("A", new SourcePos("test", 1, 14), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3101,12 +3101,12 @@ describe("token", function () {
                 );
 
                 parser.float.run(
-                    new State("1234567890e1A", SourcePos.init("test"), "none"),
+                    new State("1234567890e1A", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(1234567890e1);
                         expect(State.equals(
                             state,
-                            new State("A", new SourcePos("test", 1, 13), "none")
+                            new State("A", new SourcePos("test", 1, 13), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3129,12 +3129,12 @@ describe("token", function () {
                 );
 
                 parser.float.run(
-                    new State("1234567890.5e-2A", SourcePos.init("test"), "none"),
+                    new State("1234567890.5e-2A", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(1234567890.5e-2);
                         expect(State.equals(
                             state,
-                            new State("A", new SourcePos("test", 1, 16), "none")
+                            new State("A", new SourcePos("test", 1, 16), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3176,7 +3176,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.naturalOrFloat.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -3196,12 +3196,12 @@ describe("token", function () {
                 );
 
                 parser.naturalOrFloat.run(
-                    new State("0x123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("0x123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal([parseInt("0123456789ABCDEF", 16)]);
                         expect(State.equals(
                             state,
-                            new State("G", new SourcePos("test", 1, 18), "none")
+                            new State("G", new SourcePos("test", 1, 18), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3224,12 +3224,12 @@ describe("token", function () {
                 );
 
                 parser.naturalOrFloat.run(
-                    new State("0o123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("0o123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal([parseInt("01234567", 8)]);
                         expect(State.equals(
                             state,
-                            new State("89ABCDEFG", new SourcePos("test", 1, 10), "none")
+                            new State("89ABCDEFG", new SourcePos("test", 1, 10), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3252,12 +3252,12 @@ describe("token", function () {
                 );
 
                 parser.naturalOrFloat.run(
-                    new State("0123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("0123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal([0123456789]);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 11), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 11), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3284,12 +3284,12 @@ describe("token", function () {
                 );
 
                 parser.naturalOrFloat.run(
-                    new State("01234.56789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("01234.56789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal([undefined, 1234.56789]);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 12), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 12), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3314,12 +3314,12 @@ describe("token", function () {
                 );
 
                 parser.naturalOrFloat.run(
-                    new State("0123456789e-4ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("0123456789e-4ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal([undefined, 123456789e-4]);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 14), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 14), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3342,12 +3342,12 @@ describe("token", function () {
                 );
 
                 parser.naturalOrFloat.run(
-                    new State("01234.56789e-6ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("01234.56789e-6ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal([undefined, 1234.56789e-6]);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 15), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 15), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3370,12 +3370,12 @@ describe("token", function () {
                 );
 
                 parser.naturalOrFloat.run(
-                    new State("123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal([123456789]);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 10), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 10), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3402,12 +3402,12 @@ describe("token", function () {
                 );
 
                 parser.naturalOrFloat.run(
-                    new State("1234.56789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("1234.56789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal([undefined, 1234.56789]);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 11), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 11), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3432,12 +3432,12 @@ describe("token", function () {
                 );
 
                 parser.naturalOrFloat.run(
-                    new State("123456789e-4ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("123456789e-4ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal([undefined, 123456789e-4]);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 13), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 13), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3460,12 +3460,12 @@ describe("token", function () {
                 );
 
                 parser.naturalOrFloat.run(
-                    new State("1234.56789e-6ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("1234.56789e-6ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal([undefined, 1234.56789e-6]);
                         expect(State.equals(
                             state,
-                            new State("ABCDEFG", new SourcePos("test", 1, 14), "none")
+                            new State("ABCDEFG", new SourcePos("test", 1, 14), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3507,7 +3507,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.decimal.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -3526,12 +3526,12 @@ describe("token", function () {
                 );
 
                 parser.decimal.run(
-                    new State("0", SourcePos.init("test"), "none"),
+                    new State("0", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(0);
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 2), "none")
+                            new State("", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3550,12 +3550,12 @@ describe("token", function () {
                 );
 
                 parser.decimal.run(
-                    new State("0123456789A", SourcePos.init("test"), "none"),
+                    new State("0123456789A", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(0123456789);
                         expect(State.equals(
                             state,
-                            new State("A", new SourcePos("test", 1, 11), "none")
+                            new State("A", new SourcePos("test", 1, 11), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3593,7 +3593,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.hexadecimal.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -3611,7 +3611,7 @@ describe("token", function () {
                 );
 
                 parser.hexadecimal.run(
-                    new State("x", SourcePos.init("test"), "none"),
+                    new State("x", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -3630,7 +3630,7 @@ describe("token", function () {
                 );
 
                 parser.hexadecimal.run(
-                    new State("X", SourcePos.init("test"), "none"),
+                    new State("X", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -3649,12 +3649,12 @@ describe("token", function () {
                 );
 
                 parser.hexadecimal.run(
-                    new State("x0", SourcePos.init("test"), "none"),
+                    new State("x0", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(0);
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 3), "none")
+                            new State("", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3673,12 +3673,12 @@ describe("token", function () {
                 );
 
                 parser.hexadecimal.run(
-                    new State("X0", SourcePos.init("test"), "none"),
+                    new State("X0", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(0);
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 3), "none")
+                            new State("", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3697,12 +3697,12 @@ describe("token", function () {
                 );
 
                 parser.hexadecimal.run(
-                    new State("x0123456789ABCDEFG", SourcePos.init("test"), "none"),
+                    new State("x0123456789ABCDEFG", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(parseInt("0123456789ABCDEF", 16));
                         expect(State.equals(
                             state,
-                            new State("G", new SourcePos("test", 1, 18), "none")
+                            new State("G", new SourcePos("test", 1, 18), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3721,12 +3721,12 @@ describe("token", function () {
                 );
 
                 parser.hexadecimal.run(
-                    new State("x0123456789abcdefg", SourcePos.init("test"), "none"),
+                    new State("x0123456789abcdefg", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(parseInt("0123456789ABCDEF", 16));
                         expect(State.equals(
                             state,
-                            new State("g", new SourcePos("test", 1, 18), "none")
+                            new State("g", new SourcePos("test", 1, 18), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3764,7 +3764,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.octal.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -3782,7 +3782,7 @@ describe("token", function () {
                 );
 
                 parser.octal.run(
-                    new State("o", SourcePos.init("test"), "none"),
+                    new State("o", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -3801,7 +3801,7 @@ describe("token", function () {
                 );
 
                 parser.octal.run(
-                    new State("O", SourcePos.init("test"), "none"),
+                    new State("O", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -3820,12 +3820,12 @@ describe("token", function () {
                 );
 
                 parser.octal.run(
-                    new State("o0", SourcePos.init("test"), "none"),
+                    new State("o0", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(0);
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 3), "none")
+                            new State("", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3844,12 +3844,12 @@ describe("token", function () {
                 );
 
                 parser.octal.run(
-                    new State("O0", SourcePos.init("test"), "none"),
+                    new State("O0", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(0);
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 3), "none")
+                            new State("", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3868,12 +3868,12 @@ describe("token", function () {
                 );
 
                 parser.octal.run(
-                    new State("o0123456789", SourcePos.init("test"), "none"),
+                    new State("o0123456789", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(parseInt("01234567", 8));
                         expect(State.equals(
                             state,
-                            new State("89", new SourcePos("test", 1, 10), "none")
+                            new State("89", new SourcePos("test", 1, 10), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3911,7 +3911,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.symbol("++").run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -3930,7 +3930,7 @@ describe("token", function () {
                 );
 
                 parser.symbol("++").run(
-                    new State("+", SourcePos.init("test"), "none"),
+                    new State("+", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -3949,12 +3949,12 @@ describe("token", function () {
                 );
 
                 parser.symbol("++").run(
-                    new State("++", SourcePos.init("test"), "none"),
+                    new State("++", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("++");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 3), "none")
+                            new State("", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3975,12 +3975,12 @@ describe("token", function () {
                 );
 
                 parser.symbol("++").run(
-                    new State("++ /* foo */ --", SourcePos.init("test"), "none"),
+                    new State("++ /* foo */ --", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("++");
                         expect(State.equals(
                             state,
-                            new State("--", new SourcePos("test", 1, 14), "none")
+                            new State("--", new SourcePos("test", 1, 14), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4025,6 +4025,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position.setColumn(state.position.column + 1),
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -4043,6 +4044,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position,
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -4060,12 +4062,12 @@ describe("token", function () {
                 });
 
                 parser.lexeme(p).run(
-                    new State("a", SourcePos.init("test"), "none"),
+                    new State("a", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a1");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 2), "none")
+                            new State("", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4087,12 +4089,12 @@ describe("token", function () {
                 );
 
                 parser.lexeme(p).run(
-                    new State("a /* foo */ b", SourcePos.init("test"), "none"),
+                    new State("a /* foo */ b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a1");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 13), "none")
+                            new State("b", new SourcePos("test", 1, 13), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4113,7 +4115,7 @@ describe("token", function () {
                 );
 
                 parser.lexeme(p).run(
-                    new State("b", SourcePos.init("test"), "none"),
+                    new State("b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -4129,7 +4131,7 @@ describe("token", function () {
                 );
 
                 parser.lexeme(p).run(
-                    new State("b /* foo */ b", SourcePos.init("test"), "none"),
+                    new State("b /* foo */ b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -4145,14 +4147,14 @@ describe("token", function () {
                 );
 
                 parser.lexeme(p).run(
-                    new State("c", SourcePos.init("test"), "none"),
+                    new State("c", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.equal("c1");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 1), "none")
+                            new State("", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4172,12 +4174,12 @@ describe("token", function () {
                 );
 
                 parser.lexeme(p).run(
-                    new State("c /* foo */ b", SourcePos.init("test"), "none"),
+                    new State("c /* foo */ b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("c1");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 12), "none")
+                            new State("b", new SourcePos("test", 1, 12), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4198,7 +4200,7 @@ describe("token", function () {
                 );
 
                 parser.lexeme(p).run(
-                    new State("d", SourcePos.init("test"), "none"),
+                    new State("d", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -4214,7 +4216,7 @@ describe("token", function () {
                 );
 
                 parser.lexeme(p).run(
-                    new State("d /* foo */ b", SourcePos.init("test"), "none"),
+                    new State("d /* foo */ b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -4249,14 +4251,14 @@ describe("token", function () {
                 var parser1 = makeTokenParser(def1);
                 
                 parser1.whiteSpace.run(
-                    new State("abc", SourcePos.init("test"), "none"),
+                    new State("abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 1, 1), "none")
+                            new State("abc", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4275,12 +4277,12 @@ describe("token", function () {
                 );
 
                 parser1.whiteSpace.run(
-                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), "none"),
+                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 2, 4), "none")
+                            new State("abc", new SourcePos("test", 2, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4301,12 +4303,12 @@ describe("token", function () {
                 );
                 
                 parser1.whiteSpace.run(
-                    new State("// foo\n// bar\nabc", SourcePos.init("test"), "none"),
+                    new State("// foo\n// bar\nabc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 3, 1), "none")
+                            new State("abc", new SourcePos("test", 3, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4327,12 +4329,12 @@ describe("token", function () {
                 );
 
                 parser1.whiteSpace.run(
-                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), "none"),
+                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 1, 21), "none")
+                            new State("abc", new SourcePos("test", 1, 21), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4353,12 +4355,12 @@ describe("token", function () {
                 );
                 
                 parser1.whiteSpace.run(
-                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), "none"),
+                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("*/ abc", new SourcePos("test", 1, 18), "none")
+                            new State("*/ abc", new SourcePos("test", 1, 18), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4394,14 +4396,14 @@ describe("token", function () {
                 var parser2 = makeTokenParser(def2);
                 
                 parser2.whiteSpace.run(
-                    new State("abc", SourcePos.init("test"), "none"),
+                    new State("abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 1, 1), "none")
+                            new State("abc", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4420,12 +4422,12 @@ describe("token", function () {
                 );
 
                 parser2.whiteSpace.run(
-                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), "none"),
+                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 2, 4), "none")
+                            new State("abc", new SourcePos("test", 2, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4446,12 +4448,12 @@ describe("token", function () {
                 );
                 
                 parser2.whiteSpace.run(
-                    new State("// foo\n// bar\nabc", SourcePos.init("test"), "none"),
+                    new State("// foo\n// bar\nabc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 3, 1), "none")
+                            new State("abc", new SourcePos("test", 3, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4472,12 +4474,12 @@ describe("token", function () {
                 );
 
                 parser2.whiteSpace.run(
-                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), "none"),
+                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 1, 21), "none")
+                            new State("abc", new SourcePos("test", 1, 21), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4498,12 +4500,12 @@ describe("token", function () {
                 );
                 
                 parser2.whiteSpace.run(
-                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), "none"),
+                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 1, 21), "none")
+                            new State("abc", new SourcePos("test", 1, 21), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4539,14 +4541,14 @@ describe("token", function () {
                 var parser3 = makeTokenParser(def3);
                 
                 parser3.whiteSpace.run(
-                    new State("abc", SourcePos.init("test"), "none"),
+                    new State("abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 1, 1), "none")
+                            new State("abc", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4564,12 +4566,12 @@ describe("token", function () {
                 );
 
                 parser3.whiteSpace.run(
-                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), "none"),
+                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 2, 4), "none")
+                            new State("abc", new SourcePos("test", 2, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4589,14 +4591,14 @@ describe("token", function () {
                 );
                 
                 parser3.whiteSpace.run(
-                    new State("// foo\n// bar\nabc", SourcePos.init("test"), "none"),
+                    new State("// foo\n// bar\nabc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("// foo\n// bar\nabc", new SourcePos("test", 1, 1), "none")
+                            new State("// foo\n// bar\nabc", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4614,12 +4616,12 @@ describe("token", function () {
                 );
 
                 parser3.whiteSpace.run(
-                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), "none"),
+                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 1, 21), "none")
+                            new State("abc", new SourcePos("test", 1, 21), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4639,12 +4641,12 @@ describe("token", function () {
                 );
                 
                 parser3.whiteSpace.run(
-                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), "none"),
+                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("*/ abc", new SourcePos("test", 1, 18), "none")
+                            new State("*/ abc", new SourcePos("test", 1, 18), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4679,14 +4681,14 @@ describe("token", function () {
                 var parser4 = makeTokenParser(def4);
                 
                 parser4.whiteSpace.run(
-                    new State("abc", SourcePos.init("test"), "none"),
+                    new State("abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 1, 1), "none")
+                            new State("abc", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4704,12 +4706,12 @@ describe("token", function () {
                 );
 
                 parser4.whiteSpace.run(
-                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), "none"),
+                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 2, 4), "none")
+                            new State("abc", new SourcePos("test", 2, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4729,12 +4731,12 @@ describe("token", function () {
                 );
                 
                 parser4.whiteSpace.run(
-                    new State("// foo\n// bar\nabc", SourcePos.init("test"), "none"),
+                    new State("// foo\n// bar\nabc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 3, 1), "none")
+                            new State("abc", new SourcePos("test", 3, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4754,14 +4756,14 @@ describe("token", function () {
                 );
 
                 parser4.whiteSpace.run(
-                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), "none"),
+                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("/* foo */ /* bar */ abc", new SourcePos("test", 1, 1), "none")
+                            new State("/* foo */ /* bar */ abc", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4779,14 +4781,14 @@ describe("token", function () {
                 );
                 
                 parser4.whiteSpace.run(
-                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), "none"),
+                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("/* foo /* bar */ */ abc", new SourcePos("test", 1, 1), "none")
+                            new State("/* foo /* bar */ */ abc", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4819,14 +4821,14 @@ describe("token", function () {
                 var parser5 = makeTokenParser(def5);
                 
                 parser5.whiteSpace.run(
-                    new State("abc", SourcePos.init("test"), "none"),
+                    new State("abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 1, 1), "none")
+                            new State("abc", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4843,12 +4845,12 @@ describe("token", function () {
                 );
 
                 parser5.whiteSpace.run(
-                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), "none"),
+                    new State(" \t\n\r\f\vabc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 2, 4), "none")
+                            new State("abc", new SourcePos("test", 2, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4867,14 +4869,14 @@ describe("token", function () {
                 );
                 
                 parser5.whiteSpace.run(
-                    new State("// foo\n// bar\nabc", SourcePos.init("test"), "none"),
+                    new State("// foo\n// bar\nabc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("// foo\n// bar\nabc", new SourcePos("test", 1, 1), "none")
+                            new State("// foo\n// bar\nabc", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4891,14 +4893,14 @@ describe("token", function () {
                 );
 
                 parser5.whiteSpace.run(
-                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), "none"),
+                    new State("/* foo */ /* bar */ abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("/* foo */ /* bar */ abc", new SourcePos("test", 1, 1), "none")
+                            new State("/* foo */ /* bar */ abc", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4915,14 +4917,14 @@ describe("token", function () {
                 );
                 
                 parser5.whiteSpace.run(
-                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), "none"),
+                    new State("/* foo /* bar */ */ abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.be.undefined;
                         expect(State.equals(
                             state,
-                            new State("/* foo /* bar */ */ abc", new SourcePos("test", 1, 1), "none")
+                            new State("/* foo /* bar */ */ abc", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4963,6 +4965,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position.setColumn(state.position.column + 1),
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -4981,6 +4984,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position,
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -4998,7 +5002,7 @@ describe("token", function () {
                 });
 
                 parser.parens(p).run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -5017,7 +5021,7 @@ describe("token", function () {
                 );
 
                 parser.parens(p).run(
-                    new State("(ab", SourcePos.init("test"), "none"),
+                    new State("(ab", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5037,12 +5041,12 @@ describe("token", function () {
                 );
 
                 parser.parens(p).run(
-                    new State("(a)b", SourcePos.init("test"), "none"),
+                    new State("(a)b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a2");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 4), "none")
+                            new State("b", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5063,12 +5067,12 @@ describe("token", function () {
                 );
 
                 parser.parens(p).run(
-                    new State("( a) b", SourcePos.init("test"), "none"),
+                    new State("( a) b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a3");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 6), "none")
+                            new State("b", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5089,7 +5093,7 @@ describe("token", function () {
                 );
 
                 parser.parens(p).run(
-                    new State("(bb", SourcePos.init("test"), "none"),
+                    new State("(bb", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5105,7 +5109,7 @@ describe("token", function () {
                 );
 
                 parser.parens(p).run(
-                    new State("(b)b", SourcePos.init("test"), "none"),
+                    new State("(b)b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5121,7 +5125,7 @@ describe("token", function () {
                 );
 
                 parser.parens(p).run(
-                    new State("( b) b", SourcePos.init("test"), "none"),
+                    new State("( b) b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5137,7 +5141,7 @@ describe("token", function () {
                 );
 
                 parser.parens(p).run(
-                    new State("(cb", SourcePos.init("test"), "none"),
+                    new State("(cb", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5161,12 +5165,12 @@ describe("token", function () {
                 );
 
                 parser.parens(p).run(
-                    new State("(c)b", SourcePos.init("test"), "none"),
+                    new State("(c)b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("c2");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 3), "none")
+                            new State("b", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5187,12 +5191,12 @@ describe("token", function () {
                 );
 
                 parser.parens(p).run(
-                    new State("( c) b", SourcePos.init("test"), "none"),
+                    new State("( c) b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("c3");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 5), "none")
+                            new State("b", new SourcePos("test", 1, 5), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5213,7 +5217,7 @@ describe("token", function () {
                 );
 
                 parser.parens(p).run(
-                    new State("(db", SourcePos.init("test"), "none"),
+                    new State("(db", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5235,7 +5239,7 @@ describe("token", function () {
                 );
 
                 parser.parens(p).run(
-                    new State("(d)b", SourcePos.init("test"), "none"),
+                    new State("(d)b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5257,7 +5261,7 @@ describe("token", function () {
                 );
 
                 parser.parens(p).run(
-                    new State("( d) b", SourcePos.init("test"), "none"),
+                    new State("( d) b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5303,6 +5307,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position.setColumn(state.position.column + 1),
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -5321,6 +5326,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position,
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -5338,7 +5344,7 @@ describe("token", function () {
                 });
 
                 parser.braces(p).run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -5357,7 +5363,7 @@ describe("token", function () {
                 );
 
                 parser.braces(p).run(
-                    new State("{ab", SourcePos.init("test"), "none"),
+                    new State("{ab", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5377,12 +5383,12 @@ describe("token", function () {
                 );
 
                 parser.braces(p).run(
-                    new State("{a}b", SourcePos.init("test"), "none"),
+                    new State("{a}b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a2");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 4), "none")
+                            new State("b", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5403,12 +5409,12 @@ describe("token", function () {
                 );
 
                 parser.braces(p).run(
-                    new State("{ a} b", SourcePos.init("test"), "none"),
+                    new State("{ a} b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a3");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 6), "none")
+                            new State("b", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5429,7 +5435,7 @@ describe("token", function () {
                 );
 
                 parser.braces(p).run(
-                    new State("{bb", SourcePos.init("test"), "none"),
+                    new State("{bb", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5445,7 +5451,7 @@ describe("token", function () {
                 );
 
                 parser.braces(p).run(
-                    new State("{b}b", SourcePos.init("test"), "none"),
+                    new State("{b}b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5461,7 +5467,7 @@ describe("token", function () {
                 );
 
                 parser.braces(p).run(
-                    new State("{ b} b", SourcePos.init("test"), "none"),
+                    new State("{ b} b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5477,7 +5483,7 @@ describe("token", function () {
                 );
 
                 parser.braces(p).run(
-                    new State("{cb", SourcePos.init("test"), "none"),
+                    new State("{cb", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5501,12 +5507,12 @@ describe("token", function () {
                 );
 
                 parser.braces(p).run(
-                    new State("{c}b", SourcePos.init("test"), "none"),
+                    new State("{c}b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("c2");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 3), "none")
+                            new State("b", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5527,12 +5533,12 @@ describe("token", function () {
                 );
 
                 parser.braces(p).run(
-                    new State("{ c} b", SourcePos.init("test"), "none"),
+                    new State("{ c} b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("c3");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 5), "none")
+                            new State("b", new SourcePos("test", 1, 5), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5553,7 +5559,7 @@ describe("token", function () {
                 );
 
                 parser.braces(p).run(
-                    new State("{db", SourcePos.init("test"), "none"),
+                    new State("{db", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5575,7 +5581,7 @@ describe("token", function () {
                 );
 
                 parser.braces(p).run(
-                    new State("{d}b", SourcePos.init("test"), "none"),
+                    new State("{d}b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5597,7 +5603,7 @@ describe("token", function () {
                 );
 
                 parser.braces(p).run(
-                    new State("{ d} b", SourcePos.init("test"), "none"),
+                    new State("{ d} b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5643,6 +5649,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position.setColumn(state.position.column + 1),
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -5661,6 +5668,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position,
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -5678,7 +5686,7 @@ describe("token", function () {
                 });
 
                 parser.angles(p).run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -5697,7 +5705,7 @@ describe("token", function () {
                 );
 
                 parser.angles(p).run(
-                    new State("<ab", SourcePos.init("test"), "none"),
+                    new State("<ab", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5717,12 +5725,12 @@ describe("token", function () {
                 );
 
                 parser.angles(p).run(
-                    new State("<a>b", SourcePos.init("test"), "none"),
+                    new State("<a>b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a2");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 4), "none")
+                            new State("b", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5743,12 +5751,12 @@ describe("token", function () {
                 );
 
                 parser.angles(p).run(
-                    new State("< a> b", SourcePos.init("test"), "none"),
+                    new State("< a> b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a3");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 6), "none")
+                            new State("b", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5769,7 +5777,7 @@ describe("token", function () {
                 );
 
                 parser.angles(p).run(
-                    new State("<bb", SourcePos.init("test"), "none"),
+                    new State("<bb", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5785,7 +5793,7 @@ describe("token", function () {
                 );
 
                 parser.angles(p).run(
-                    new State("<b>b", SourcePos.init("test"), "none"),
+                    new State("<b>b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5801,7 +5809,7 @@ describe("token", function () {
                 );
 
                 parser.angles(p).run(
-                    new State("< b> b", SourcePos.init("test"), "none"),
+                    new State("< b> b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5817,7 +5825,7 @@ describe("token", function () {
                 );
 
                 parser.angles(p).run(
-                    new State("<cb", SourcePos.init("test"), "none"),
+                    new State("<cb", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5841,12 +5849,12 @@ describe("token", function () {
                 );
 
                 parser.angles(p).run(
-                    new State("<c>b", SourcePos.init("test"), "none"),
+                    new State("<c>b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("c2");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 3), "none")
+                            new State("b", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5867,12 +5875,12 @@ describe("token", function () {
                 );
 
                 parser.angles(p).run(
-                    new State("< c> b", SourcePos.init("test"), "none"),
+                    new State("< c> b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("c3");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 5), "none")
+                            new State("b", new SourcePos("test", 1, 5), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5893,7 +5901,7 @@ describe("token", function () {
                 );
 
                 parser.angles(p).run(
-                    new State("<db", SourcePos.init("test"), "none"),
+                    new State("<db", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5915,7 +5923,7 @@ describe("token", function () {
                 );
 
                 parser.angles(p).run(
-                    new State("<d>b", SourcePos.init("test"), "none"),
+                    new State("<d>b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5937,7 +5945,7 @@ describe("token", function () {
                 );
 
                 parser.angles(p).run(
-                    new State("< d> b", SourcePos.init("test"), "none"),
+                    new State("< d> b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5983,6 +5991,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position.setColumn(state.position.column + 1),
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -6001,6 +6010,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position,
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -6018,7 +6028,7 @@ describe("token", function () {
                 });
 
                 parser.brackets(p).run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -6037,7 +6047,7 @@ describe("token", function () {
                 );
 
                 parser.brackets(p).run(
-                    new State("[ab", SourcePos.init("test"), "none"),
+                    new State("[ab", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -6057,12 +6067,12 @@ describe("token", function () {
                 );
 
                 parser.brackets(p).run(
-                    new State("[a]b", SourcePos.init("test"), "none"),
+                    new State("[a]b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a2");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 4), "none")
+                            new State("b", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6083,12 +6093,12 @@ describe("token", function () {
                 );
 
                 parser.brackets(p).run(
-                    new State("[ a] b", SourcePos.init("test"), "none"),
+                    new State("[ a] b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("a3");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 6), "none")
+                            new State("b", new SourcePos("test", 1, 6), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6109,7 +6119,7 @@ describe("token", function () {
                 );
 
                 parser.brackets(p).run(
-                    new State("[bb", SourcePos.init("test"), "none"),
+                    new State("[bb", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -6125,7 +6135,7 @@ describe("token", function () {
                 );
 
                 parser.brackets(p).run(
-                    new State("[b]b", SourcePos.init("test"), "none"),
+                    new State("[b]b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -6141,7 +6151,7 @@ describe("token", function () {
                 );
 
                 parser.brackets(p).run(
-                    new State("[ b] b", SourcePos.init("test"), "none"),
+                    new State("[ b] b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -6157,7 +6167,7 @@ describe("token", function () {
                 );
 
                 parser.brackets(p).run(
-                    new State("[cb", SourcePos.init("test"), "none"),
+                    new State("[cb", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -6181,12 +6191,12 @@ describe("token", function () {
                 );
 
                 parser.brackets(p).run(
-                    new State("[c]b", SourcePos.init("test"), "none"),
+                    new State("[c]b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("c2");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 3), "none")
+                            new State("b", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6207,12 +6217,12 @@ describe("token", function () {
                 );
 
                 parser.brackets(p).run(
-                    new State("[ c] b", SourcePos.init("test"), "none"),
+                    new State("[ c] b", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal("c3");
                         expect(State.equals(
                             state,
-                            new State("b", new SourcePos("test", 1, 5), "none")
+                            new State("b", new SourcePos("test", 1, 5), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6233,7 +6243,7 @@ describe("token", function () {
                 );
 
                 parser.brackets(p).run(
-                    new State("[db", SourcePos.init("test"), "none"),
+                    new State("[db", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -6255,7 +6265,7 @@ describe("token", function () {
                 );
 
                 parser.brackets(p).run(
-                    new State("[d]b", SourcePos.init("test"), "none"),
+                    new State("[d]b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -6277,7 +6287,7 @@ describe("token", function () {
                 );
 
                 parser.brackets(p).run(
-                    new State("[ d] b", SourcePos.init("test"), "none"),
+                    new State("[ d] b", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -6318,7 +6328,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.semi.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -6337,7 +6347,7 @@ describe("token", function () {
                 );
 
                 parser.semi.run(
-                    new State(":", SourcePos.init("test"), "none"),
+                    new State(":", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -6356,12 +6366,12 @@ describe("token", function () {
                 );
 
                 parser.semi.run(
-                    new State(";", SourcePos.init("test"), "none"),
+                    new State(";", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(";");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 2), "none")
+                            new State("", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6382,12 +6392,12 @@ describe("token", function () {
                 );
 
                 parser.semi.run(
-                    new State(";;", SourcePos.init("test"), "none"),
+                    new State(";;", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(";");
                         expect(State.equals(
                             state,
-                            new State(";", new SourcePos("test", 1, 2), "none")
+                            new State(";", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6408,12 +6418,12 @@ describe("token", function () {
                 );
 
                 parser.semi.run(
-                    new State("; ;", SourcePos.init("test"), "none"),
+                    new State("; ;", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(";");
                         expect(State.equals(
                             state,
-                            new State(";", new SourcePos("test", 1, 3), "none")
+                            new State(";", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6453,7 +6463,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.comma.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -6472,7 +6482,7 @@ describe("token", function () {
                 );
 
                 parser.comma.run(
-                    new State(".", SourcePos.init("test"), "none"),
+                    new State(".", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -6491,12 +6501,12 @@ describe("token", function () {
                 );
 
                 parser.comma.run(
-                    new State(",", SourcePos.init("test"), "none"),
+                    new State(",", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(",");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 2), "none")
+                            new State("", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6517,12 +6527,12 @@ describe("token", function () {
                 );
 
                 parser.comma.run(
-                    new State(",,", SourcePos.init("test"), "none"),
+                    new State(",,", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(",");
                         expect(State.equals(
                             state,
-                            new State(",", new SourcePos("test", 1, 2), "none")
+                            new State(",", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6543,12 +6553,12 @@ describe("token", function () {
                 );
 
                 parser.comma.run(
-                    new State(", ,", SourcePos.init("test"), "none"),
+                    new State(", ,", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(",");
                         expect(State.equals(
                             state,
-                            new State(",", new SourcePos("test", 1, 3), "none")
+                            new State(",", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6588,7 +6598,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.colon.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -6607,7 +6617,7 @@ describe("token", function () {
                 );
 
                 parser.colon.run(
-                    new State(";", SourcePos.init("test"), "none"),
+                    new State(";", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -6626,12 +6636,12 @@ describe("token", function () {
                 );
 
                 parser.colon.run(
-                    new State(":", SourcePos.init("test"), "none"),
+                    new State(":", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(":");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 2), "none")
+                            new State("", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6652,12 +6662,12 @@ describe("token", function () {
                 );
 
                 parser.colon.run(
-                    new State("::", SourcePos.init("test"), "none"),
+                    new State("::", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(":");
                         expect(State.equals(
                             state,
-                            new State(":", new SourcePos("test", 1, 2), "none")
+                            new State(":", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6678,12 +6688,12 @@ describe("token", function () {
                 );
 
                 parser.colon.run(
-                    new State(": :", SourcePos.init("test"), "none"),
+                    new State(": :", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(":");
                         expect(State.equals(
                             state,
-                            new State(":", new SourcePos("test", 1, 3), "none")
+                            new State(":", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6723,7 +6733,7 @@ describe("token", function () {
                 var parser = makeTokenParser(def);
 
                 parser.dot.run(
-                    new State("", SourcePos.init("test"), "none"),
+                    new State("", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -6742,7 +6752,7 @@ describe("token", function () {
                 );
 
                 parser.dot.run(
-                    new State(",", SourcePos.init("test"), "none"),
+                    new State(",", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -6761,12 +6771,12 @@ describe("token", function () {
                 );
 
                 parser.dot.run(
-                    new State(".", SourcePos.init("test"), "none"),
+                    new State(".", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(".");
                         expect(State.equals(
                             state,
-                            new State("", new SourcePos("test", 1, 2), "none")
+                            new State("", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6787,12 +6797,12 @@ describe("token", function () {
                 );
 
                 parser.dot.run(
-                    new State("..", SourcePos.init("test"), "none"),
+                    new State("..", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(".");
                         expect(State.equals(
                             state,
-                            new State(".", new SourcePos("test", 1, 2), "none")
+                            new State(".", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6813,12 +6823,12 @@ describe("token", function () {
                 );
 
                 parser.dot.run(
-                    new State(". .", SourcePos.init("test"), "none"),
+                    new State(". .", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(".");
                         expect(State.equals(
                             state,
-                            new State(".", new SourcePos("test", 1, 3), "none")
+                            new State(".", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6863,6 +6873,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position.setColumn(state.position.column + 1),
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -6881,6 +6892,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position,
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -6898,12 +6910,12 @@ describe("token", function () {
                 });
 
                 parser.semiSep(p).run(
-                    new State("aabcd", SourcePos.init("test"), "none"),
+                    new State("aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 2), "none")
+                            new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6923,7 +6935,7 @@ describe("token", function () {
                 );
 
                 parser.semiSep(p).run(
-                    new State("babcd", SourcePos.init("test"), "none"),
+                    new State("babcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -6941,14 +6953,14 @@ describe("token", function () {
                 );
 
                 parser.semiSep(p).run(
-                    new State("cabcd", SourcePos.init("test"), "none"),
+                    new State("cabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 1), "none")
+                            new State("abcd", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6966,14 +6978,14 @@ describe("token", function () {
                 );
 
                 parser.semiSep(p).run(
-                    new State("dabcd", SourcePos.init("test"), "none"),
+                    new State("dabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.deep.equal([]);
                         expect(State.equals(
                             state,
-                            new State("dabcd", new SourcePos("test", 1, 1), "none")
+                            new State("dabcd", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6989,12 +7001,12 @@ describe("token", function () {
                 );
 
                 parser.semiSep(p).run(
-                    new State("a;aabcd", SourcePos.init("test"), "none"),
+                    new State("a;aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1", "a3"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 4), "none")
+                            new State("abcd", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7013,12 +7025,12 @@ describe("token", function () {
                 );
 
                 parser.semiSep(p).run(
-                    new State("a; /* foo */ aabcd", SourcePos.init("test"), "none"),
+                    new State("a; /* foo */ aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1", "a14"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 15), "none")
+                            new State("abcd", new SourcePos("test", 1, 15), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7037,7 +7049,7 @@ describe("token", function () {
                 );
 
                 parser.semiSep(p).run(
-                    new State("a;babcd", SourcePos.init("test"), "none"),
+                    new State("a;babcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7055,12 +7067,12 @@ describe("token", function () {
                 );
 
                 parser.semiSep(p).run(
-                    new State("a;cabcd", SourcePos.init("test"), "none"),
+                    new State("a;cabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1", "c3"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 3), "none")
+                            new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7079,7 +7091,7 @@ describe("token", function () {
                 );
 
                 parser.semiSep(p).run(
-                    new State("a;dabcd", SourcePos.init("test"), "none"),
+                    new State("a;dabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7102,7 +7114,7 @@ describe("token", function () {
                 
                 ["a", "b", "c", "d"].forEach(function (c) {
                     parser.semiSep(p).run(
-                        new State("b;" + c + "abcd", SourcePos.init("test"), "none"),
+                        new State("b;" + c + "abcd", SourcePos.init("test"), 8, "none"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -7121,12 +7133,12 @@ describe("token", function () {
                 });
 
                 parser.semiSep(p).run(
-                    new State("c;aabcd", SourcePos.init("test"), "none"),
+                    new State("c;aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1", "a2"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 3), "none")
+                            new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7145,7 +7157,7 @@ describe("token", function () {
                 );
 
                 parser.semiSep(p).run(
-                    new State("c;babcd", SourcePos.init("test"), "none"),
+                    new State("c;babcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7163,12 +7175,12 @@ describe("token", function () {
                 );
 
                 parser.semiSep(p).run(
-                    new State("c;cabcd", SourcePos.init("test"), "none"),
+                    new State("c;cabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1", "c2"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 2), "none")
+                            new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7187,7 +7199,7 @@ describe("token", function () {
                 );
 
                 parser.semiSep(p).run(
-                    new State("c;dabcd", SourcePos.init("test"), "none"),
+                    new State("c;dabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7210,14 +7222,14 @@ describe("token", function () {
 
                 ["a", "b", "c", "d"].forEach(function (c) {
                     parser.semiSep(p).run(
-                        new State("d;" + c + "abcd", SourcePos.init("test"), "none"),
+                        new State("d;" + c + "abcd", SourcePos.init("test"), 8, "none"),
                         throwError,
                         throwError,
                         function (value, state, error) {
                             expect(value).to.deep.equal([]);
                             expect(State.equals(
                                 state,
-                                new State("d;" + c + "abcd", new SourcePos("test", 1, 1), "none")
+                                new State("d;" + c + "abcd", new SourcePos("test", 1, 1), 8, "none")
                             )).to.be.true;
                             expect(ParseError.equals(
                                 error,
@@ -7258,6 +7270,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position.setColumn(state.position.column + 1),
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -7276,6 +7289,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position,
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -7293,12 +7307,12 @@ describe("token", function () {
                 });
 
                 parser.semiSep1(p).run(
-                    new State("aabcd", SourcePos.init("test"), "none"),
+                    new State("aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 2), "none")
+                            new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7318,7 +7332,7 @@ describe("token", function () {
                 );
 
                 parser.semiSep1(p).run(
-                    new State("babcd", SourcePos.init("test"), "none"),
+                    new State("babcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7336,14 +7350,14 @@ describe("token", function () {
                 );
 
                 parser.semiSep1(p).run(
-                    new State("cabcd", SourcePos.init("test"), "none"),
+                    new State("cabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 1), "none")
+                            new State("abcd", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7361,7 +7375,7 @@ describe("token", function () {
                 );
 
                 parser.semiSep1(p).run(
-                    new State("dabcd", SourcePos.init("test"), "none"),
+                    new State("dabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -7379,12 +7393,12 @@ describe("token", function () {
                 );
 
                 parser.semiSep1(p).run(
-                    new State("a;aabcd", SourcePos.init("test"), "none"),
+                    new State("a;aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1", "a3"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 4), "none")
+                            new State("abcd", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7403,12 +7417,12 @@ describe("token", function () {
                 );
 
                 parser.semiSep1(p).run(
-                    new State("a; /* foo */ aabcd", SourcePos.init("test"), "none"),
+                    new State("a; /* foo */ aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1", "a14"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 15), "none")
+                            new State("abcd", new SourcePos("test", 1, 15), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7427,7 +7441,7 @@ describe("token", function () {
                 );
 
                 parser.semiSep1(p).run(
-                    new State("a;babcd", SourcePos.init("test"), "none"),
+                    new State("a;babcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7445,12 +7459,12 @@ describe("token", function () {
                 );
 
                 parser.semiSep1(p).run(
-                    new State("a;cabcd", SourcePos.init("test"), "none"),
+                    new State("a;cabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1", "c3"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 3), "none")
+                            new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7469,7 +7483,7 @@ describe("token", function () {
                 );
 
                 parser.semiSep1(p).run(
-                    new State("a;dabcd", SourcePos.init("test"), "none"),
+                    new State("a;dabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7492,7 +7506,7 @@ describe("token", function () {
                 
                 ["a", "b", "c", "d"].forEach(function (c) {
                     parser.semiSep1(p).run(
-                        new State("b;" + c + "abcd", SourcePos.init("test"), "none"),
+                        new State("b;" + c + "abcd", SourcePos.init("test"), 8, "none"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -7511,12 +7525,12 @@ describe("token", function () {
                 });
 
                 parser.semiSep1(p).run(
-                    new State("c;aabcd", SourcePos.init("test"), "none"),
+                    new State("c;aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1", "a2"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 3), "none")
+                            new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7535,7 +7549,7 @@ describe("token", function () {
                 );
 
                 parser.semiSep1(p).run(
-                    new State("c;babcd", SourcePos.init("test"), "none"),
+                    new State("c;babcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7553,12 +7567,12 @@ describe("token", function () {
                 );
 
                 parser.semiSep1(p).run(
-                    new State("c;cabcd", SourcePos.init("test"), "none"),
+                    new State("c;cabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1", "c2"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 2), "none")
+                            new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7577,7 +7591,7 @@ describe("token", function () {
                 );
 
                 parser.semiSep1(p).run(
-                    new State("c;dabcd", SourcePos.init("test"), "none"),
+                    new State("c;dabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7600,7 +7614,7 @@ describe("token", function () {
 
                 ["a", "b", "c", "d"].forEach(function (c) {
                     parser.semiSep1(p).run(
-                        new State("d;" + c + "abcd", SourcePos.init("test"), "none"),
+                        new State("d;" + c + "abcd", SourcePos.init("test"), 8, "none"),
                         throwError,
                         throwError,
                         throwError,
@@ -7643,6 +7657,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position.setColumn(state.position.column + 1),
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -7661,6 +7676,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position,
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -7678,12 +7694,12 @@ describe("token", function () {
                 });
 
                 parser.commaSep(p).run(
-                    new State("aabcd", SourcePos.init("test"), "none"),
+                    new State("aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 2), "none")
+                            new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7703,7 +7719,7 @@ describe("token", function () {
                 );
 
                 parser.commaSep(p).run(
-                    new State("babcd", SourcePos.init("test"), "none"),
+                    new State("babcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7721,14 +7737,14 @@ describe("token", function () {
                 );
 
                 parser.commaSep(p).run(
-                    new State("cabcd", SourcePos.init("test"), "none"),
+                    new State("cabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 1), "none")
+                            new State("abcd", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7746,14 +7762,14 @@ describe("token", function () {
                 );
 
                 parser.commaSep(p).run(
-                    new State("dabcd", SourcePos.init("test"), "none"),
+                    new State("dabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.deep.equal([]);
                         expect(State.equals(
                             state,
-                            new State("dabcd", new SourcePos("test", 1, 1), "none")
+                            new State("dabcd", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7769,12 +7785,12 @@ describe("token", function () {
                 );
 
                 parser.commaSep(p).run(
-                    new State("a,aabcd", SourcePos.init("test"), "none"),
+                    new State("a,aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1", "a3"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 4), "none")
+                            new State("abcd", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7793,12 +7809,12 @@ describe("token", function () {
                 );
 
                 parser.commaSep(p).run(
-                    new State("a, /* foo */ aabcd", SourcePos.init("test"), "none"),
+                    new State("a, /* foo */ aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1", "a14"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 15), "none")
+                            new State("abcd", new SourcePos("test", 1, 15), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7817,7 +7833,7 @@ describe("token", function () {
                 );
 
                 parser.commaSep(p).run(
-                    new State("a,babcd", SourcePos.init("test"), "none"),
+                    new State("a,babcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7835,12 +7851,12 @@ describe("token", function () {
                 );
 
                 parser.commaSep(p).run(
-                    new State("a,cabcd", SourcePos.init("test"), "none"),
+                    new State("a,cabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1", "c3"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 3), "none")
+                            new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7859,7 +7875,7 @@ describe("token", function () {
                 );
 
                 parser.commaSep(p).run(
-                    new State("a,dabcd", SourcePos.init("test"), "none"),
+                    new State("a,dabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7882,7 +7898,7 @@ describe("token", function () {
                 
                 ["a", "b", "c", "d"].forEach(function (c) {
                     parser.commaSep(p).run(
-                        new State("b," + c + "abcd", SourcePos.init("test"), "none"),
+                        new State("b," + c + "abcd", SourcePos.init("test"), 8, "none"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -7901,12 +7917,12 @@ describe("token", function () {
                 });
 
                 parser.commaSep(p).run(
-                    new State("c,aabcd", SourcePos.init("test"), "none"),
+                    new State("c,aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1", "a2"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 3), "none")
+                            new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7925,7 +7941,7 @@ describe("token", function () {
                 );
 
                 parser.commaSep(p).run(
-                    new State("c,babcd", SourcePos.init("test"), "none"),
+                    new State("c,babcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7943,12 +7959,12 @@ describe("token", function () {
                 );
 
                 parser.commaSep(p).run(
-                    new State("c,cabcd", SourcePos.init("test"), "none"),
+                    new State("c,cabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1", "c2"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 2), "none")
+                            new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7967,7 +7983,7 @@ describe("token", function () {
                 );
 
                 parser.commaSep(p).run(
-                    new State("c,dabcd", SourcePos.init("test"), "none"),
+                    new State("c,dabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7990,14 +8006,14 @@ describe("token", function () {
 
                 ["a", "b", "c", "d"].forEach(function (c) {
                     parser.commaSep(p).run(
-                        new State("d," + c + "abcd", SourcePos.init("test"), "none"),
+                        new State("d," + c + "abcd", SourcePos.init("test"), 8, "none"),
                         throwError,
                         throwError,
                         function (value, state, error) {
                             expect(value).to.deep.equal([]);
                             expect(State.equals(
                                 state,
-                                new State("d," + c + "abcd", new SourcePos("test", 1, 1), "none")
+                                new State("d," + c + "abcd", new SourcePos("test", 1, 1), 8, "none")
                             )).to.be.true;
                             expect(ParseError.equals(
                                 error,
@@ -8038,6 +8054,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position.setColumn(state.position.column + 1),
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -8056,6 +8073,7 @@ describe("token", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position,
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -8073,12 +8091,12 @@ describe("token", function () {
                 });
 
                 parser.commaSep1(p).run(
-                    new State("aabcd", SourcePos.init("test"), "none"),
+                    new State("aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 2), "none")
+                            new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -8098,7 +8116,7 @@ describe("token", function () {
                 );
 
                 parser.commaSep1(p).run(
-                    new State("babcd", SourcePos.init("test"), "none"),
+                    new State("babcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -8116,14 +8134,14 @@ describe("token", function () {
                 );
 
                 parser.commaSep1(p).run(
-                    new State("cabcd", SourcePos.init("test"), "none"),
+                    new State("cabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 1), "none")
+                            new State("abcd", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -8141,7 +8159,7 @@ describe("token", function () {
                 );
 
                 parser.commaSep1(p).run(
-                    new State("dabcd", SourcePos.init("test"), "none"),
+                    new State("dabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -8159,12 +8177,12 @@ describe("token", function () {
                 );
 
                 parser.commaSep1(p).run(
-                    new State("a,aabcd", SourcePos.init("test"), "none"),
+                    new State("a,aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1", "a3"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 4), "none")
+                            new State("abcd", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -8183,12 +8201,12 @@ describe("token", function () {
                 );
 
                 parser.commaSep1(p).run(
-                    new State("a, /* foo */ aabcd", SourcePos.init("test"), "none"),
+                    new State("a, /* foo */ aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1", "a14"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 15), "none")
+                            new State("abcd", new SourcePos("test", 1, 15), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -8207,7 +8225,7 @@ describe("token", function () {
                 );
 
                 parser.commaSep1(p).run(
-                    new State("a,babcd", SourcePos.init("test"), "none"),
+                    new State("a,babcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -8225,12 +8243,12 @@ describe("token", function () {
                 );
 
                 parser.commaSep1(p).run(
-                    new State("a,cabcd", SourcePos.init("test"), "none"),
+                    new State("a,cabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1", "c3"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 3), "none")
+                            new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -8249,7 +8267,7 @@ describe("token", function () {
                 );
 
                 parser.commaSep1(p).run(
-                    new State("a,dabcd", SourcePos.init("test"), "none"),
+                    new State("a,dabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -8272,7 +8290,7 @@ describe("token", function () {
                 
                 ["a", "b", "c", "d"].forEach(function (c) {
                     parser.commaSep1(p).run(
-                        new State("b," + c + "abcd", SourcePos.init("test"), "none"),
+                        new State("b," + c + "abcd", SourcePos.init("test"), 8, "none"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -8291,12 +8309,12 @@ describe("token", function () {
                 });
 
                 parser.commaSep1(p).run(
-                    new State("c,aabcd", SourcePos.init("test"), "none"),
+                    new State("c,aabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1", "a2"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 3), "none")
+                            new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -8315,7 +8333,7 @@ describe("token", function () {
                 );
 
                 parser.commaSep1(p).run(
-                    new State("c,babcd", SourcePos.init("test"), "none"),
+                    new State("c,babcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -8333,12 +8351,12 @@ describe("token", function () {
                 );
 
                 parser.commaSep1(p).run(
-                    new State("c,cabcd", SourcePos.init("test"), "none"),
+                    new State("c,cabcd", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1", "c2"]);
                         expect(State.equals(
                             state,
-                            new State("abcd", new SourcePos("test", 1, 2), "none")
+                            new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -8357,7 +8375,7 @@ describe("token", function () {
                 );
 
                 parser.commaSep1(p).run(
-                    new State("c,dabcd", SourcePos.init("test"), "none"),
+                    new State("c,dabcd", SourcePos.init("test"), 8, "none"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -8380,7 +8398,7 @@ describe("token", function () {
 
                 ["a", "b", "c", "d"].forEach(function (c) {
                     parser.commaSep1(p).run(
-                        new State("d," + c + "abcd", SourcePos.init("test"), "none"),
+                        new State("d," + c + "abcd", SourcePos.init("test"), 8, "none"),
                         throwError,
                         throwError,
                         throwError,

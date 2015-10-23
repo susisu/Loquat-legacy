@@ -154,59 +154,71 @@ describe("pos", function () {
             });
         });
 
-        describe("#addChar(char)", function () {
+        describe("#addChar(char, tabWidth)", function () {
             it("should return a copy of the position, the line and the column of which are incremented by the specified character", function () {
                 var posA = new SourcePos("abc", 1, 2);
-                var copyA = posA.addChar("a");
+                var copyA = posA.addChar("a", 8);
                 expect(copyA).to.have.property("name", "abc");
                 expect(copyA).to.have.property("line", 1);
                 expect(copyA).to.have.property("column", 3);
 
                 var posB = new SourcePos("def", 1, 2);
-                var copyB = posB.addChar("\n");
+                var copyB = posB.addChar("\n", 8);
                 expect(copyB).to.have.property("name", "def");
                 expect(copyB).to.have.property("line", 2);
                 expect(copyB).to.have.property("column", 1);
 
                 var posC = new SourcePos("ghi", 1, 1);
-                var copyC = posC.addChar("\t");
+                var copyC = posC.addChar("\t", 8);
                 expect(copyC).to.have.property("name", "ghi");
                 expect(copyC).to.have.property("line", 1);
                 expect(copyC).to.have.property("column", 9);
 
                 var posD = new SourcePos("jkl", 1, 5);
-                var copyD = posD.addChar("\t");
+                var copyD = posD.addChar("\t", 8);
                 expect(copyD).to.have.property("name", "jkl");
                 expect(copyD).to.have.property("line", 1);
                 expect(copyD).to.have.property("column", 9);
 
                 var posE = new SourcePos("mno", 1, 9);
-                var copyE = posE.addChar("\t");
+                var copyE = posE.addChar("\t", 8);
                 expect(copyE).to.have.property("name", "mno");
                 expect(copyE).to.have.property("line", 1);
                 expect(copyE).to.have.property("column", 17);
+
+                var posF = new SourcePos("pqr", 1, 1);
+                var copyF = posF.addChar("\t", 7);
+                expect(copyF).to.have.property("name", "pqr");
+                expect(copyF).to.have.property("line", 1);
+                expect(copyF).to.have.property("column", 8);
             });
         });
 
-        describe("#addString(str)", function () {
+        describe("#addString(str, tabWidth)", function () {
             it("should return a copy of the position, the line and the column of which are incremented by the specified string", function () {
                 var posA = new SourcePos("abc", 1, 2);
-                var copyA = posA.addString("foo");
+                var copyA = posA.addString("foo", 8);
                 expect(copyA).to.have.property("name", "abc");
                 expect(copyA).to.have.property("line", 1);
                 expect(copyA).to.have.property("column", 5);
 
                 var posB = new SourcePos("def", 1, 2);
-                var copyB = posB.addString("bar\nbaz");
+                var copyB = posB.addString("bar\nbaz", 8);
                 expect(copyB).to.have.property("name", "def");
                 expect(copyB).to.have.property("line", 2);
                 expect(copyB).to.have.property("column", 4);
 
                 var posC = new SourcePos("ghi", 1, 2);
-                var copyC = posC.addString("hoge\nfuga\tpiyo");
+                var copyC = posC.addString("hoge\nfuga\tpiyo", 8);
                 expect(copyC).to.have.property("name", "ghi");
                 expect(copyC).to.have.property("line", 2);
                 expect(copyC).to.have.property("column", 13);
+
+                var posD = new SourcePos("jkl", 1, 2);
+                var copyD = posD.addString("hoge\nfuga\tpiyo", 7);
+                expect(copyD).to.have.property("name", "jkl");
+                expect(copyD).to.have.property("line", 2);
+                expect(copyD).to.have.property("column", 12);
             });
         });
     });

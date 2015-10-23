@@ -25,81 +25,98 @@ describe("prim", function () {
     var LazyParser = lq.prim.LazyParser;
 
     describe("State", function () {
-        it("should have fields 'input', 'position' and 'userState'", function () {
-            var state = new State("foo", new SourcePos("test", 1, 2), {});
+        it("should have fields 'input', 'position', 'tabWidth' and 'userState'", function () {
+            var state = new State("foo", new SourcePos("test", 1, 2), 8, {});
             expect(state).to.have.property("input");
             expect(state).to.have.property("position").that.is.instanceOf(SourcePos);
+            expect(state).to.have.property("tabWidth").that.is.a("number");
             expect(state).to.have.property("userState");
         });
 
         describe("coustructor(input, position, userState)", function () {
             it("should create a new State object that represents state of parser", function () {
-                var state = new State("foo", new SourcePos("test", 1, 2), "none");
+                var state = new State("foo", new SourcePos("test", 1, 2), 8, "none");
                 expect(state.input).to.equal("foo");
                 expect(SourcePos.equals(state.position, new SourcePos("test", 1, 2))).to.be.true;
+                expect(state.tabWidth).to.equal(8);
                 expect(state.userState).to.equal("none");
             });
         });
 
         describe(".equals(stateA, stateB, inputEquals, userStateEquals)", function () {
             it("should return true when 'stateA' and 'stateB' represent the same state", function () {
-                var stateA = new State("foo", new SourcePos("test", 1, 2), "none");
-                var stateB = new State("foo", new SourcePos("test", 1, 2), "none");
+                var stateA = new State("foo", new SourcePos("test", 1, 2), 8, "none");
+                var stateB = new State("foo", new SourcePos("test", 1, 2), 8, "none");
                 expect(State.equals(stateA, stateB)).to.be.true;
 
-                var stateC = new State(["f", "o", "o"], new SourcePos("test", 1, 2), "none");
-                var stateD = new State(["f", "o", "o"], new SourcePos("test", 1, 2), "none");
+                var stateC = new State(["f", "o", "o"], new SourcePos("test", 1, 2), 8, "none");
+                var stateD = new State(["f", "o", "o"], new SourcePos("test", 1, 2), 8, "none");
                 expect(State.equals(stateC, stateD, lq.util.ArrayUtil.equals)).to.be.true;
 
-                var stateE = new State("foo", new SourcePos("test", 1, 2), [1, 2, 3]);
-                var stateF = new State("foo", new SourcePos("test", 1, 2), [1, 2, 3]);
+                var stateE = new State("foo", new SourcePos("test", 1, 2), 8, [1, 2, 3]);
+                var stateF = new State("foo", new SourcePos("test", 1, 2), 8, [1, 2, 3]);
                 expect(State.equals(stateE, stateF, undefined, lq.util.ArrayUtil.equals)).to.be.true;
             });
 
             it("should return false when 'stateA' and 'stateB' represent different states", function () {
-                var stateA = new State("foo", new SourcePos("test", 1, 2), "none");
-                var stateB = new State("bar", new SourcePos("test", 1, 2), "none");
+                var stateA = new State("foo", new SourcePos("test", 1, 2), 8, "none");
+                var stateB = new State("bar", new SourcePos("test", 1, 2), 8, "none");
                 expect(State.equals(stateA, stateB)).to.be.false;
 
-                var stateC = new State("foo", new SourcePos("test", 1, 2), "none");
-                var stateD = new State("foo", new SourcePos("test", 3, 4), "none");
+                var stateC = new State("foo", new SourcePos("test", 1, 2), 8, "none");
+                var stateD = new State("foo", new SourcePos("test", 3, 4), 8, "none");
                 expect(State.equals(stateC, stateD)).to.be.false;
 
-                var stateE = new State("foo", new SourcePos("test", 1, 2), "bar");
-                var stateF = new State("foo", new SourcePos("test", 3, 4), "baz");
+                var stateE = new State("foo", new SourcePos("test", 1, 2), 8, "bar");
+                var stateF = new State("foo", new SourcePos("test", 3, 4), 8, "baz");
                 expect(State.equals(stateE, stateF)).to.be.false;
             });
         });
 
         describe("#setInput(input)", function () {
             it("should return a copy of the state, the input of which is set to the specified input", function () {
-                var state = new State("foo", new SourcePos("test", 1, 2), "none");
+                var state = new State("foo", new SourcePos("test", 1, 2), 8, "none");
                 var copy = state.setInput("bar");
                 expect(copy).not.to.equal(state);
                 expect(copy.input).to.equal("bar");
                 expect(SourcePos.equals(copy.position, state.position)).to.be.true;
+                expect(copy.tabWidth).to.equal(state.tabWidth);
                 expect(copy.userState).to.equal(state.userState);
             });
         });
 
         describe("#setPosition(position)", function () {
             it("should return a copy of the state, the position of which is set to the specified position", function () {
-                var state = new State("foo", new SourcePos("test", 1, 2), "none");
+                var state = new State("foo", new SourcePos("test", 1, 2), 8, "none");
                 var copy = state.setPosition(new SourcePos("test", 3, 4));
                 expect(copy).not.to.equal(state);
                 expect(copy.input).to.equal(state.input);
                 expect(SourcePos.equals(copy.position, new SourcePos("test", 3, 4))).to.be.true;
+                expect(copy.tabWidth).to.equal(state.tabWidth);
+                expect(copy.userState).to.equal(state.userState);
+            });
+        });
+
+        describe("#setTabWidth(tabWidth)", function () {
+            it("should return a copy of the state, the tab width of which is set to the specified value", function () {
+                var state = new State("foo", new SourcePos("test", 1, 2), 8, "none");
+                var copy = state.setTabWidth(4);
+                expect(copy).not.to.equal(state);
+                expect(copy.input).to.equal(state.input);
+                expect(SourcePos.equals(copy.position, state.position)).to.be.true;
+                expect(copy.tabWidth).to.equal(4);
                 expect(copy.userState).to.equal(state.userState);
             });
         });
 
         describe("#setUserState(userState)", function () {
             it("should return a copy of the state, the user state of which is set to the specified user state", function () {
-                var state = new State("foo", new SourcePos("test", 1, 2), "none");
+                var state = new State("foo", new SourcePos("test", 1, 2), 8, "none");
                 var copy = state.setUserState("some");
                 expect(copy).not.to.equal(state);
                 expect(copy.input).to.equal(state.input);
                 expect(SourcePos.equals(copy.position, state.position)).to.be.true;
+                expect(copy.tabWidth).to.equal(state.tabWidth);
                 expect(copy.userState).to.equal("some");
             });
         });
@@ -109,7 +126,7 @@ describe("prim", function () {
         it("should have fields 'consumed', 'succeeded', 'value', 'state' and 'error'", function () {
             var pos = new SourcePos("test", 1, 2);
             var res = new Result(true, true, "foo",
-                new State("some", pos, {}),
+                new State("some", pos, 8, {}),
                 new ParseError(pos, [
                     new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                     new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -126,7 +143,7 @@ describe("prim", function () {
             it("should create a new Result object that represents result of parsing", function () {
                 var pos = new SourcePos("test", 1, 2);
                 var res = new Result(true, true, "foo",
-                    new State("some", pos, "none"),
+                    new State("some", pos, 8, "none"),
                     new ParseError(pos, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -135,7 +152,7 @@ describe("prim", function () {
                 expect(res.consumed).to.be.true;
                 expect(res.succeeded).to.be.true;
                 expect(res.value).to.equal("foo");
-                expect(State.equals(res.state, new State("some", pos, "none"))).to.be.true;
+                expect(State.equals(res.state, new State("some", pos, 8, "none"))).to.be.true;
                 expect(
                     ParseError.equals(res.error,
                         new ParseError(pos, [
@@ -151,7 +168,7 @@ describe("prim", function () {
             it("should return true when 'resultA' and 'resultB' represent the same result", function () {
                 var posA = new SourcePos("test", 1, 2);
                 var resA = new Result(true, true, "foo",
-                    new State("some", posA, "none"),
+                    new State("some", posA, 8, "none"),
                     new ParseError(posA, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -159,7 +176,7 @@ describe("prim", function () {
                 );
                 var posB = new SourcePos("test", 1, 2);
                 var resB = new Result(true, true, "foo",
-                    new State("some", posB, "none"),
+                    new State("some", posB, 8, "none"),
                     new ParseError(posB, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -169,7 +186,7 @@ describe("prim", function () {
 
                 var posC = new SourcePos("test", 1, 2);
                 var resC = new Result(true, true, ["f", "o", "o"],
-                    new State("some", posC, "none"),
+                    new State("some", posC, 8, "none"),
                     new ParseError(posC, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -177,7 +194,7 @@ describe("prim", function () {
                 );
                 var posD = new SourcePos("test", 1, 2);
                 var resD = new Result(true, true, ["f", "o", "o"],
-                    new State("some", posD, "none"),
+                    new State("some", posD, 8, "none"),
                     new ParseError(posD, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -189,7 +206,7 @@ describe("prim", function () {
             it("should return false when 'resultA' and 'resultB' represent different results", function () {
                 var posA = new SourcePos("test", 1, 2);
                 var resA = new Result(true, true, "foo",
-                    new State("some", posA, "none"),
+                    new State("some", posA, 8, "none"),
                     new ParseError(posA, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -197,7 +214,7 @@ describe("prim", function () {
                 );
                 var posB = new SourcePos("test", 3, 4);
                 var resB = new Result(true, true, "foo",
-                    new State("some", posB, "none"),
+                    new State("some", posB, 8, "none"),
                     new ParseError(posB, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -207,7 +224,7 @@ describe("prim", function () {
 
                 var posC = new SourcePos("test", 1, 2);
                 var resC = new Result(true, true, "foo",
-                    new State("some", posC, "none"),
+                    new State("some", posC, 8, "none"),
                     new ParseError(posC, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -215,7 +232,7 @@ describe("prim", function () {
                 );
                 var posD = new SourcePos("test", 1, 2);
                 var resD = new Result(false, true, "foo",
-                    new State("some", posD, "none"),
+                    new State("some", posD, 8, "none"),
                     new ParseError(posD, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -225,7 +242,7 @@ describe("prim", function () {
 
                 var posE = new SourcePos("test", 1, 2);
                 var resE = new Result(true, true, "foo",
-                    new State("some", posE, "none"),
+                    new State("some", posE, 8, "none"),
                     new ParseError(posE, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -233,7 +250,7 @@ describe("prim", function () {
                 );
                 var posF = new SourcePos("test", 1, 2);
                 var resF = new Result(true, false, "foo",
-                    new State("some", posF, "none"),
+                    new State("some", posF, 8, "none"),
                     new ParseError(posF, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -243,7 +260,7 @@ describe("prim", function () {
 
                 var posG = new SourcePos("test", 1, 2);
                 var resG = new Result(true, true, "foo",
-                    new State("some", posG, "none"),
+                    new State("some", posG, 8, "none"),
                     new ParseError(posG, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -251,7 +268,7 @@ describe("prim", function () {
                 );
                 var posH = new SourcePos("test", 1, 2);
                 var resH = new Result(true, true, "bar",
-                    new State("some", posH, "none"),
+                    new State("some", posH, 8, "none"),
                     new ParseError(posH, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -261,7 +278,7 @@ describe("prim", function () {
 
                 var posI = new SourcePos("test", 1, 2);
                 var resI = new Result(true, true, "foo",
-                    new State("some", posI, "none"),
+                    new State("some", posI, 8, "none"),
                     new ParseError(posI, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -269,7 +286,7 @@ describe("prim", function () {
                 );
                 var posJ = new SourcePos("test", 1, 2);
                 var resJ = new Result(true, true, "foo",
-                    new State("some", posJ, "some"),
+                    new State("some", posJ, 8, "some"),
                     new ParseError(posJ, [
                         new ErrorMessage(ErrorMessageType.UNEXPECT, "abc"),
                         new ErrorMessage(ErrorMessageType.EXPECT, "def")
@@ -324,11 +341,11 @@ describe("prim", function () {
                 var posA = new SourcePos("testA", 1, 2);
                 var posB = new SourcePos("testB", 3, 4);
 
-                alwaysCSuc("foo", new State("abc", posA, "none"), new ParseError(posA, [])).run(
-                    new State("def", posB, "some"),
+                alwaysCSuc("foo", new State("abc", posA, 8, "none"), new ParseError(posA, [])).run(
+                    new State("def", posB, 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("foo");
-                        expect(State.equals(state, new State("abc", posA, "none"))).to.be.true;
+                        expect(State.equals(state, new State("abc", posA, 8, "none"))).to.be.true;
                         expect(ParseError.equals(error, new ParseError(posA, []))).to.be.true;
                     },
                     throwError,
@@ -337,7 +354,7 @@ describe("prim", function () {
                 );
 
                 alwaysCErr(new ParseError(posA, [])).run(
-                    new State("def", posB, "some"),
+                    new State("def", posB, 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(error, new ParseError(posA, []))).to.be.true;
@@ -346,20 +363,20 @@ describe("prim", function () {
                     throwError
                 );
 
-                alwaysESuc("foo", new State("abc", posA, "none"), new ParseError(posA, [])).run(
-                    new State("def", posB, "some"),
+                alwaysESuc("foo", new State("abc", posA, 8, "none"), new ParseError(posA, [])).run(
+                    new State("def", posB, 8, "some"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.equal("foo");
-                        expect(State.equals(state, new State("abc", posA, "none"))).to.be.true;
+                        expect(State.equals(state, new State("abc", posA, 8, "none"))).to.be.true;
                         expect(ParseError.equals(error, new ParseError(posA, []))).to.be.true;
                     },
                     throwError
                 );
 
                 alwaysEErr(new ParseError(posA, [])).run(
-                    new State("def", posB, "some"),
+                    new State("def", posB, 8, "some"),
                     throwError,
                     throwError,
                     throwError,
@@ -375,17 +392,17 @@ describe("prim", function () {
                 var posA = new SourcePos("testA", 1, 2);
                 var posB = new SourcePos("testB", 3, 4);
 
-                var resCSuc = alwaysCSuc("foo", new State("abc", posA, "none"), new ParseError(posA, []))
-                    .parse(new State("def", posB, "some"));
+                var resCSuc = alwaysCSuc("foo", new State("abc", posA, 8, "none"), new ParseError(posA, []))
+                    .parse(new State("def", posB, 8, "some"));
                 expect(
                     Result.equals(
                         resCSuc,
-                        new Result(true, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
+                        new Result(true, true, "foo", new State("abc", posA, 8, "none"), new ParseError(posA, []))
                     )
                 ).to.be.true;
 
                 var resCErr = alwaysCErr(new ParseError(posA, []))
-                    .parse(new State("def", posB, "some"));
+                    .parse(new State("def", posB, 8, "some"));
                 expect(
                     Result.equals(
                         resCErr,
@@ -393,17 +410,17 @@ describe("prim", function () {
                     )
                 ).to.be.true;
 
-                var resESuc = alwaysESuc("foo", new State("abc", posA, "none"), new ParseError(posA, []))
-                    .parse(new State("def", posB, "some"));
+                var resESuc = alwaysESuc("foo", new State("abc", posA, 8, "none"), new ParseError(posA, []))
+                    .parse(new State("def", posB, 8, "some"));
                 expect(
                     Result.equals(
                         resESuc,
-                        new Result(false, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
+                        new Result(false, true, "foo", new State("abc", posA, 8, "none"), new ParseError(posA, []))
                     )
                 ).to.be.true;
 
                 var resEErr = alwaysEErr(new ParseError(posA, []))
-                    .parse(new State("def", posB, "some"));
+                    .parse(new State("def", posB, 8, "some"));
                 expect(
                     Result.equals(
                         resEErr,
@@ -434,14 +451,14 @@ describe("prim", function () {
                 var parserA = new LazyParser(function () {
                     return t;
                 });
-                t = alwaysCSuc("foo", new State("abc", posA, "none"), new ParseError(posA, []));
+                t = alwaysCSuc("foo", new State("abc", posA, 8, "none"), new ParseError(posA, []));
                 parserA.init();
                 t = alwaysCErr(new ParseError(posA, []));
-                var res = parserA.parse(new State("def", posB, "some"));
+                var res = parserA.parse(new State("def", posB, 8, "some"));
                 expect(
                     Result.equals(
                         res,
-                        new Result(true, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
+                        new Result(true, true, "foo", new State("abc", posA, 8, "none"), new ParseError(posA, []))
                     )
                 ).to.be.true;
 
@@ -449,10 +466,10 @@ describe("prim", function () {
                 var parserB = new LazyParser(function () {
                     return u;
                 });
-                u = alwaysCSuc("foo", new State("abc", posA, "none"), new ParseError(posA, []));
+                u = alwaysCSuc("foo", new State("abc", posA, 8, "none"), new ParseError(posA, []));
                 u = alwaysCErr(new ParseError(posA, []));
                 parserB.init();
-                var res = parserB.parse(new State("def", posB, "some"));
+                var res = parserB.parse(new State("def", posB, 8, "some"));
                 expect(
                     Result.equals(
                         res,
@@ -468,13 +485,13 @@ describe("prim", function () {
                 var posB = new SourcePos("testB", 3, 4);
 
                 var lazyCSuc = new LazyParser(function () {
-                    return alwaysCSuc("foo", new State("abc", posA, "none"), new ParseError(posA, []));
+                    return alwaysCSuc("foo", new State("abc", posA, 8, "none"), new ParseError(posA, []));
                 });
                 lazyCSuc.run(
-                    new State("def", posB, "some"),
+                    new State("def", posB, 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("foo");
-                        expect(State.equals(state, new State("abc", posA, "none"))).to.be.true;
+                        expect(State.equals(state, new State("abc", posA, 8, "none"))).to.be.true;
                         expect(ParseError.equals(error, new ParseError(posA, []))).to.be.true;
                     },
                     throwError,
@@ -486,7 +503,7 @@ describe("prim", function () {
                     return alwaysCErr(new ParseError(posA, []));
                 });
                 lazyCErr.run(
-                    new State("def", posB, "some"),
+                    new State("def", posB, 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(error, new ParseError(posA, []))).to.be.true;
@@ -496,15 +513,15 @@ describe("prim", function () {
                 );
 
                 var lazyESuc = new LazyParser(function () {
-                    return alwaysESuc("foo", new State("abc", posA, "none"), new ParseError(posA, []));
+                    return alwaysESuc("foo", new State("abc", posA, 8, "none"), new ParseError(posA, []));
                 });
                 lazyESuc.run(
-                    new State("def", posB, "some"),
+                    new State("def", posB, 8, "some"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.equal("foo");
-                        expect(State.equals(state, new State("abc", posA, "none"))).to.be.true;
+                        expect(State.equals(state, new State("abc", posA, 8, "none"))).to.be.true;
                         expect(ParseError.equals(error, new ParseError(posA, []))).to.be.true;
                     },
                     throwError
@@ -514,7 +531,7 @@ describe("prim", function () {
                     return alwaysEErr(new ParseError(posA, []));
                 });
                 lazyEErr.run(
-                    new State("def", posB, "some"),
+                    new State("def", posB, 8, "some"),
                     throwError,
                     throwError,
                     throwError,
@@ -531,20 +548,20 @@ describe("prim", function () {
                 var posB = new SourcePos("testB", 3, 4);
 
                 var lazyCSuc = new LazyParser(function () {
-                    return alwaysCSuc("foo", new State("abc", posA, "none"), new ParseError(posA, []));
+                    return alwaysCSuc("foo", new State("abc", posA, 8, "none"), new ParseError(posA, []));
                 });
-                var resCSuc = lazyCSuc.parse(new State("def", posB, "some"));
+                var resCSuc = lazyCSuc.parse(new State("def", posB, 8, "some"));
                 expect(
                     Result.equals(
                         resCSuc,
-                        new Result(true, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
+                        new Result(true, true, "foo", new State("abc", posA, 8, "none"), new ParseError(posA, []))
                     )
                 ).to.be.true;
 
                 var lazyCErr = new LazyParser(function () {
                     return alwaysCErr(new ParseError(posA, []));
                 });
-                var resCErr = lazyCErr.parse(new State("def", posB, "some"));
+                var resCErr = lazyCErr.parse(new State("def", posB, 8, "some"));
                 expect(
                     Result.equals(
                         resCErr,
@@ -553,20 +570,20 @@ describe("prim", function () {
                 ).to.be.true;
 
                 var lazyESuc = new LazyParser(function () {
-                    return alwaysESuc("foo", new State("abc", posA, "none"), new ParseError(posA, []));
+                    return alwaysESuc("foo", new State("abc", posA, 8, "none"), new ParseError(posA, []));
                 });
-                var resESuc = lazyESuc.parse(new State("def", posB, "some"));
+                var resESuc = lazyESuc.parse(new State("def", posB, 8, "some"));
                 expect(
                     Result.equals(
                         resESuc,
-                        new Result(false, true, "foo", new State("abc", posA, "none"), new ParseError(posA, []))
+                        new Result(false, true, "foo", new State("abc", posA, 8, "none"), new ParseError(posA, []))
                     )
                 ).to.be.true;
 
                 var lazyEErr = new LazyParser(function () {
                     return alwaysEErr(new ParseError(posA, []));
                 });
-                var resEErr = lazyEErr.parse(new State("def", posB, "some"));
+                var resEErr = lazyEErr.parse(new State("def", posB, 8, "some"));
                 expect(
                     Result.equals(
                         resEErr,
@@ -577,21 +594,21 @@ describe("prim", function () {
         });
     });
 
-    describe("parse(parser, name, input, userState)", function () {
+    describe("parse(parser, name, input, tabWidth, userState)", function () {
         it("should parse 'input' from the head and return the result of parsing", function () {
             var suc = new Parser(function (state, csuc, cerr, esuc, eerr) {
-                State.equals(state, new State("abc", new SourcePos("test", 1, 1), "none"));
+                State.equals(state, new State("abc", new SourcePos("test", 1, 1), 8, "none"));
                 return esuc("foo", state, ParseError.unknown(state.position));
             });
-            var resSuc = lq.prim.parse(suc, "test", "abc", "none");
+            var resSuc = lq.prim.parse(suc, "test", "abc", 8, "none");
             expect(resSuc.succeeded).to.be.true;
             expect(resSuc.value).to.equal("foo");
 
             var err = new Parser(function (state, csuc, cerr, esuc, eerr) {
-                State.equals(state, new State("abc", new SourcePos("test", 1, 1), "none"));
+                State.equals(state, new State("abc", new SourcePos("test", 1, 1), 8, "none"));
                 return eerr(new ParseError(state.position, [new ErrorMessage(ErrorMessageType.UNEXPECT, "bar")]));
             });
-            var resErr = lq.prim.parse(err, "test", "abc", "none");
+            var resErr = lq.prim.parse(err, "test", "abc", 8, "none");
             expect(resErr.succeeded).to.be.false;
             expect(
                 ParseError.equals(
@@ -607,8 +624,8 @@ describe("prim", function () {
             function toUpperCase (str) { return str.toUpperCase(); }
 
             var pos = new SourcePos("test", 1, 2);
-            var stateA = new State("abc", pos, "none");
-            var stateB = new State("def", pos, "none");
+            var stateA = new State("abc", pos, 8, "none");
+            var stateB = new State("def", pos, 8, "none");
 
             lq.prim.fmap(toUpperCase)(alwaysCSuc("foo", stateA, ParseError.unknown(pos))).run(
                 stateB,
@@ -658,7 +675,7 @@ describe("prim", function () {
         it("should satisfy the functor laws", function () {
             var acsuc = alwaysCSuc(
                 "foo",
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 1, 2),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
@@ -672,7 +689,7 @@ describe("prim", function () {
             );
             var aesuc = alwaysESuc(
                 "foo",
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 1, 2),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
@@ -684,7 +701,7 @@ describe("prim", function () {
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                 )
             );
-            var initState = new State("abc", SourcePos.init("test"), "none");
+            var initState = new State("abc", SourcePos.init("test"), 8, "none");
 
             var id = function (x) { return x; };
             var fid = lq.prim.fmap(id);
@@ -767,12 +784,12 @@ describe("prim", function () {
     describe("pure(value)", function () {
         it("should return a parser that always succeeds without consumption, with 'value'", function () {
             lq.prim.pure("foo").run(
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal("foo");
-                    expect(State.equals(state, new State("abc", new SourcePos("test", 1, 2), "none"))).to.be.true;
+                    expect(State.equals(state, new State("abc", new SourcePos("test", 1, 2), 8, "none"))).to.be.true;
                     expect(ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 2)))).to.be.true;
                 },
                 throwError
@@ -783,14 +800,14 @@ describe("prim", function () {
     describe("ap(parserA, parserB)", function () {
         var valueA = function (str) { return str.toUpperCase(); };
         var posA = new SourcePos("test", 1, 2);
-        var stateA = new State("abc", posA, "none");
+        var stateA = new State("abc", posA, 8, "none");
         var errorA = new ParseError(
             posA,
             [new ErrorMessage(ErrorMessageType.MESSAGE, "FOO")]
         );
         var valueB = "bar"
         var posB = new SourcePos("test", 3, 4);
-        var stateB = new State("def", posB, "some");
+        var stateB = new State("def", posB, 8, "some");
         var errorB = new ParseError(
             posB,
             [new ErrorMessage(ErrorMessageType.MESSAGE, "BAR")]
@@ -970,7 +987,7 @@ describe("prim", function () {
         it("should satisfy the applicative laws", function () {
             var acsucv = alwaysCSuc(
                 "foo",
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 1, 2),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "csucv")]
@@ -978,7 +995,7 @@ describe("prim", function () {
             );
             var acsucf = alwaysCSuc(
                 function (str) { return str + "bar"; },
-                new State("abc", new SourcePos("test", 3, 4), "none"),
+                new State("abc", new SourcePos("test", 3, 4), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 3, 4),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "csucf")]
@@ -992,7 +1009,7 @@ describe("prim", function () {
             );
             var aesucv = alwaysESuc(
                 "foo",
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 1, 2),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "esucv")]
@@ -1000,7 +1017,7 @@ describe("prim", function () {
             );
             var aesucf = alwaysESuc(
                 function (str) { return str + "baz"; },
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 1, 2),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "esucf")]
@@ -1012,7 +1029,7 @@ describe("prim", function () {
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                 )
             );
-            var initState = new State("abc", SourcePos.init("test"), "none");
+            var initState = new State("abc", SourcePos.init("test"), 8, "none");
 
             var id = function (x) { return x; };
 
@@ -1086,14 +1103,14 @@ describe("prim", function () {
     describe("left(parserA, parserB)", function () {
         var valueA = "foo"
         var posA = new SourcePos("test", 1, 2);
-        var stateA = new State("abc", posA, "none");
+        var stateA = new State("abc", posA, 8, "none");
         var errorA = new ParseError(
             posA,
             [new ErrorMessage(ErrorMessageType.MESSAGE, "FOO")]
         );
         var valueB = "bar"
         var posB = new SourcePos("test", 3, 4);
-        var stateB = new State("def", posB, "some");
+        var stateB = new State("def", posB, 8, "some");
         var errorB = new ParseError(
             posB,
             [new ErrorMessage(ErrorMessageType.MESSAGE, "BAR")]
@@ -1274,14 +1291,14 @@ describe("prim", function () {
     describe("right(parserA, parserB)", function () {
         var valueA = "foo"
         var posA = new SourcePos("test", 1, 2);
-        var stateA = new State("abc", posA, "none");
+        var stateA = new State("abc", posA, 8, "none");
         var errorA = new ParseError(
             posA,
             [new ErrorMessage(ErrorMessageType.MESSAGE, "FOO")]
         );
         var valueB = "bar"
         var posB = new SourcePos("test", 3, 4);
-        var stateB = new State("def", posB, "some");
+        var stateB = new State("def", posB, 8, "some");
         var errorB = new ParseError(
             posB,
             [new ErrorMessage(ErrorMessageType.MESSAGE, "BAR")]
@@ -1462,14 +1479,14 @@ describe("prim", function () {
     describe("bind(parserA, func)", function () {
         var valueA = "foo"
         var posA = new SourcePos("test", 1, 2);
-        var stateA = new State("abc", posA, "none");
+        var stateA = new State("abc", posA, 8, "none");
         var errorA = new ParseError(
             posA,
             [new ErrorMessage(ErrorMessageType.MESSAGE, "FOO")]
         );
         var valueB = "bar"
         var posB = new SourcePos("test", 3, 4);
-        var stateB = new State("def", posB, "some");
+        var stateB = new State("def", posB, 8, "some");
         var errorB = new ParseError(
             posB,
             [new ErrorMessage(ErrorMessageType.MESSAGE, "BAR")]
@@ -1697,7 +1714,7 @@ describe("prim", function () {
         it("should satisfy the monad laws", function () {
             var acsuc = alwaysCSuc(
                 "foo",
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 1, 2),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
@@ -1711,7 +1728,7 @@ describe("prim", function () {
             );
             var aesuc = alwaysESuc(
                 "foo",
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 1, 2),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
@@ -1726,7 +1743,7 @@ describe("prim", function () {
             var fcsuc = function (str) {
                 return alwaysCSuc(
                     str + "bar",
-                    new State("def", new SourcePos("test", 3, 4), "some"),
+                    new State("def", new SourcePos("test", 3, 4), 8, "some"),
                     new ParseError(
                         new SourcePos("test", 3, 4),
                         [new ErrorMessage(ErrorMessageType.MESSAGE, "csucf")]
@@ -1744,7 +1761,7 @@ describe("prim", function () {
             var fesuc = function (str) {
                 return alwaysESuc(
                     str + "baz",
-                    new State("def", new SourcePos("test", 3, 4), "some"),
+                    new State("def", new SourcePos("test", 3, 4), 8, "some"),
                     new ParseError(
                         new SourcePos("test", 3, 4),
                         [new ErrorMessage(ErrorMessageType.MESSAGE, "esucf")]
@@ -1759,7 +1776,7 @@ describe("prim", function () {
                     )
                 );
             };
-            var initState = new State("abc", SourcePos.init("test"), "none");
+            var initState = new State("abc", SourcePos.init("test"), 8, "none");
 
             [fcsuc, fcerr, fesuc, feerr].forEach(function (f) {
                 var x = "foo";
@@ -1803,14 +1820,14 @@ describe("prim", function () {
     describe("then(parserA, parserB)", function () {
         var valueA = "foo"
         var posA = new SourcePos("test", 1, 2);
-        var stateA = new State("abc", posA, "none");
+        var stateA = new State("abc", posA, 8, "none");
         var errorA = new ParseError(
             posA,
             [new ErrorMessage(ErrorMessageType.MESSAGE, "FOO")]
         );
         var valueB = "bar"
         var posB = new SourcePos("test", 3, 4);
-        var stateB = new State("def", posB, "some");
+        var stateB = new State("def", posB, 8, "some");
         var errorB = new ParseError(
             posB,
             [new ErrorMessage(ErrorMessageType.MESSAGE, "BAR")]
@@ -1991,7 +2008,7 @@ describe("prim", function () {
     describe("fail(message)", function () {
         it("should return a parser that always fails with specified message", function () {
             lq.prim.fail("foo").run(
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -2013,7 +2030,7 @@ describe("prim", function () {
     describe("mzero", function () {
         it("should always fail without consumption, with unknown error", function () {
             lq.prim.mzero.run(
-                new State("foo", new SourcePos("test", 1, 2), "none"),
+                new State("foo", new SourcePos("test", 1, 2), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -2027,14 +2044,14 @@ describe("prim", function () {
     describe("mplus(parserA, parserB)", function () {
         var valueA = "foo"
         var posA = new SourcePos("test", 1, 2);
-        var stateA = new State("abc", posA, "none");
+        var stateA = new State("abc", posA, 8, "none");
         var errorA = new ParseError(
             posA,
             [new ErrorMessage(ErrorMessageType.MESSAGE, "FOO")]
         );
         var valueB = "bar"
         var posB = new SourcePos("test", 3, 4);
-        var stateB = new State("def", posB, "some");
+        var stateB = new State("def", posB, 8, "some");
         var errorB = new ParseError(
             posB,
             [new ErrorMessage(ErrorMessageType.MESSAGE, "BAR")]
@@ -2226,7 +2243,7 @@ describe("prim", function () {
         it("should satisfy the monoid laws", function () {
             var acsuc = alwaysCSuc(
                 "foo",
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 1, 2),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
@@ -2240,7 +2257,7 @@ describe("prim", function () {
             );
             var aesuc = alwaysESuc(
                 "foo",
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 1, 2),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
@@ -2252,7 +2269,7 @@ describe("prim", function () {
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
                 )
             );
-            var initState = new State("abc", SourcePos.init("test"), "none");
+            var initState = new State("abc", SourcePos.init("test"), 8, "none");
 
             [acsuc, acerr, aesuc, aeerr].forEach(function (x) {
                 [acsuc, acerr, aesuc, aeerr].forEach(function (y) {
@@ -2289,13 +2306,13 @@ describe("prim", function () {
         it("should return a parser labeled with 'message'", function () {
             var valueA = "foo"
             var posA = new SourcePos("test", 1, 2);
-            var stateA = new State("abc", posA, "none");
+            var stateA = new State("abc", posA, 8, "none");
             var errorA = new ParseError(
                 posA,
                 [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
             );
             lq.prim.label(alwaysCSuc(valueA, stateA, errorA), "baz").run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal(valueA);
                     expect(State.equals(state, stateA)).to.be.true;
@@ -2307,7 +2324,7 @@ describe("prim", function () {
             );
 
             lq.prim.label(alwaysCErr(errorA), "baz").run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(error, errorA)).to.be.true;
@@ -2317,7 +2334,7 @@ describe("prim", function () {
             );
 
             lq.prim.label(alwaysESuc(valueA, stateA, errorA), "baz").run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
@@ -2340,7 +2357,7 @@ describe("prim", function () {
             );
 
             lq.prim.label(alwaysEErr(errorA), "baz").run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 throwError,
                 throwError,
                 throwError,
@@ -2362,10 +2379,10 @@ describe("prim", function () {
 
             var valueB = "foo"
             var posB = new SourcePos("test", 1, 2);
-            var stateB = new State("abc", posB, "none");
+            var stateB = new State("abc", posB, 8, "none");
             var errorB = ParseError.unknown(posB);
             lq.prim.label(alwaysCSuc(valueB, stateB, errorB), "baz").run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal(valueB);
                     expect(State.equals(state, stateB)).to.be.true;
@@ -2377,7 +2394,7 @@ describe("prim", function () {
             );
 
             lq.prim.label(alwaysCErr(errorB), "baz").run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(error, errorB)).to.be.true;
@@ -2387,7 +2404,7 @@ describe("prim", function () {
             );
 
             lq.prim.label(alwaysESuc(valueB, stateB, errorB), "baz").run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
@@ -2399,7 +2416,7 @@ describe("prim", function () {
             );
 
             lq.prim.label(alwaysEErr(errorB), "baz").run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 throwError,
                 throwError,
                 throwError,
@@ -2422,13 +2439,13 @@ describe("prim", function () {
         it("should return a parser labeled with each message of 'messages'", function () {
             var valueA = "foo"
             var posA = new SourcePos("test", 1, 2);
-            var stateA = new State("abc", posA, "none");
+            var stateA = new State("abc", posA, 8, "none");
             var errorA = new ParseError(
                 posA,
                 [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
             );
             lq.prim.labels(alwaysCSuc(valueA, stateA, errorA), ["uno", "dos", "tres"]).run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal(valueA);
                     expect(State.equals(state, stateA)).to.be.true;
@@ -2440,7 +2457,7 @@ describe("prim", function () {
             );
 
             lq.prim.labels(alwaysCErr(errorA), ["uno", "dos", "tres"]).run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(error, errorA)).to.be.true;
@@ -2450,7 +2467,7 @@ describe("prim", function () {
             );
 
             lq.prim.labels(alwaysESuc(valueA, stateA, errorA), ["uno", "dos", "tres"]).run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
@@ -2475,7 +2492,7 @@ describe("prim", function () {
             );
 
             lq.prim.labels(alwaysEErr(errorA), ["uno", "dos", "tres"]).run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 throwError,
                 throwError,
                 throwError,
@@ -2499,10 +2516,10 @@ describe("prim", function () {
 
             var valueB = "foo"
             var posB = new SourcePos("test", 1, 2);
-            var stateB = new State("abc", posB, "none");
+            var stateB = new State("abc", posB, 8, "none");
             var errorB = ParseError.unknown(posB);
             lq.prim.labels(alwaysCSuc(valueB, stateB, errorB), ["uno", "dos", "tres"]).run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal(valueB);
                     expect(State.equals(state, stateB)).to.be.true;
@@ -2514,7 +2531,7 @@ describe("prim", function () {
             );
 
             lq.prim.labels(alwaysCErr(errorB), ["uno", "dos", "tres"]).run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(error, errorB)).to.be.true;
@@ -2524,7 +2541,7 @@ describe("prim", function () {
             );
 
             lq.prim.labels(alwaysESuc(valueB, stateB, errorB), ["uno", "dos", "tres"]).run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
@@ -2536,7 +2553,7 @@ describe("prim", function () {
             );
 
             lq.prim.labels(alwaysEErr(errorB), ["uno", "dos", "tres"]).run(
-                new State("def", new SourcePos("test", 3, 4), "some"),
+                new State("def", new SourcePos("test", 3, 4), 8, "some"),
                 throwError,
                 throwError,
                 throwError,
@@ -2562,7 +2579,7 @@ describe("prim", function () {
     describe("unexpected(message)", function () {
         it("should return a parser that always fails with unexpect error", function () {
             lq.prim.unexpected("foo").run(
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -2591,14 +2608,14 @@ describe("prim", function () {
         it("should return a parser that always treats any failure from 'parser' as the parser didn't consume", function () {
             var valueA = "foo"
             var posA = new SourcePos("test", 1, 2);
-            var stateA = new State("abc", posA, "none");
+            var stateA = new State("abc", posA, 8, "none");
             var errorA = new ParseError(
                 posA,
                 [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
             );
 
             lq.prim.attempt(alwaysCSuc(valueA, stateA, errorA)).run(
-                new State("def", SourcePos.init("test"), "some"),
+                new State("def", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal(valueA);
                     expect(State.equals(state, stateA)).to.be.true;
@@ -2610,7 +2627,7 @@ describe("prim", function () {
             );
 
             lq.prim.attempt(alwaysCErr(errorA)).run(
-                new State("def", SourcePos.init("test"), "some"),
+                new State("def", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 throwError,
@@ -2620,7 +2637,7 @@ describe("prim", function () {
             );
 
             lq.prim.attempt(alwaysESuc(valueA, stateA, errorA)).run(
-                new State("def", SourcePos.init("test"), "some"),
+                new State("def", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
@@ -2632,7 +2649,7 @@ describe("prim", function () {
             );
 
             lq.prim.attempt(alwaysEErr(errorA)).run(
-                new State("def", SourcePos.init("test"), "some"),
+                new State("def", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 throwError,
@@ -2647,12 +2664,12 @@ describe("prim", function () {
         it("should return a parser that runs 'parser' but doesn't consume the input and reports no error, the state remains intact", function () {
             var valueA = "foo"
             var posA = new SourcePos("test", 1, 2);
-            var stateA = new State("abc", posA, "none");
+            var stateA = new State("abc", posA, 8, "none");
             var errorA = new ParseError(
                 posA,
                 [new ErrorMessage(ErrorMessageType.MESSAGE, "bar")]
             );
-            var origState = new State("def", SourcePos.init("test"), "some");
+            var origState = new State("def", SourcePos.init("test"), 8, "some");
 
             lq.prim.lookAhead(alwaysCSuc(valueA, stateA, errorA)).run(
                 origState,
@@ -2721,7 +2738,7 @@ describe("prim", function () {
                         var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
                         return csuc(
                             "a",
-                            new State(state.input.substr(1), newPosition, state.userState),
+                            new State(state.input.substr(1), newPosition, 8, state.userState),
                             ParseError.unknown(newPosition)
                         );
                     }
@@ -2735,10 +2752,10 @@ describe("prim", function () {
                     }
                 })
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a", "a", "a"]);
-                    expect(State.equals(state, new State("b", new SourcePos("test", 1, 4), "none"))).to.be.true;
+                    expect(State.equals(state, new State("b", new SourcePos("test", 1, 4), 8, "none"))).to.be.true;
                     expect(
                         ParseError.equals(
                             error,
@@ -2763,7 +2780,7 @@ describe("prim", function () {
                         var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
                         return csuc(
                             "a",
-                            new State(state.input.substr(1), newPosition, state.userState),
+                            new State(state.input.substr(1), newPosition, 8, state.userState),
                             ParseError.unknown(newPosition)
                         );
                     }
@@ -2777,7 +2794,7 @@ describe("prim", function () {
                     }
                 })
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 function (error) {
                     expect(
@@ -2805,7 +2822,7 @@ describe("prim", function () {
                     )
                 )
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 function (error) {
                     expect(
@@ -2833,12 +2850,12 @@ describe("prim", function () {
                     )
                 )
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal([]);
-                    expect(State.equals(state, new State("aaab", SourcePos.init("test"), "none"))).to.be.true;
+                    expect(State.equals(state, new State("aaab", SourcePos.init("test"), 8, "none"))).to.be.true;
                     expect(
                         ParseError.equals(
                             error,
@@ -2862,7 +2879,7 @@ describe("prim", function () {
                             var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
                             return csuc(
                                 "a",
-                                new State(state.input.substr(1), newPosition, state.userState),
+                                new State(state.input.substr(1), newPosition, 8, state.userState),
                                 ParseError.unknown(newPosition)
                             );
                         }
@@ -2875,7 +2892,7 @@ describe("prim", function () {
                         }
                     })
                 ).run(
-                    new State("aaab", SourcePos.init("test"), "none"),
+                    new State("aaab", SourcePos.init("test"), 8, "none"),
                     function () {},
                     function () {},
                     function () {},
@@ -2890,14 +2907,14 @@ describe("prim", function () {
                     },
                     alwaysESuc(
                         "foo",
-                        new State("def", new SourcePos("test", 100, 200), "some"),
+                        new State("def", new SourcePos("test", 100, 200), 8, "some"),
                         new ParseError(
                             new SourcePos("test", 100, 200),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
                         )
                     )
                 ).run(
-                    new State("aaab", SourcePos.init("test"), "none"),
+                    new State("aaab", SourcePos.init("test"), 8, "none"),
                     function () {},
                     function () {},
                     function () {},
@@ -2915,7 +2932,7 @@ describe("prim", function () {
                         var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
                         return csuc(
                             "a",
-                            new State(state.input.substr(1), newPosition, state.userState),
+                            new State(state.input.substr(1), newPosition, 8, state.userState),
                             ParseError.unknown(newPosition)
                         );
                     }
@@ -2929,10 +2946,10 @@ describe("prim", function () {
                     }
                 })
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a", "a", "a"]);
-                    expect(State.equals(state, new State("b", new SourcePos("test", 1, 4), "none"))).to.be.true;
+                    expect(State.equals(state, new State("b", new SourcePos("test", 1, 4), 8, "none"))).to.be.true;
                     expect(
                         ParseError.equals(
                             error,
@@ -2954,7 +2971,7 @@ describe("prim", function () {
                         var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
                         return csuc(
                             "a",
-                            new State(state.input.substr(1), newPosition, state.userState),
+                            new State(state.input.substr(1), newPosition, 8, state.userState),
                             ParseError.unknown(newPosition)
                         );
                     }
@@ -2968,7 +2985,7 @@ describe("prim", function () {
                     }
                 })
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 function (error) {
                     expect(
@@ -2993,7 +3010,7 @@ describe("prim", function () {
                     )
                 )
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 function (error) {
                     expect(
@@ -3018,12 +3035,12 @@ describe("prim", function () {
                     )
                 )
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal([]);
-                    expect(State.equals(state, new State("aaab", SourcePos.init("test"), "none"))).to.be.true;
+                    expect(State.equals(state, new State("aaab", SourcePos.init("test"), 8, "none"))).to.be.true;
                     expect(
                         ParseError.equals(
                             error,
@@ -3044,7 +3061,7 @@ describe("prim", function () {
                             var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
                             return csuc(
                                 "a",
-                                new State(state.input.substr(1), newPosition, state.userState),
+                                new State(state.input.substr(1), newPosition, 8, state.userState),
                                 ParseError.unknown(newPosition)
                             );
                         }
@@ -3057,7 +3074,7 @@ describe("prim", function () {
                         }
                     })
                 ).run(
-                    new State("aaab", SourcePos.init("test"), "none"),
+                    new State("aaab", SourcePos.init("test"), 8, "none"),
                     function () {},
                     function () {},
                     function () {},
@@ -3069,14 +3086,14 @@ describe("prim", function () {
                 lq.prim.many(
                     alwaysESuc(
                         "foo",
-                        new State("def", new SourcePos("test", 100, 200), "some"),
+                        new State("def", new SourcePos("test", 100, 200), 8, "some"),
                         new ParseError(
                             new SourcePos("test", 100, 200),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
                         )
                     )
                 ).run(
-                    new State("aaab", SourcePos.init("test"), "none"),
+                    new State("aaab", SourcePos.init("test"), 8, "none"),
                     function () {},
                     function () {},
                     function () {},
@@ -3094,7 +3111,7 @@ describe("prim", function () {
                         var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
                         return csuc(
                             "a",
-                            new State(state.input.substr(1), newPosition, state.userState),
+                            new State(state.input.substr(1), newPosition, 8, state.userState),
                             ParseError.unknown(newPosition)
                         );
                     }
@@ -3108,10 +3125,10 @@ describe("prim", function () {
                     }
                 })
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.be.undefined;
-                    expect(State.equals(state, new State("b", new SourcePos("test", 1, 4), "none"))).to.be.true;
+                    expect(State.equals(state, new State("b", new SourcePos("test", 1, 4), 8, "none"))).to.be.true;
                     expect(
                         ParseError.equals(
                             error,
@@ -3133,7 +3150,7 @@ describe("prim", function () {
                         var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
                         return csuc(
                             "a",
-                            new State(state.input.substr(1), newPosition, state.userState),
+                            new State(state.input.substr(1), newPosition, 8, state.userState),
                             ParseError.unknown(newPosition)
                         );
                     }
@@ -3147,7 +3164,7 @@ describe("prim", function () {
                     }
                 })
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 function (error) {
                     expect(
@@ -3172,7 +3189,7 @@ describe("prim", function () {
                     )
                 )
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 function (error) {
                     expect(
@@ -3197,12 +3214,12 @@ describe("prim", function () {
                     )
                 )
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.be.undefined;
-                    expect(State.equals(state, new State("aaab", SourcePos.init("test"), "none"))).to.be.true;
+                    expect(State.equals(state, new State("aaab", SourcePos.init("test"), 8, "none"))).to.be.true;
                     expect(
                         ParseError.equals(
                             error,
@@ -3223,7 +3240,7 @@ describe("prim", function () {
                             var newPosition = new SourcePos(state.position.name, state.position.line, state.position.column + 1);
                             return csuc(
                                 "a",
-                                new State(state.input.substr(1), newPosition, state.userState),
+                                new State(state.input.substr(1), newPosition, 8, state.userState),
                                 ParseError.unknown(newPosition)
                             );
                         }
@@ -3236,7 +3253,7 @@ describe("prim", function () {
                         }
                     })
                 ).run(
-                    new State("aaab", SourcePos.init("test"), "none"),
+                    new State("aaab", SourcePos.init("test"), 8, "none"),
                     function () {},
                     function () {},
                     function () {},
@@ -3248,14 +3265,14 @@ describe("prim", function () {
                 lq.prim.skipMany(
                     alwaysESuc(
                         "foo",
-                        new State("def", new SourcePos("test", 100, 200), "some"),
+                        new State("def", new SourcePos("test", 100, 200), 8, "some"),
                         new ParseError(
                             new SourcePos("test", 100, 200),
                             [new ErrorMessage(ErrorMessageType.MESSAGE, "foo")]
                         )
                     )
                 ).run(
-                    new State("aaab", SourcePos.init("test"), "none"),
+                    new State("aaab", SourcePos.init("test"), 8, "none"),
                     function () {},
                     function () {},
                     function () {},
@@ -3269,7 +3286,7 @@ describe("prim", function () {
         it("should return a parser that parses token sequence", function () {
             var tokensA = [[1, 2, "foo"], [3, 4, "bar"]];
             var streamA = [[1, 2, "foo"], [3, 4, "bar"], [5, 6, "baz"]];
-            var stateA = new State(streamA, SourcePos.init("test"), "none");
+            var stateA = new State(streamA, SourcePos.init("test"), 8, "none");
             lq.prim.tokens(
                 function (tokens) {
                     return tokens.map(function (token) {
@@ -3291,7 +3308,7 @@ describe("prim", function () {
                     expect(
                         State.equals(
                             state,
-                            new State([[5, 6, "baz"]], new SourcePos("test", 3, 4), "none"),
+                            new State([[5, 6, "baz"]], new SourcePos("test", 3, 4), 8, "none"),
                             function (inputA, inputB) {
                                 return lq.util.ArrayUtil.equals(inputA, inputB, lq.util.ArrayUtil.equals);
                             }
@@ -3311,7 +3328,7 @@ describe("prim", function () {
 
             var tokensB = [[1, 2, "foo"], [3, 4, "bar"]];
             var streamB = [[1, 2, "foo"]];
-            var stateB = new State(streamB, SourcePos.init("test"), "none");
+            var stateB = new State(streamB, SourcePos.init("test"), 8, "none");
             lq.prim.tokens(
                 function (tokens) {
                     return tokens.map(function (token) {
@@ -3349,7 +3366,7 @@ describe("prim", function () {
 
             var tokensC = [[1, 2, "foo"], [3, 4, "bar"]];
             var streamC = [[1, 2, "foo"], [5, 6, "baz"]];
-            var stateC = new State(streamC, SourcePos.init("test"), "none");
+            var stateC = new State(streamC, SourcePos.init("test"), 8, "none");
             lq.prim.tokens(
                 function (tokens) {
                     return tokens.map(function (token) {
@@ -3387,7 +3404,7 @@ describe("prim", function () {
 
             var tokensD = [[1, 2, "foo"], [3, 4, "bar"]];
             var streamD = [];
-            var stateD = new State(streamD, SourcePos.init("test"), "none");
+            var stateD = new State(streamD, SourcePos.init("test"), 8, "none");
             lq.prim.tokens(
                 function (tokens) {
                     return tokens.map(function (token) {
@@ -3425,7 +3442,7 @@ describe("prim", function () {
 
             var tokensE = [[1, 2, "foo"], [3, 4, "bar"]];
             var streamE = [[5, 6, "baz"]];
-            var stateE = new State(streamE, SourcePos.init("test"), "none");
+            var stateE = new State(streamE, SourcePos.init("test"), 8, "none");
             lq.prim.tokens(
                 function (tokens) {
                     return tokens.map(function (token) {
@@ -3463,7 +3480,7 @@ describe("prim", function () {
 
             var tokensF = [];
             var streamF = [[1, 2, "foo"], [3, 4, "bar"], [5, 6, "baz"]];
-            var stateF = new State(streamF, SourcePos.init("test"), "none");
+            var stateF = new State(streamF, SourcePos.init("test"), 8, "none");
             lq.prim.tokens(
                 function (tokens) {
                     return tokens.map(function (token) {
@@ -3490,6 +3507,7 @@ describe("prim", function () {
                             new State(
                                 [[1, 2, "foo"], [3, 4, "bar"], [5, 6, "baz"]],
                                 SourcePos.init("test"),
+                                8,
                                 "none"
                             ),
                             function (inputA, inputB) {
@@ -3507,7 +3525,7 @@ describe("prim", function () {
     describe("token(tokenToString, calcValue, calcPos)", function () {
         it("should return a parser that consumes token containing position information from input stream", function () {
             var streamA = [[1, 2, "foo"], [3, 4, "bar"], [5, 6, "baz"]];
-            var stateA = new State(streamA, SourcePos.init("test"), "none");
+            var stateA = new State(streamA, SourcePos.init("test"), 8, "none");
             lq.prim.token(
                 function (token) {
                     return "line " + token[0].toString()
@@ -3530,6 +3548,7 @@ describe("prim", function () {
                             new State(
                                 [[3, 4, "bar"], [5, 6, "baz"]],
                                 new SourcePos("test", 3, 4),
+                                8,
                                 "none"
                             ),
                             function (inputA, inputB) {
@@ -3545,7 +3564,7 @@ describe("prim", function () {
             );
 
             var streamB = [[1, 2, "foo"]];
-            var stateB = new State(streamB, SourcePos.init("test"), "none");
+            var stateB = new State(streamB, SourcePos.init("test"), 8, "none");
             lq.prim.token(
                 function (token) {
                     return "line " + token[0].toString()
@@ -3568,6 +3587,7 @@ describe("prim", function () {
                             new State(
                                 [],
                                 new SourcePos("test", 1, 2),
+                                8,
                                 "none"
                             ),
                             function (inputA, inputB) {
@@ -3583,7 +3603,7 @@ describe("prim", function () {
             );
 
             var streamC = [[1, 2, "foo"], [3, 4, "bar"], [5, 6, "baz"]];
-            var stateC = new State(streamC, SourcePos.init("test"), "none");
+            var stateC = new State(streamC, SourcePos.init("test"), 8, "none");
             lq.prim.token(
                 function (token) {
                     return "line " + token[0].toString()
@@ -3615,7 +3635,7 @@ describe("prim", function () {
             );
 
             var streamD = [];
-            var stateD = new State(streamD, SourcePos.init("test"), "none");
+            var stateD = new State(streamD, SourcePos.init("test"), 8, "none");
             lq.prim.token(
                 function (token) {
                     return "line " + token[0].toString()
@@ -3651,7 +3671,7 @@ describe("prim", function () {
     describe("tokenPrim(tokenToString, calcValue, calcNextPos, calcNextUserState)", function () {
         it("should return a parser that consumes token from input stream", function () {
             var streamA = ["10", "20", "30"];
-            var stateA = new State(streamA, SourcePos.init("test"), []);
+            var stateA = new State(streamA, SourcePos.init("test"), 8, []);
             lq.prim.tokenPrim(
                 lq.util.show,
                 function (numStr) {
@@ -3676,7 +3696,7 @@ describe("prim", function () {
                     expect(
                         State.equals(
                             state,
-                            new State(["20", "30"], new SourcePos("test", 1, 2), ["10"]),
+                            new State(["20", "30"], new SourcePos("test", 1, 2), 8, ["10"]),
                             lq.util.ArrayUtil.equals,
                             lq.util.ArrayUtil.equals
                         )
@@ -3689,7 +3709,7 @@ describe("prim", function () {
             );
 
             var streamB = ["abc", "20", "30"];
-            var stateB = new State(streamB, SourcePos.init("test"), []);
+            var stateB = new State(streamB, SourcePos.init("test"), 8, []);
             lq.prim.tokenPrim(
                 lq.util.show,
                 function (numStr) {
@@ -3726,7 +3746,7 @@ describe("prim", function () {
             );
 
             var streamC = [];
-            var stateC = new State(streamC, SourcePos.init("test"), []);
+            var stateC = new State(streamC, SourcePos.init("test"), 8, []);
             lq.prim.tokenPrim(
                 lq.util.show,
                 function (numStr) {
@@ -3763,7 +3783,7 @@ describe("prim", function () {
             );
 
             var streamD = ["10", "20", "30"];
-            var stateD = new State(streamD, SourcePos.init("test"), []);
+            var stateD = new State(streamD, SourcePos.init("test"), 8, []);
             lq.prim.tokenPrim(
                 lq.util.show,
                 function (numStr) {
@@ -3785,7 +3805,7 @@ describe("prim", function () {
                     expect(
                         State.equals(
                             state,
-                            new State(["20", "30"], new SourcePos("test", 1, 2), []),
+                            new State(["20", "30"], new SourcePos("test", 1, 2), 8, []),
                             lq.util.ArrayUtil.equals,
                             lq.util.ArrayUtil.equals
                         )
@@ -3802,20 +3822,20 @@ describe("prim", function () {
     describe("getState", function () {
         it("should take the current state as its value", function () {
             lq.prim.getState.run(
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(
                         State.equals(
                             value,
-                            new State("abc", new SourcePos("test", 1, 2), "none")
+                            new State("abc", new SourcePos("test", 1, 2), 8, "none")
                         )
                     ).to.be.true;
                     expect(
                         State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 1, 2), "none")
+                            new State("abc", new SourcePos("test", 1, 2), 8, "none")
                         )
                     ).to.be.true;
                     expect(
@@ -3832,21 +3852,21 @@ describe("prim", function () {
 
     describe("setState(state)", function () {
         it("should set specified 'state' as the state and take the new state as its value", function () {
-            lq.prim.setState(new State("def", new SourcePos("test", 3, 4), "some")).run(
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+            lq.prim.setState(new State("def", new SourcePos("test", 3, 4), 8, "some")).run(
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(
                         State.equals(
                             value,
-                            new State("def", new SourcePos("test", 3, 4), "some")
+                            new State("def", new SourcePos("test", 3, 4), 8, "some")
                         )
                     ).to.be.true;
                     expect(
                         State.equals(
                             state,
-                            new State("def", new SourcePos("test", 3, 4), "some")
+                            new State("def", new SourcePos("test", 3, 4), 8, "some")
                         )
                     ).to.be.true;
                     expect(
@@ -3868,20 +3888,20 @@ describe("prim", function () {
                     .setPosition(new SourcePos("test", 3, 4))
                     .setUserState("some");
             }).run(
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(
                         State.equals(
                             value,
-                            new State("def", new SourcePos("test", 3, 4), "some")
+                            new State("def", new SourcePos("test", 3, 4), 8, "some")
                         )
                     ).to.be.true;
                     expect(
                         State.equals(
                             state,
-                            new State("def", new SourcePos("test", 3, 4), "some")
+                            new State("def", new SourcePos("test", 3, 4), 8, "some")
                         )
                     ).to.be.true;
                     expect(
@@ -3899,7 +3919,7 @@ describe("prim", function () {
     describe("getInput", function () {
         it("should take the current input as its value", function () {
             lq.prim.getInput.run(
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
@@ -3907,7 +3927,7 @@ describe("prim", function () {
                     expect(
                         State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 1, 2), "none")
+                            new State("abc", new SourcePos("test", 1, 2), 8, "none")
                         )
                     ).to.be.true;
                     expect(
@@ -3925,7 +3945,7 @@ describe("prim", function () {
     describe("setInput(input)", function () {
         it("should set specified 'input' as the input", function () {
             lq.prim.setInput("def").run(
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
@@ -3933,7 +3953,7 @@ describe("prim", function () {
                     expect(
                         State.equals(
                             state,
-                            new State("def", new SourcePos("test", 1, 2), "none")
+                            new State("def", new SourcePos("test", 1, 2), 8, "none")
                         )
                     ).to.be.true;
                     expect(
@@ -3951,7 +3971,7 @@ describe("prim", function () {
     describe("getPosition", function () {
         it("should take the current position as its value", function () {
             lq.prim.getPosition.run(
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
@@ -3959,7 +3979,7 @@ describe("prim", function () {
                     expect(
                         State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 1, 2), "none")
+                            new State("abc", new SourcePos("test", 1, 2), 8, "none")
                         )
                     ).to.be.true;
                     expect(
@@ -3977,7 +3997,7 @@ describe("prim", function () {
     describe("setPosition(position)", function () {
         it("should set specified 'position' as the position", function () {
             lq.prim.setPosition(new SourcePos("test", 3, 4)).run(
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
@@ -3985,7 +4005,7 @@ describe("prim", function () {
                     expect(
                         State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 3, 4), "none")
+                            new State("abc", new SourcePos("test", 3, 4), 8, "none")
                         )
                     ).to.be.true;
                     expect(
@@ -4000,10 +4020,62 @@ describe("prim", function () {
         });
     });
 
+    describe("getTabWidth", function () {
+        it("should take the current tab width as its value", function () {
+            lq.prim.getTabWidth.run(
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    expect(value).to.equal(8);
+                    expect(
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 2), 8, "none")
+                        )
+                    ).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        )
+                    ).to.be.true;
+                },
+                throwError
+            );
+        });
+    });
+
+    describe("setTabWidth(tabWidth)", function () {
+        it("should set specified value as the tab width", function () {
+            lq.prim.setTabWidth(4).run(
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    expect(value).to.be.undefined;
+                    expect(
+                        State.equals(
+                            state,
+                            new State("abc", new SourcePos("test", 1, 2), 4, "none")
+                        )
+                    ).to.be.true;
+                    expect(
+                        ParseError.equals(
+                            error,
+                            ParseError.unknown(new SourcePos("test", 1, 2))
+                        )
+                    ).to.be.true;
+                },
+                throwError
+            );
+        });
+    });
+
     describe("getUserState", function () {
         it("should take the current user state as its value", function () {
             lq.prim.getUserState.run(
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
@@ -4011,7 +4083,7 @@ describe("prim", function () {
                     expect(
                         State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 1, 2), "none")
+                            new State("abc", new SourcePos("test", 1, 2), 8, "none")
                         )
                     ).to.be.true;
                     expect(
@@ -4029,7 +4101,7 @@ describe("prim", function () {
     describe("setUserState(userState)", function () {
         it("should set specified 'userState' as the user state", function () {
             lq.prim.setUserState("some").run(
-                new State("abc", new SourcePos("test", 1, 2), "none"),
+                new State("abc", new SourcePos("test", 1, 2), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
@@ -4037,7 +4109,7 @@ describe("prim", function () {
                     expect(
                         State.equals(
                             state,
-                            new State("abc", new SourcePos("test", 1, 2), "some")
+                            new State("abc", new SourcePos("test", 1, 2), 8, "some")
                         )
                     ).to.be.true;
                     expect(
