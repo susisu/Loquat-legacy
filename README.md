@@ -9,7 +9,7 @@ $ npm install loquat
 Here is a simple parsing example:
 ``` javascript
 var lq = require("loquat");
-var result = lq.parse(lq.string("foo"), "name", "foobar");
+var result = lq.parse(lq.string("foo"), "name", "foobar", 8);
 if (result.succeeded) {
     console.log(result.value);
 }
@@ -19,14 +19,13 @@ else {
 ```
 
 ### Browsers
-Install with `bower`:
 ``` shell
 $ bower install susisu/Loquat
 ```
 ``` html
 <script type="text/javascript" src="./bower_components/loquat/dist/loquat.min.js"></script>
 <script type="text/javascript">
-var result = loquat.parse(loquat.string("foo"), "name", "foobar");
+var result = loquat.parse(loquat.string("foo"), "name", "foobar", 8);
 if (result.succeeded) {
     console.log(result.value);
 }
