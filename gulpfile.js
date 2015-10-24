@@ -1,6 +1,6 @@
 var gulp    = require("gulp"),
     mocha   = require("gulp-mocha"),
-    webpack = require("gulp-webpack");
+    webpack = require("webpack-stream");
 
 var packageInfo = require("./package.json");
 var banner = "Loquat " + packageInfo.version +
