@@ -1,5 +1,5 @@
 /*!
- * Loquat 1.2.2
+ * Loquat 1.3.0
  * copyright (c) 2014-2015 Susisu | MIT License
  * https://github.com/susisu/Loquat
  */
@@ -7,41 +7,41 @@ var loquat =
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-/******/
+
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-/******/
+
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-/******/
+
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
 /******/ 			loaded: false
 /******/ 		};
-/******/
+
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
+
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-/******/
+
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
-/******/
+
+
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-/******/
+
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-/******/
+
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-/******/
+
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
@@ -62,7 +62,6 @@ var loquat =
     function end () {
         module.exports = Object.freeze(mergeObjects([
             {},
-            lq.array,
             lq.char,
             lq.combinator,
             lq.error,
@@ -70,7 +69,6 @@ var loquat =
             lq.monad,
             lq.pos,
             lq.prim,
-            lq.string,
             lq.sugar,
             lq.token,
             lq.util
@@ -79,15 +77,15 @@ var loquat =
 
     var lq = Object.freeze({
         "char"      : __webpack_require__(1),
-        "combinator": __webpack_require__(2),
+        "combinator": __webpack_require__(6),
         "error"     : __webpack_require__(3),
-        "expr"      : __webpack_require__(4),
-        "monad"     : __webpack_require__(5),
-        "pos"       : __webpack_require__(6),
-        "prim"      : __webpack_require__(7),
-        "sugar"     : __webpack_require__(8),
-        "token"     : __webpack_require__(9),
-        "util"      : __webpack_require__(10)
+        "expr"      : __webpack_require__(8),
+        "monad"     : __webpack_require__(7),
+        "pos"       : __webpack_require__(4),
+        "prim"      : __webpack_require__(2),
+        "sugar"     : __webpack_require__(9),
+        "token"     : __webpack_require__(10),
+        "util"      : __webpack_require__(5)
     });
 
 
@@ -147,27 +145,33 @@ var loquat =
     }
 
     var lq = Object.freeze({
-        "prim": __webpack_require__(7),
-        "util": __webpack_require__(10)
+        "prim": __webpack_require__(2),
+        "util": __webpack_require__(5)
     });
 
 
     function string (str) {
-        return lq.prim.fmap(function (chars) { return chars.join(""); })(
-            lq.prim.tokens(
-                function (chars) { return lq.util.show(chars.join("")); },
-                function (position, chars) { return position.addString(chars.join("")); },
-                str.split("")
-            )
-        );
+        return new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+            var tabWidth = state.tabWidth;
+            return lq.prim.fmap(function (chars) { return chars.join(""); })(
+                lq.prim.tokens(
+                    function (chars) { return lq.util.show(chars.join("")); },
+                    function (position, chars) { return position.addString(chars.join(""), tabWidth); },
+                    str.split("")
+                )
+            ).run(state, csuc, cerr, esuc, eerr);
+        });
     }
 
     function satisfy (test) {
-        return lq.prim.tokenPrim(
-            lq.util.show,
-            function (char) { return test(char) ? [char] : [] ; },
-            function (position, char, rest) { return position.addChar(char); }
-        );
+        return new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+            var tabWidth = state.tabWidth;
+            return lq.prim.tokenPrim(
+                lq.util.show,
+                function (char) { return test(char) ? [char] : [] ; },
+                function (position, char, rest) { return position.addChar(char, tabWidth); }
+            ).run(state, csuc, cerr, esuc, eerr);
+        });
     }
 
     function oneOf (str) {
@@ -271,6 +275,1138 @@ var loquat =
 /***/ function(module, exports, __webpack_require__) {
 
     /*
+     * Loquat / prim.js
+     * copyright (c) 2014 Susisu
+     *
+     * primitive parser combinators
+     */
+
+    "use strict";
+
+    function end () {
+        module.exports = Object.freeze({
+            /* constructors */
+            "State"     : State,
+            "Result"    : Result,
+            "Parser"    : Parser,
+            "LazyParser": LazyParser,
+
+            /* utility functions */
+            "parse": parse,
+
+            /* functor */
+            "fmap": fmap,
+
+            /* applicative functor */
+            "pure" : pure,
+            "ap"   : ap,
+            "left" : left,
+            "right": right,
+
+            /* monad */
+            "bind": bind,
+            "then": then,
+            "fail": fail,
+
+            /* monad plus */
+            "mzero": mzero,
+            "mplus": mplus,
+
+            "label"     : label,
+            "labels"    : labels,
+            "unexpected": unexpected,
+            "try"       : attempt,
+            "attempt"   : attempt,
+            "lookAhead" : lookAhead,
+            "manyAccum" : manyAccum,
+            "many"      : many,
+            "skipMany"  : skipMany,
+            "tokens"    : tokens,
+            "token"     : token,
+            "tokenPrim" : tokenPrim,
+
+            /* state manipulation */
+            "getState"    : getState,
+            "setState"    : setState,
+            "updateState" : updateState,
+            "getInput"    : getInput,
+            "setInput"    : setInput,
+            "getPosition" : getPosition,
+            "setPosition" : setPosition,
+            "getTabWidth" : getTabWidth,
+            "setTabWidth" : setTabWidth,
+            "getUserState": getUserState,
+            "setUserState": setUserState
+        });
+    }
+
+    var lq = Object.freeze({
+        "error": __webpack_require__(3),
+        "pos"  : __webpack_require__(4),
+        "util" : __webpack_require__(5)
+    });
+
+
+    function State (input, position, tabWidth, userState) {
+        this.input     = input;
+        this.position  = position;
+        this.tabWidth  = tabWidth;
+        this.userState = userState;
+    }
+
+    Object.defineProperties(State, {
+        "equals": { "value": function (stateA, stateB, inputEquals, userStateEquals) {
+            return (inputEquals === undefined
+                    ? stateA.input === stateB.input
+                    : inputEquals(stateA.input, stateB.input))
+                && lq.pos.SourcePos.equals(stateA.position, stateB.position)
+                && stateA.tabWidth === stateB.tabWidth
+                && (userStateEquals === undefined
+                    ? stateA.userState === stateB.userState
+                    : userStateEquals(stateA.userState, stateB.userState));
+        }}
+    });
+
+    Object.defineProperties(State.prototype, {
+        "setInput": { "value": function (input) {
+            return new State(input, this.position, this.tabWidth, this.userState);
+        }},
+
+        "setPosition": { "value": function (position) {
+            return new State(this.input, position, this.tabWidth, this.userState);
+        }},
+
+        "setTabWidth": { "value": function (tabWidth) {
+            return new State(this.input, this.position, tabWidth, this.userState);
+        }},
+
+        "setUserState": { "value": function (userState) {
+            return new State(this.input, this.position, this.tabWidth, userState);
+        }}
+    });
+
+    function Result (consumed, succeeded, value, state, error) {
+        this.consumed  = consumed;
+        this.succeeded = succeeded;
+        this.value     = value;
+        this.state     = state;
+        this.error     = error;
+    }
+
+    Object.defineProperties(Result, {
+        "equals": { "value": function (resultA, resultB, valueEquals, inputEquals, userStateEquals) {
+            return resultA.consumed === resultB.consumed
+                && resultA.succeeded === resultB.succeeded
+                && (valueEquals === undefined
+                    ? resultA.value === resultB.value
+                    : valueEquals(resultA.value, resultB.value))
+                && (resultA.state === undefined || resultB.state === undefined
+                    ? resultA.state === resultB.state
+                    : State.equals(resultA.state, resultB.state, inputEquals, userStateEquals))
+                && lq.error.ParseError.equals(resultA.error, resultB.error);
+        }}
+    });
+
+    function Parser (parserFunc) {
+        this.parserFunc = parserFunc;
+    }
+
+    Object.defineProperties(Parser.prototype, {
+        "run": { "value": function (state, consumedSucceeded, consumedError, emptySucceeded, emptyError) {
+            return this.parserFunc(state, consumedSucceeded, consumedError, emptySucceeded, emptyError);
+        }},
+
+        "parse": { "value": function (state) {
+            return this.run(state, consumedSucceeded, consumedError, emptySucceeded, emptyError);
+
+            function consumedSucceeded (value, state, error) {
+                return new Result(true, true, value, state, error);
+            }
+
+            function consumedError (error) {
+                return new Result(true, false, undefined, undefined, error);
+            }
+
+            function emptySucceeded (value, state, error) {
+                return new Result(false, true, value, state, error);
+            }
+
+            function emptyError (error) {
+                return new Result(false, false, undefined, undefined, error);
+            }
+        }}
+    });
+
+
+    function LazyParser (generator) {
+        this.generator = generator;
+        this.parser    = undefined;
+    }
+
+    Object.defineProperties(LazyParser.prototype, {
+        "init": { "value": function () {
+            if (this.parser === undefined) {
+                this.parser = this.generator();
+            }
+        }},
+
+        "run": { "value": function (state, consumedSucceeded, consumedError, emptySucceeded, emptyError) {
+            this.init();
+            return this.parser.run(state, consumedSucceeded, consumedError, emptySucceeded, emptyError);
+        }},
+
+        "parse": { "value": function (state) {
+            this.init();
+            return this.parser.parse(state);
+        }}
+    });
+
+
+    function parse (parser, name, input, tabWidth, userState) {
+        var result = parser.parse(new State(input, lq.pos.SourcePos.init(name), tabWidth, userState));
+        return result.succeeded
+            ? { "succeeded": true, "value": result.value }
+            : { "succeeded": false, "error": result.error };
+    }
+
+
+    function fmap (func) {
+        return function (parser) {
+            return new Parser(function (state, csuc, cerr, esuc, eerr) {
+                return parser.run(
+                    state,
+                    function (value, state, error) {
+                        return csuc(func(value), state, error);
+                    },
+                    cerr,
+                    function (value, state, error) {
+                        return esuc(func(value), state, error);
+                    },
+                    eerr
+                );
+            });
+        };
+    }
+
+    function pure (value) {
+        return new Parser(function (state, csuc, cerr, esuc, eerr) {
+            return esuc(value, state, lq.error.ParseError.unknown(state.position));
+        });
+    }
+
+    function ap (parserA, parserB) {
+        return bind(
+            parserA,
+            function (valueA) {
+                return bind(
+                    parserB,
+                    function (valueB) {
+                        return pure(valueA(valueB));
+                    }
+                );
+            }
+        );
+    }
+
+    function left (parserA, parserB) {
+        return ap(fmap(former)(parserA), parserB);
+
+        function former (x) {
+            return function (y) {
+                return x;
+            };
+        }
+    }
+
+    function right (parserA, parserB) {
+        return ap(fmap(latter)(parserA), parserB);
+
+        function latter (x) {
+            return function (y) {
+                return y;
+            };
+        }
+    }
+
+    function bind (parserA, func) {
+        return new Parser(function (state, csuc, cerr, esuc, eerr) {
+            var valueA;
+            var stateA;
+            var errorA;
+            var cont = false;
+            var consumed = false;
+            var resultA = parserA.run(
+                state,
+                function (value, state, error) {
+                    cont = true;
+                    consumed = true;
+                    valueA = value;
+                    stateA = state;
+                    errorA = error;
+                },
+                cerr,
+                function (value, state, error) {
+                    cont = true;
+                    valueA = value;
+                    stateA = state;
+                    errorA = error;
+                },
+                eerr
+            );
+            if (cont) {
+                if (consumed) {
+                    return func(valueA).run(
+                        stateA,
+                        csuc,
+                        cerr,
+                        function (value, state, error) {
+                            return csuc(value, state, lq.error.ParseError.merge(errorA, error));
+                        },
+                        function (error) {
+                            return cerr(lq.error.ParseError.merge(errorA, error));
+                        }
+                    );
+                }
+                else {
+                    return func(valueA).run(
+                        stateA,
+                        csuc,
+                        cerr,
+                        function (value, state, error) {
+                            return esuc(value, state, lq.error.ParseError.merge(errorA, error));
+                        },
+                        function (error) {
+                            return eerr(lq.error.ParseError.merge(errorA, error));
+                        }
+                    );
+                }
+            }
+            else {
+                return resultA;
+            }
+        });
+    }
+
+    function then (parserA, parserB) {
+        return bind(parserA, function (any) { return parserB; });
+    }
+
+    function fail (message) {
+        return new Parser(function (state, csuc, cerr, esuc, eerr) {
+            return eerr(
+                new lq.error.ParseError(
+                    state.position,
+                    [new lq.error.ErrorMessage(lq.error.ErrorMessageType.MESSAGE, message)]
+                )
+            );
+        });
+    }
+
+    var mzero = new Parser(function (state, csuc, cerr, esuc, eerr) {
+        return eerr(lq.error.ParseError.unknown(state.position));
+    });
+
+    function mplus (parserA, parserB) {
+        return new Parser(function (state, csuc, cerr, esuc, eerr) {
+            var errorA;
+            var cont = false;
+            var resultA = parserA.run(
+                state,
+                csuc,
+                cerr,
+                esuc,
+                function (error) {
+                    cont = true;
+                    errorA = error;
+                }
+            );
+            if (cont) {
+                return parserB.run(
+                    state,
+                    csuc,
+                    cerr,
+                    function (value, state, error) {
+                        return esuc(value, state, lq.error.ParseError.merge(errorA, error));
+                    },
+                    function (error) {
+                        return eerr(lq.error.ParseError.merge(errorA, error));
+                    }
+                );
+            }
+            else {
+                return resultA;
+            }
+        });
+    }
+
+    function label (parser, message) {
+        return labels(parser, [message]);
+    }
+
+    function labels (parser, messages) {
+        return new Parser(function (state, csuc, cerr, esuc, eerr) {
+            return parser.run(
+                state,
+                csuc,
+                cerr,
+                function (value, state, error) {
+                    return esuc(value, state, error.isUnknown() ? error : setExpectMessages(error, messages));
+                },
+                function (error) {
+                    return eerr(setExpectMessages(error, messages));
+                }
+            );
+        });
+
+        function setExpectMessages(error, messages) {
+            return messages.length === 0
+                 ? error.setSpecificTypeMessages(lq.error.ErrorMessageType.EXPECT, [""])
+                 : error.setSpecificTypeMessages(lq.error.ErrorMessageType.EXPECT, messages);
+        }
+    }
+
+    function unexpected (message) {
+        return new Parser(function (state, csuc, cerr, esuc, eerr) {
+            return eerr(
+                new lq.error.ParseError(
+                    state.position,
+                    [new lq.error.ErrorMessage(lq.error.ErrorMessageType.UNEXPECT, message)]
+                )
+            );
+        });
+    }
+
+    function attempt (parser) {
+        return new Parser(function (state, csuc, cerr, esuc, eerr) {
+            return parser.run(state, csuc, eerr, esuc, eerr);
+        });
+    }
+
+    function lookAhead (parser) {
+        return new Parser(function (state, csuc, cerr, esuc, eerr) {
+            return parser.run(state, esuc_, cerr, esuc_, eerr);
+
+            function esuc_ (value, state_, error_) {
+                return esuc(value, state, lq.error.ParseError.unknown(state.position));
+            }
+        });
+    }
+
+    function manyAccum (accumulate, parser) {
+        return new Parser(function (state, csuc, cerr, esuc, eerr) {
+            var accum = [];
+            var consumed = false;
+            var stop = false;
+            var currentState = state;
+            var result;
+            while (!stop) {
+                result = parser.run(currentState, csuc_, cerr_, esuc_, eerr_);
+            }
+            return result;
+
+            function csuc_ (value, state, error) {
+                consumed = true;
+                accum = accumulate(value, accum);
+                currentState = state;
+            }
+
+            function cerr_ (error) {
+                consumed = true;
+                stop = true;
+                return cerr(error);
+            }
+
+            function esuc_ (value, state, error) {
+                throw new Error("'many' is applied to a parser that accepts an empty string");
+            }
+
+            function eerr_ (error) {
+                stop = true;
+                if (consumed) {
+                    return csuc(accum, currentState, error);
+                }
+                else {
+                    return esuc(accum, currentState, error);
+                }
+            }
+        });
+    }
+
+    function many (parser) {
+        return new Parser(function (state, csuc, cerr, esuc, eerr) {
+            var accum = [];
+            return manyAccum(
+                function (value, accum_) {
+                    accum.push(value);
+                    return accum_;
+                },
+                parser
+            ).run(
+                state,
+                function (value, state, error) {
+                    return csuc(accum, state, error);
+                },
+                cerr,
+                function (value, state, error) {
+                    return esuc(accum, state, error);
+                },
+                eerr
+            );
+        });
+    }
+
+    function skipMany (parser) {
+        return then(
+            manyAccum(
+                function (value, accum) {
+                    return [];
+                },
+                parser
+            ),
+            pure(undefined)
+        );
+    }
+
+    function tokens (tokensToString, calcNextPos, expectedTokens, tokenEquals) {
+        return new Parser(function (state, csuc, cerr, esuc, eerr) {
+            var restInput = state.input;
+            for (var index = 0; index < expectedTokens.length; index ++) {
+                var unconsed = lq.util.uncons(restInput);
+                if (unconsed.length === 0) {
+                    if (index === 0) {
+                        return eerr(eofError());
+                    }
+                    else {
+                        return cerr(eofError());
+                    }
+                }
+                else {
+                    if (equals(expectedTokens[index], unconsed[0])) {
+                        restInput = unconsed[1];
+                    }
+                    else {
+                        if (index === 0) {
+                            return eerr(expectError(unconsed[0]));
+                        }
+                        else {
+                            return cerr(expectError(unconsed[0]));
+                        }
+                    }
+                }
+            }
+            if (index === 0) {
+                return esuc([], state, lq.error.ParseError.unknown(state.position));
+            }
+            else {
+                var newPosition = calcNextPos(state.position, expectedTokens);
+                return csuc(
+                    expectedTokens,
+                    new State(restInput, newPosition, state.tabWidth, state.userState),
+                    lq.error.ParseError.unknown(newPosition)
+                );
+            }
+
+            function equals (tokenA, tokenB) {
+                if (tokenEquals === undefined) {
+                    return tokenA === tokenB;
+                }
+                else {
+                    return tokenEquals(tokenA, tokenB);
+                }
+            }
+
+            function eofError () {
+                return new lq.error.ParseError(
+                    state.position,
+                    [
+                        new lq.error.ErrorMessage(
+                            lq.error.ErrorMessageType.SYSTEM_UNEXPECT,
+                            ""
+                        ),
+                        new lq.error.ErrorMessage(
+                            lq.error.ErrorMessageType.EXPECT,
+                            tokensToString(expectedTokens)
+                        )
+                    ]
+                );
+            }
+
+            function expectError (token) {
+                return new lq.error.ParseError(
+                    state.position,
+                    [
+                        new lq.error.ErrorMessage(
+                            lq.error.ErrorMessageType.SYSTEM_UNEXPECT,
+                            tokensToString([token])
+                        ),
+                        new lq.error.ErrorMessage(
+                            lq.error.ErrorMessageType.EXPECT,
+                            tokensToString(expectedTokens)
+                        )
+                    ]
+                );
+            }
+        });
+    }
+
+    function token (tokenToString, calcValue, calcPos) {
+        return tokenPrim(tokenToString, calcValue, calcNextPos);
+
+        function calcNextPos (position, token, rest) {
+            var unconsed = lq.util.uncons(rest);
+            if (unconsed.length === 0) {
+                return calcPos(token);
+            }
+            else {
+                return calcPos(unconsed[0]);
+            }
+        }
+    }
+
+    function tokenPrim (tokenToString, calcValue, calcNextPos, calcNextUserState) {
+        return new Parser(function (state, csuc, cerr, esuc, eerr) {
+            var unconsed = lq.util.uncons(state.input);
+            if (unconsed.length === 0) {
+                return eerr(systemUnexpected(state.position, ""));
+            }
+            else {
+                var token = unconsed[0];
+                var rest = unconsed[1];
+                var result = calcValue(token);
+                if (result.length === 0) {
+                    return eerr(systemUnexpected(state.position, tokenToString(token)));
+                }
+                else {
+                    var newPosition = calcNextPos(state.position, token, rest);
+                    var newUserState = calcNextUserState === undefined
+                        ? state.userState
+                        : calcNextUserState(state.userState, state.position, token, rest);
+                    return csuc(
+                        result[0],
+                        new State(rest, newPosition, state.tabWidth, newUserState),
+                        lq.error.ParseError.unknown(newPosition)
+                    );
+                }
+            }
+        });
+
+        function systemUnexpected (position, message) {
+            return new lq.error.ParseError(
+                position,
+                [new lq.error.ErrorMessage(lq.error.ErrorMessageType.SYSTEM_UNEXPECT, message)]
+            );
+        }
+    }
+
+    var getState = new Parser (function (state, csuc, cerr, esuc, eerr) {
+        return esuc(state, state, lq.error.ParseError.unknown(state.position));
+    });
+
+    function setState (state) {
+        return updateState(function(any) { return state; });
+    }
+
+    function updateState (func) {
+        return new Parser (function (state, csuc, cerr, esuc, eerr) {
+            var newState = func(state);
+            return esuc(newState, newState, lq.error.ParseError.unknown(newState.position));
+        });
+    }
+
+    var getInput = bind(getState, function (state) { return pure(state.input); });
+
+    function setInput (input) {
+        return then(
+            updateState(function (state) { return state.setInput(input); }),
+            pure(undefined)
+        );
+    }
+
+    var getPosition = bind(getState, function (state) { return pure(state.position); });
+
+
+    function setPosition (position) {
+        return then(
+            updateState(function (state) { return state.setPosition(position); }),
+            pure(undefined)
+        );
+    }
+
+    var getTabWidth = bind(getState, function (state) { return pure(state.tabWidth); });
+
+    function setTabWidth (tabWidth) {
+        return then(
+            updateState(function (state) { return state.setTabWidth(tabWidth); }),
+            pure(undefined)
+        );
+    }
+
+    var getUserState = bind(getState, function (state) { return pure(state.userState); });
+
+    function setUserState (userState) {
+        return then(
+            updateState(function (state) { return state.setUserState(userState); }),
+            pure(undefined)
+        );
+    }
+
+
+    end();
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+    /*
+     * Loquat / error.js
+     * copyright (c) 2014 Susisu
+     *
+     * parse errors
+     */
+
+    "use strict";
+
+    function end () {
+        module.exports = Object.freeze({
+            "ErrorMessage"    : ErrorMessage,
+            "ErrorMessageType": ErrorMessageType,
+            "ParseError"      : ParseError
+        });
+    }
+
+    var lq = Object.freeze({
+        "pos" : __webpack_require__(4),
+        "util": __webpack_require__(5)
+    });
+
+
+    function ErrorMessage (type, message) {
+        this.type    = type;
+        this.message = message;
+    }
+
+    Object.defineProperties(ErrorMessage, {
+        "equals": { "value": function (messageA, messageB) {
+            return messageA.type === messageB.type
+                && messageA.message === messageB.message;
+        }},
+
+        "messagesToString": { "value": function (messages) {
+            if (messages.length === 0) {
+                return "unknown parse error";
+            }
+            else {
+                var systemUnexpects = [];
+                var unexpects       = [];
+                var expects         = [];
+                var defaultMessages = [];
+                for (var i = 0; i < messages.length; i ++) {
+                    switch (messages[i].type) {
+                        case ErrorMessageType.SYSTEM_UNEXPECT:
+                            systemUnexpects.push(messages[i].message);
+                            break;
+                        case ErrorMessageType.UNEXPECT:
+                            unexpects.push(messages[i].message);
+                            break;
+                        case ErrorMessageType.EXPECT:
+                            expects.push(messages[i].message);
+                            break;
+                        case ErrorMessageType.MESSAGE:
+                            defaultMessages.push(messages[i].message);
+                            break;
+                    }
+                }
+                return clean([
+                    unexpects.length === 0 && systemUnexpects.length !== 0
+                        ? systemUnexpects[0] === ""
+                            ? "unexpected end of input"
+                            : "unexpected " + systemUnexpects[0]
+                        : "",
+                    toStringWithDescription("unexpected", clean(unexpects)),
+                    toStringWithDescription("expecting", clean(expects)),
+                    toStringWithDescription("", clean(defaultMessages))
+                ]).join("\n");
+            }
+
+            function clean (messages) {
+                return messages.filter(function (element, index, array) {
+                    return array.indexOf(element) === index
+                        && element                !== "";
+                });
+            }
+
+            function separateByCommasOr (messages) {
+                return messages.length <= 1
+                     ? messages.toString()
+                     : messages.slice(0, messages.length - 1).join(", ") + " or " + messages[messages.length - 1];
+            }
+
+            function toStringWithDescription (description, messages) {
+                return messages.length === 0
+                     ? ""
+                     : (description === "" ? "" : description + " ") + separateByCommasOr(messages);
+            }
+        }}
+    });
+
+
+    var ErrorMessageType = Object.freeze({
+        "SYSTEM_UNEXPECT": "systemUnexpect",
+        "UNEXPECT": "unexpect",
+        "EXPECT": "expect",
+        "MESSAGE": "message"
+    });
+
+
+    function ParseError (position, messages) {
+        this.position = position;
+        this.messages = messages;
+    }
+
+    Object.defineProperties(ParseError, {
+        "unknown": { "value": function (position) {
+            return new ParseError(position, []);
+        }},
+
+        "equals": { "value": function (errorA, errorB) {
+            return lq.pos.SourcePos.equals(errorA.position, errorB.position)
+                && lq.util.ArrayUtil.equals(errorA.messages, errorB.messages, ErrorMessage.equals);
+        }},
+
+        "merge": { "value": function (errorA, errorB) {
+            var result = lq.pos.SourcePos.compare(errorA.position, errorB.position);
+            return errorB.isUnknown() && !errorA.isUnknown() ? errorA
+                 : errorA.isUnknown() && !errorB.isUnknown() ? errorB
+                 : result > 0                                ? errorA
+                 : result < 0                                ? errorB
+                                                             : errorA.addMessages(errorB.messages);
+        }}
+    });
+
+    Object.defineProperties(ParseError.prototype, {
+        "toString": { "value": function () {
+            return this.position.toString() + ":\n" + ErrorMessage.messagesToString(this.messages);
+        }},
+
+        "isUnknown": { "value": function () {
+            return this.messages.length === 0;
+        }},
+
+        "clone": { "value": function () {
+            return new ParseError(this.position.clone(), this.messages.slice());
+        }},
+
+        "setPosition": { "value": function (position) {
+            return new ParseError(position, this.messages);
+        }},
+
+        "setMessages": { "value": function (messages) {
+            return new ParseError(this.position, messages);
+        }},
+
+        "setSpecificTypeMessages": { "value": function (type, messages) {
+            return new ParseError(
+                this.position,
+                this.messages.filter(function (message) { return message.type !== type; })
+                    .concat(messages.map(function (message) { return new ErrorMessage(type, message); }))
+            );
+        }},
+
+        "addMessages": { "value": function (messages) {
+            return new ParseError(this.position, this.messages.concat(messages));
+        }}
+    });
+
+
+    end();
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+    /*
+     * Loquat / pos.js
+     * copyright (c) 2014 Susisu
+     *
+     * source positions
+     */
+
+    "use strict";
+
+    function end () {
+        module.exports = Object.freeze({
+            "SourcePos": SourcePos
+        });
+    }
+
+
+    function SourcePos (name, line, column) {
+        this.name   = name;
+        this.line   = line;
+        this.column = column;
+    }
+
+    Object.defineProperties(SourcePos, {
+        "init": { "value": function (name) {
+            return new SourcePos(name, 1, 1);
+        }},
+
+        "equals": { "value": function (positionA, positionB) {
+            return positionA.name   === positionB.name
+                && positionA.line   === positionB.line
+                && positionA.column === positionB.column;
+        }},
+
+        "compare": { "value": function (positionA, positionB) {
+            return positionA.name   < positionB.name   ? -1
+                 : positionA.name   > positionB.name   ? 1
+                 : positionA.line   < positionB.line   ? -1
+                 : positionA.line   > positionB.line   ? 1
+                 : positionA.column < positionB.column ? -1
+                 : positionA.column > positionB.column ? 1
+                                                       : 0;
+        }}
+    });
+
+    Object.defineProperties(SourcePos.prototype, {
+        "toString": { "value": function () {
+            return (this.name === "" ? "" : "\"" + this.name + "\" ")
+                + "(line " + this.line.toString() + ", column " + this.column.toString() + ")";
+        }},
+
+        "clone": { "value": function () {
+            return new SourcePos(this.name, this.line, this.column);
+        }},
+
+        "setName": { "value": function (name) {
+            return new SourcePos(name, this.line, this.column);
+        }},
+
+        "setLine": { "value": function (line) {
+            return new SourcePos(this.name, line, this.column);
+        }},
+
+        "setColumn": { "value": function (column) {
+            return new SourcePos(this.name, this.line, column);
+        }},
+
+        "addChar": { "value": function (char, tabWidth) {
+            tabWidth = tabWidth | 0;
+            if (tabWidth <= 0) {
+                tabWidth = 8;
+            }
+            var copy = this.clone();
+            switch (char) {
+                case "\n":
+                    copy.line ++;
+                    copy.column = 1;
+                    break;
+                case "\t":
+                    copy.column += tabWidth - (copy.column - 1) % tabWidth;
+                    break;
+                default:
+                    copy.column ++;
+            }
+            return copy;
+        }},
+
+        "addString": { "value": function (str, tabWidth) {
+            tabWidth = tabWidth | 0;
+            if (tabWidth <= 0) {
+                tabWidth = 8;
+            }
+            var copy = this.clone();
+            for (var i = 0; i < str.length; i ++) {
+                switch (str[i]) {
+                    case "\n":
+                        copy.line ++;
+                        copy.column = 1;
+                        break;
+                    case "\t":
+                        copy.column += tabWidth - (copy.column - 1) % tabWidth;
+                        break;
+                    default:
+                        copy.column ++;
+                }
+            }
+            return copy;
+        }}
+    });
+
+
+    end();
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+    /*
+     * Loquat / util.js
+     * copyright (c) 2014 Susisu
+     *
+     * utility functions
+     */
+
+    "use strict";
+
+    function end () {
+        module.exports = Object.freeze({
+            "ArrayUtil" : ArrayUtil,
+            "CharUtil"  : CharUtil,
+            "show"      : show,
+            "escapeChar": escapeChar,
+            "uncons"    : uncons
+        });
+    }
+
+
+    var ArrayUtil = Object.freeze({
+        "equals": function (arrayA, arrayB, elementEquals) {
+            if (arrayA.length !== arrayB.length) {
+                return false;
+            }
+            else {
+                if (elementEquals === undefined) {
+                    return ArrayUtil.zipWith(function (x, y) { return x === y; }, arrayA, arrayB)
+                        .every(function (x) { return x; });
+                }
+                else {
+                    return ArrayUtil.zipWith(elementEquals, arrayA, arrayB).every(function (x) { return x; });
+                }
+            }
+        },
+
+        "nub": function (array) {
+            return array.filter(function (element, index, array) { return array.indexOf(element) === index; });
+        },
+
+        "replicate": function (n, element) {
+            var array = [];
+            for (var i = 0; i < n; i ++) {
+                array.push(element);
+            }
+            return array;
+        },
+
+        "zipWith": function (func, arrayA, arrayB) {
+            var array = [];
+            var length = Math.min(arrayA.length, arrayB.length);
+            for (var i = 0; i < length; i ++) {
+                array.push(func(arrayA[i], arrayB[i]));
+            }
+            return array;
+        }
+    });
+
+    var CharUtil = Object.freeze({
+        "isSpace": function (char) {
+            return char.length === 1
+                && " \t\n\r\f\v".indexOf(char) >= 0;
+        },
+
+        "isUpper": function (char) {
+            return char.length === 1
+                && "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(char) >= 0;
+        },
+
+        "isLower": function (char) {
+            return char.length === 1
+                && "abcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
+        },
+
+        "isAlphaNum": function (char) {
+            return char.length === 1
+                && "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
+        },
+
+        "isAlpha": function (char) {
+            return char.length === 1
+                && "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
+        },
+
+        "isDigit": function (char) {
+            return char.length === 1
+                && "0123456789".indexOf(char) >= 0;
+        },
+
+        "isHexDigit": function (char) {
+            return char.length === 1
+                && "0123456789ABCDEFabcdef".indexOf(char) >= 0;
+        },
+
+        "isOctDigit": function (char) {
+            return char.length === 1
+                && "01234567".indexOf(char) >= 0;
+        }
+    });
+
+    function show (value) {
+        if (typeof value === "string" || value instanceof String) {
+            if (value.length === 1) {
+                return "\"" + escapeChar(value) + "\"";
+            }
+            else {
+                return "\"" + value.split("").map(escapeChar).join("") + "\"";
+            }
+        }
+        else if (value instanceof Array) {
+            return "[" + value.map(show).join(", ") + "]";
+        }
+        else {
+            return String(value);
+        }
+    }
+
+    function escapeChar (char) {
+        switch (char) {
+            case "\\": return "\\\\";
+            case "\"": return "\\\"";
+            case "\b": return "\\b";
+            case "\t": return "\\t";
+            case "\n": return "\\n";
+            case "\r": return "\\r";
+            case "\f": return "\\f";
+            case "\v": return "\\v";
+            default  : return char;
+        }
+    }
+
+    function uncons (value) {
+        if (typeof value === "string" || value instanceof String) {
+            if (value.length === 0) {
+                return [];
+            }
+            else {
+                return [value[0], value.substr(1)];
+            }
+        }
+        else if (value instanceof Array) {
+            if (value.length === 0) {
+                return [];
+            }
+            else {
+                return [value[0], value.slice(1)];
+            }
+        }
+        else {
+            if (typeof value.uncons === "function") {
+                return value.uncons();
+            }
+        }
+    }
+
+
+    end();
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+    /*
      * Loquat / combinator.js
      * copyright (c) 2014 Susisu
      *
@@ -308,9 +1444,9 @@ var loquat =
 
     var lq = Object.freeze({
         "error": __webpack_require__(3),
-        "monad": __webpack_require__(5),
-        "prim" : __webpack_require__(7),
-        "util" : __webpack_require__(10)
+        "monad": __webpack_require__(7),
+        "prim" : __webpack_require__(2),
+        "util" : __webpack_require__(5)
     });
 
 
@@ -891,175 +2027,444 @@ var loquat =
 
 
 /***/ },
-/* 3 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
     /*
-     * Loquat / error.js
+     * Loquat / monad.js
      * copyright (c) 2014 Susisu
      *
-     * parse errors
+     * monadic functions
      */
 
     "use strict";
 
     function end () {
         module.exports = Object.freeze({
-            "ErrorMessage"    : ErrorMessage,
-            "ErrorMessageType": ErrorMessageType,
-            "ParseError"      : ParseError
+            "forever"    : forever,
+            "void"       : nullify,
+            "nullify"    : nullify,
+            "join"       : join,
+            "when"       : when,
+            "unless"     : unless,
+            "liftM"      : liftM,
+            "liftM2"     : liftM2,
+            "liftM3"     : liftM3,
+            "liftM4"     : liftM4,
+            "liftM5"     : liftM5,
+            "ltor"       : ltor,
+            "rtol"       : rtol,
+            "sequence"   : sequence,
+            "sequence_"  : sequence_,
+            "mapM"       : mapM,
+            "mapM_"      : mapM_,
+            "forM"       : forM,
+            "forM_"      : forM_,
+            "filterM"    : filterM,
+            "zipWithM"   : zipWithM,
+            "zipWithM_"  : zipWithM_,
+            "foldM"      : foldM,
+            "foldM_"     : foldM_,
+            "replicateM" : replicateM,
+            "replicateM_": replicateM_,
+            "guard"      : guard,
+            "msum"       : msum,
+            "mfilter"    : mfilter
         });
     }
 
     var lq = Object.freeze({
-        "pos" : __webpack_require__(6),
-        "util": __webpack_require__(10)
+        "error": __webpack_require__(3),
+        "prim" : __webpack_require__(2),
+        "util" : __webpack_require__(5)
     });
 
 
-    function ErrorMessage (type, message) {
-        this.type    = type;
-        this.message = message;
+    function forever (parser) {
+        var loop = new lq.prim.LazyParser(function () {
+            return lq.prim.then(parser, loop);
+        });
+        return loop;
     }
 
-    Object.defineProperties(ErrorMessage, {
-        "equals": { "value": function (messageA, messageB) {
-            return messageA.type === messageB.type
-                && messageA.message === messageB.message;
-        }},
+    var nullify = lq.prim.fmap(function (any) { return undefined; });
 
-        "messagesToString": { "value": function (messages) {
-            if (messages.length === 0) {
-                return "unknown parse error";
+    function join (parser) {
+        return lq.prim.bind(
+            parser,
+            function (value) {
+                return value;
+            }
+        );
+    }
+
+    function when (flag, parser) {
+        if (flag) {
+            return parser;
+        }
+        else {
+            return lq.prim.pure(undefined);
+        }
+    }
+
+    function unless (flag, parser) {
+        if (flag) {
+            return lq.prim.pure(undefined);
+        }
+        else {
+            return parser;
+        }
+    }
+
+    function liftM (func) {
+        return function (parser) {
+            return lq.prim.bind(
+                parser,
+                function (value) {
+                    return lq.prim.pure(func(value));
+                }
+            );
+        };
+    }
+
+    function liftM2 (func) {
+        return function (parserA, parserB) {
+            return lq.prim.bind(
+                parserA,
+                function (valueA) {
+                    return lq.prim.bind(
+                        parserB,
+                        function (valueB) {
+                            return lq.prim.pure(func(valueA, valueB));
+                        }
+                    );
+                }
+            );
+        };
+    }
+
+    function liftM3 (func) {
+        return function (parserA, parserB, parserC) {
+            return lq.prim.bind(
+                parserA,
+                function (valueA) {
+                    return lq.prim.bind(
+                        parserB,
+                        function (valueB) {
+                            return lq.prim.bind(
+                                parserC,
+                                function (valueC) {
+                                    return lq.prim.pure(func(valueA, valueB, valueC));
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        };
+    }
+
+    function liftM4 (func) {
+        return function (parserA, parserB, parserC, parserD) {
+            return lq.prim.bind(
+                parserA,
+                function (valueA) {
+                    return lq.prim.bind(
+                        parserB,
+                        function (valueB) {
+                            return lq.prim.bind(
+                                parserC,
+                                function (valueC) {
+                                    return lq.prim.bind(
+                                        parserD,
+                                        function (valueD) {
+                                            return lq.prim.pure(func(valueA, valueB, valueC, valueD));
+                                        }
+                                    );
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        };
+    }
+
+    function liftM5 (func) {
+        return function (parserA, parserB, parserC, parserD, parserE) {
+            return lq.prim.bind(
+                parserA,
+                function (valueA) {
+                    return lq.prim.bind(
+                        parserB,
+                        function (valueB) {
+                            return lq.prim.bind(
+                                parserC,
+                                function (valueC) {
+                                    return lq.prim.bind(
+                                        parserD,
+                                        function (valueD) {
+                                            return lq.prim.bind(
+                                                parserE,
+                                                function (valueE) {
+                                                    return lq.prim.pure(func(valueA, valueB, valueC, valueD, valueE));
+                                                }
+                                            );
+                                        }
+                                    );
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        };
+    }
+
+    function ltor (funcA, funcB) {
+        return function (value) { return lq.prim.bind(funcA(value), funcB); };
+    }
+
+    function rtol (funcA, funcB) {
+        return ltor(funcB, funcA);
+    }
+
+    function sequence (parsers) {
+        return new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+            var accum = [];
+            var currentState = state;
+            var currentError = lq.error.ParseError.unknown(state.position);
+            var consumed = false;
+            var stop = false;
+            for (var i = 0; i < parsers.length; i ++) {
+                parsers[i].run(currentState, csuc_, cerr_, esuc_, eerr_);
+                if (stop) {
+                    if (consumed) {
+                        return cerr(currentError);
+                    }
+                    else {
+                        return eerr(currentError);
+                    } 
+                }
+            }
+            if (consumed) {
+                return csuc(accum, currentState, currentError);
             }
             else {
-                var systemUnexpects = [];
-                var unexpects       = [];
-                var expects         = [];
-                var defaultMessages = [];
-                for (var i = 0; i < messages.length; i ++) {
-                    switch (messages[i].type) {
-                        case ErrorMessageType.SYSTEM_UNEXPECT:
-                            systemUnexpects.push(messages[i].message);
-                            break;
-                        case ErrorMessageType.UNEXPECT:
-                            unexpects.push(messages[i].message);
-                            break;
-                        case ErrorMessageType.EXPECT:
-                            expects.push(messages[i].message);
-                            break;
-                        case ErrorMessageType.MESSAGE:
-                            defaultMessages.push(messages[i].message);
-                            break;
-                    }
-                }
-                return clean([
-                    unexpects.length === 0 && systemUnexpects.length !== 0
-                        ? systemUnexpects[0] === ""
-                            ? "unexpected end of input"
-                            : "unexpected " + systemUnexpects[0]
-                        : "",
-                    toStringWithDescription("unexpected", clean(unexpects)),
-                    toStringWithDescription("expecting", clean(expects)),
-                    toStringWithDescription("", clean(defaultMessages))
-                ]).join("\n");
+                return esuc(accum, currentState, currentError);
             }
 
-            function clean (messages) {
-                return messages.filter(function (element, index, array) {
-                    return array.indexOf(element) === index
-                        && element                !== "";
-                });
+            function csuc_ (value, state, error) {
+                consumed = true;
+                accum.push(value);
+                currentState = state;
+                currentError = error;
             }
 
-            function separateByCommasOr (messages) {
-                return messages.length <= 1
-                     ? messages.toString()
-                     : messages.slice(0, messages.length - 1).join(", ") + " or " + messages[messages.length - 1];
+            function cerr_ (error) {
+                consumed = true;
+                stop = true;
+                currentError = error;
             }
 
-            function toStringWithDescription (description, messages) {
-                return messages.length === 0
-                     ? ""
-                     : (description === "" ? "" : description + " ") + separateByCommasOr(messages);
+            function esuc_ (value, state, error) {
+                accum.push(value);
+                currentState = state;
+                currentError = lq.error.ParseError.merge(currentError, error);
             }
-        }}
-    });
 
-
-    var ErrorMessageType = Object.freeze({
-        "SYSTEM_UNEXPECT": "systemUnexpect",
-        "UNEXPECT": "unexpect",
-        "EXPECT": "expect",
-        "MESSAGE": "message"
-    });
-
-
-    function ParseError (position, messages) {
-        this.position = position;
-        this.messages = messages;
+            function eerr_ (error) {
+                stop = true;
+                currentError = lq.error.ParseError.merge(currentError, error);
+            }
+        });
     }
 
-    Object.defineProperties(ParseError, {
-        "unknown": { "value": function (position) {
-            return new ParseError(position, []);
-        }},
+    function sequence_ (parsers) {
+        return parsers.reduceRight(
+            function (accum, parser) { return lq.prim.then(parser, accum); },
+            lq.prim.pure(undefined)
+        );
+    }
 
-        "equals": { "value": function (errorA, errorB) {
-            return lq.pos.SourcePos.equals(errorA.position, errorB.position)
-                && lq.util.ArrayUtil.equals(errorA.messages, errorB.messages, ErrorMessage.equals);
-        }},
+    function mapM (func, array) {
+        return sequence(array.map(func));
+    }
 
-        "merge": { "value": function (errorA, errorB) {
-            var result = lq.pos.SourcePos.compare(errorA.position, errorB.position);
-            return errorB.isUnknown() && !errorA.isUnknown() ? errorA
-                 : errorA.isUnknown() && !errorB.isUnknown() ? errorB
-                 : result > 0                                ? errorA
-                 : result < 0                                ? errorB
-                                                             : errorA.addMessages(errorB.messages);
-        }}
-    });
+    function mapM_ (func, array) {
+        return sequence_(array.map(func));
+    }
 
-    Object.defineProperties(ParseError.prototype, {
-        "toString": { "value": function () {
-            return this.position.toString() + ":\n" + ErrorMessage.messagesToString(this.messages);
-        }},
+    function forM (array, func) {
+        return mapM(func, array);
+    }
 
-        "isUnknown": { "value": function () {
-            return this.messages.length === 0;
-        }},
+    function forM_ (array, func) {
+        return mapM_(func, array);
+    }
 
-        "clone": { "value": function () {
-            return new ParseError(this.position.clone(), this.messages.slice());
-        }},
+    function filterM (test, array) {
+        return new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+            var accum = [];
+            var currentState = state;
+            var currentError = lq.error.ParseError.unknown(state.position);
+            var consumed = false;
+            var stop = false;
+            var flag = false;
+            for (var i = 0; i < array.length; i ++) {
+                test(array[i]).run(currentState, csuc_, cerr_, esuc_, eerr_);
+                if (stop) {
+                    if (consumed) {
+                        return cerr(currentError);
+                    }
+                    else {
+                        return eerr(currentError);
+                    }
+                }
+                if (flag) {
+                    accum.push(array[i]);
+                }
+            }
+            if (consumed) {
+                return csuc(accum, currentState, currentError);
+            }
+            else {
+                return esuc(accum, currentState, currentError);
+            }
 
-        "setPosition": { "value": function (position) {
-            return new ParseError(position, this.messages);
-        }},
+            function csuc_ (value, state, error) {
+                consumed = true;
+                flag = value;
+                currentState = state;
+                currentError = error;
+            }
 
-        "setMessages": { "value": function (messages) {
-            return new ParseError(this.position, messages);
-        }},
+            function cerr_ (error) {
+                consumed = true;
+                stop = true;
+                currentError = error;
+            }
 
-        "setSpecificTypeMessages": { "value": function (type, messages) {
-            return new ParseError(
-                this.position,
-                this.messages.filter(function (message) { return message.type !== type; })
-                    .concat(messages.map(function (message) { return new ErrorMessage(type, message); }))
-            );
-        }},
+            function esuc_ (value, state, error) {
+                flag = value;
+                currentState = state;
+                currentError = lq.error.ParseError.merge(currentError, error);
+            }
 
-        "addMessages": { "value": function (messages) {
-            return new ParseError(this.position, this.messages.concat(messages));
-        }}
-    });
+            function eerr_ (error) {
+                stop = true;
+                currentError = lq.error.ParseError.merge(currentError, error);
+            }
+        });
+    }
+
+    function zipWithM (func, arrayA, arrayB) {
+        return sequence(lq.util.ArrayUtil.zipWith(func, arrayA, arrayB));
+    }
+
+    function zipWithM_ (func, arrayA, arrayB) {
+        return sequence_(lq.util.ArrayUtil.zipWith(func, arrayA, arrayB));
+    }
+
+    function foldM (func, initialValue, array) {
+        return new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+            var accum = initialValue;
+            var currentState = state;
+            var currentError = lq.error.ParseError.unknown(state.position);
+            var consumed = false;
+            var stop = false;
+            for (var i = 0; i < array.length; i ++) {
+                func(accum, array[i]).run(currentState, csuc_, cerr_, esuc_, eerr_);
+                if (stop) {
+                    if (consumed) {
+                        return cerr(currentError);
+                    }
+                    else {
+                        return eerr(currentError);
+                    }
+                }
+            }
+            if (consumed) {
+                return csuc(accum, currentState, currentError);
+            }
+            else {
+                return esuc(accum, currentState, currentError);
+            }
+
+            function csuc_ (value, state, error) {
+                consumed = true;
+                accum = value;
+                currentState = state;
+                currentError = error;
+            }
+
+            function cerr_ (error) {
+                consumed = true;
+                stop = true;
+                currentError = error;
+            }
+
+            function esuc_ (value, state, error) {
+                accum = value;
+                currentState = state;
+                currentError = lq.error.ParseError.merge(currentError, error);
+            }
+
+            function eerr_ (error) {
+                stop = true;
+                currentError = lq.error.ParseError.merge(currentError, error);
+            }
+        });
+    }
+
+    function foldM_ (func, initialValue, array) {
+        return lq.prim.then(foldM(func, initialValue, array), lq.prim.pure(undefined));
+    }
+
+    function replicateM (n, parser) {
+        return sequence(lq.util.ArrayUtil.replicate(n, parser));
+    }
+
+    function replicateM_ (n, parser) {
+        return sequence_(lq.util.ArrayUtil.replicate(n, parser));
+    }
+
+    function guard (flag) {
+        if (flag) {
+            return lq.prim.pure(undefined);
+        }
+        else {
+            return lq.prim.mzero;
+        }
+    }
+
+    function msum (parsers) {
+        return parsers.reduceRight(
+            function (accum, parser) { return lq.prim.mplus(parser, accum); },
+            lq.prim.mzero
+        );
+    }
+
+    function mfilter (test, parser) {
+        return lq.prim.bind(
+            parser,
+            function (value) {
+                if (test(value)) {
+                    return lq.prim.pure(value);
+                }
+                else {
+                    return lq.prim.mzero;
+                }
+            }
+        );
+    }
 
 
     end();
 
 
 /***/ },
-/* 4 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
     /*
@@ -1081,9 +2486,9 @@ var loquat =
     }
 
     var lq = Object.freeze({
-        "combinator": __webpack_require__(2),
+        "combinator": __webpack_require__(6),
         "error"     : __webpack_require__(3),
-        "prim"      : __webpack_require__(7),
+        "prim"      : __webpack_require__(2),
     });
 
 
@@ -1520,1220 +2925,7 @@ var loquat =
 
 
 /***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-    /*
-     * Loquat / monad.js
-     * copyright (c) 2014 Susisu
-     *
-     * monadic functions
-     */
-
-    "use strict";
-
-    function end () {
-        module.exports = Object.freeze({
-            "forever"    : forever,
-            "void"       : nullify,
-            "nullify"    : nullify,
-            "join"       : join,
-            "when"       : when,
-            "unless"     : unless,
-            "liftM"      : liftM,
-            "liftM2"     : liftM2,
-            "liftM3"     : liftM3,
-            "liftM4"     : liftM4,
-            "liftM5"     : liftM5,
-            "ltor"       : ltor,
-            "rtol"       : rtol,
-            "sequence"   : sequence,
-            "sequence_"  : sequence_,
-            "mapM"       : mapM,
-            "mapM_"      : mapM_,
-            "forM"       : forM,
-            "forM_"      : forM_,
-            "filterM"    : filterM,
-            "zipWithM"   : zipWithM,
-            "zipWithM_"  : zipWithM_,
-            "foldM"      : foldM,
-            "foldM_"     : foldM_,
-            "replicateM" : replicateM,
-            "replicateM_": replicateM_,
-            "guard"      : guard,
-            "msum"       : msum,
-            "mfilter"    : mfilter
-        });
-    }
-
-    var lq = Object.freeze({
-        "error": __webpack_require__(3),
-        "prim" : __webpack_require__(7),
-        "util" : __webpack_require__(10)
-    });
-
-
-    function forever (parser) {
-        var loop = new lq.prim.LazyParser(function () {
-            return lq.prim.then(parser, loop);
-        });
-        return loop;
-    }
-
-    var nullify = lq.prim.fmap(function (any) { return undefined; });
-
-    function join (parser) {
-        return lq.prim.bind(
-            parser,
-            function (value) {
-                return value;
-            }
-        );
-    }
-
-    function when (flag, parser) {
-        if (flag) {
-            return parser;
-        }
-        else {
-            return lq.prim.pure(undefined);
-        }
-    }
-
-    function unless (flag, parser) {
-        if (flag) {
-            return lq.prim.pure(undefined);
-        }
-        else {
-            return parser;
-        }
-    }
-
-    function liftM (func) {
-        return function (parser) {
-            return lq.prim.bind(
-                parser,
-                function (value) {
-                    return lq.prim.pure(func(value));
-                }
-            );
-        };
-    }
-
-    function liftM2 (func) {
-        return function (parserA, parserB) {
-            return lq.prim.bind(
-                parserA,
-                function (valueA) {
-                    return lq.prim.bind(
-                        parserB,
-                        function (valueB) {
-                            return lq.prim.pure(func(valueA, valueB));
-                        }
-                    );
-                }
-            );
-        };
-    }
-
-    function liftM3 (func) {
-        return function (parserA, parserB, parserC) {
-            return lq.prim.bind(
-                parserA,
-                function (valueA) {
-                    return lq.prim.bind(
-                        parserB,
-                        function (valueB) {
-                            return lq.prim.bind(
-                                parserC,
-                                function (valueC) {
-                                    return lq.prim.pure(func(valueA, valueB, valueC));
-                                }
-                            );
-                        }
-                    );
-                }
-            );
-        };
-    }
-
-    function liftM4 (func) {
-        return function (parserA, parserB, parserC, parserD) {
-            return lq.prim.bind(
-                parserA,
-                function (valueA) {
-                    return lq.prim.bind(
-                        parserB,
-                        function (valueB) {
-                            return lq.prim.bind(
-                                parserC,
-                                function (valueC) {
-                                    return lq.prim.bind(
-                                        parserD,
-                                        function (valueD) {
-                                            return lq.prim.pure(func(valueA, valueB, valueC, valueD));
-                                        }
-                                    );
-                                }
-                            );
-                        }
-                    );
-                }
-            );
-        };
-    }
-
-    function liftM5 (func) {
-        return function (parserA, parserB, parserC, parserD, parserE) {
-            return lq.prim.bind(
-                parserA,
-                function (valueA) {
-                    return lq.prim.bind(
-                        parserB,
-                        function (valueB) {
-                            return lq.prim.bind(
-                                parserC,
-                                function (valueC) {
-                                    return lq.prim.bind(
-                                        parserD,
-                                        function (valueD) {
-                                            return lq.prim.bind(
-                                                parserE,
-                                                function (valueE) {
-                                                    return lq.prim.pure(func(valueA, valueB, valueC, valueD, valueE));
-                                                }
-                                            );
-                                        }
-                                    );
-                                }
-                            );
-                        }
-                    );
-                }
-            );
-        };
-    }
-
-    function ltor (funcA, funcB) {
-        return function (value) { return lq.prim.bind(funcA(value), funcB); };
-    }
-
-    function rtol (funcA, funcB) {
-        return ltor(funcB, funcA);
-    }
-
-    function sequence (parsers) {
-        return new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
-            var accum = [];
-            var currentState = state;
-            var currentError = lq.error.ParseError.unknown(state.position);
-            var consumed = false;
-            var stop = false;
-            for (var i = 0; i < parsers.length; i ++) {
-                parsers[i].run(currentState, csuc_, cerr_, esuc_, eerr_);
-                if (stop) {
-                    if (consumed) {
-                        return cerr(currentError);
-                    }
-                    else {
-                        return eerr(currentError);
-                    } 
-                }
-            }
-            if (consumed) {
-                return csuc(accum, currentState, currentError);
-            }
-            else {
-                return esuc(accum, currentState, currentError);
-            }
-
-            function csuc_ (value, state, error) {
-                consumed = true;
-                accum.push(value);
-                currentState = state;
-                currentError = error;
-            }
-
-            function cerr_ (error) {
-                consumed = true;
-                stop = true;
-                currentError = error;
-            }
-
-            function esuc_ (value, state, error) {
-                accum.push(value);
-                currentState = state;
-                currentError = lq.error.ParseError.merge(currentError, error);
-            }
-
-            function eerr_ (error) {
-                stop = true;
-                currentError = lq.error.ParseError.merge(currentError, error);
-            }
-        });
-    }
-
-    function sequence_ (parsers) {
-        return parsers.reduceRight(
-            function (accum, parser) { return lq.prim.then(parser, accum); },
-            lq.prim.pure(undefined)
-        );
-    }
-
-    function mapM (func, array) {
-        return sequence(array.map(func));
-    }
-
-    function mapM_ (func, array) {
-        return sequence_(array.map(func));
-    }
-
-    function forM (array, func) {
-        return mapM(func, array);
-    }
-
-    function forM_ (array, func) {
-        return mapM_(func, array);
-    }
-
-    function filterM (test, array) {
-        return new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
-            var accum = [];
-            var currentState = state;
-            var currentError = lq.error.ParseError.unknown(state.position);
-            var consumed = false;
-            var stop = false;
-            var flag = false;
-            for (var i = 0; i < array.length; i ++) {
-                test(array[i]).run(currentState, csuc_, cerr_, esuc_, eerr_);
-                if (stop) {
-                    if (consumed) {
-                        return cerr(currentError);
-                    }
-                    else {
-                        return eerr(currentError);
-                    }
-                }
-                if (flag) {
-                    accum.push(array[i]);
-                }
-            }
-            if (consumed) {
-                return csuc(accum, currentState, currentError);
-            }
-            else {
-                return esuc(accum, currentState, currentError);
-            }
-
-            function csuc_ (value, state, error) {
-                consumed = true;
-                flag = value;
-                currentState = state;
-                currentError = error;
-            }
-
-            function cerr_ (error) {
-                consumed = true;
-                stop = true;
-                currentError = error;
-            }
-
-            function esuc_ (value, state, error) {
-                flag = value;
-                currentState = state;
-                currentError = lq.error.ParseError.merge(currentError, error);
-            }
-
-            function eerr_ (error) {
-                stop = true;
-                currentError = lq.error.ParseError.merge(currentError, error);
-            }
-        });
-    }
-
-    function zipWithM (func, arrayA, arrayB) {
-        return sequence(lq.util.ArrayUtil.zipWith(func, arrayA, arrayB));
-    }
-
-    function zipWithM_ (func, arrayA, arrayB) {
-        return sequence_(lq.util.ArrayUtil.zipWith(func, arrayA, arrayB));
-    }
-
-    function foldM (func, initialValue, array) {
-        return new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
-            var accum = initialValue;
-            var currentState = state;
-            var currentError = lq.error.ParseError.unknown(state.position);
-            var consumed = false;
-            var stop = false;
-            for (var i = 0; i < array.length; i ++) {
-                func(accum, array[i]).run(currentState, csuc_, cerr_, esuc_, eerr_);
-                if (stop) {
-                    if (consumed) {
-                        return cerr(currentError);
-                    }
-                    else {
-                        return eerr(currentError);
-                    }
-                }
-            }
-            if (consumed) {
-                return csuc(accum, currentState, currentError);
-            }
-            else {
-                return esuc(accum, currentState, currentError);
-            }
-
-            function csuc_ (value, state, error) {
-                consumed = true;
-                accum = value;
-                currentState = state;
-                currentError = error;
-            }
-
-            function cerr_ (error) {
-                consumed = true;
-                stop = true;
-                currentError = error;
-            }
-
-            function esuc_ (value, state, error) {
-                accum = value;
-                currentState = state;
-                currentError = lq.error.ParseError.merge(currentError, error);
-            }
-
-            function eerr_ (error) {
-                stop = true;
-                currentError = lq.error.ParseError.merge(currentError, error);
-            }
-        });
-    }
-
-    function foldM_ (func, initialValue, array) {
-        return lq.prim.then(foldM(func, initialValue, array), lq.prim.pure(undefined));
-    }
-
-    function replicateM (n, parser) {
-        return sequence(lq.util.ArrayUtil.replicate(n, parser));
-    }
-
-    function replicateM_ (n, parser) {
-        return sequence_(lq.util.ArrayUtil.replicate(n, parser));
-    }
-
-    function guard (flag) {
-        if (flag) {
-            return lq.prim.pure(undefined);
-        }
-        else {
-            return lq.prim.mzero;
-        }
-    }
-
-    function msum (parsers) {
-        return parsers.reduceRight(
-            function (accum, parser) { return lq.prim.mplus(parser, accum); },
-            lq.prim.mzero
-        );
-    }
-
-    function mfilter (test, parser) {
-        return lq.prim.bind(
-            parser,
-            function (value) {
-                if (test(value)) {
-                    return lq.prim.pure(value);
-                }
-                else {
-                    return lq.prim.mzero;
-                }
-            }
-        );
-    }
-
-
-    end();
-
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-    /*
-     * Loquat / pos.js
-     * copyright (c) 2014 Susisu
-     *
-     * source positions
-     */
-
-    "use strict";
-
-    function end () {
-        module.exports = Object.freeze({
-            "SourcePos": SourcePos
-        });
-    }
-
-
-    function SourcePos (name, line, column) {
-        this.name   = name;
-        this.line   = line;
-        this.column = column;
-    }
-
-    Object.defineProperties(SourcePos, {
-        "init": { "value": function (name) {
-            return new SourcePos(name, 1, 1);
-        }},
-
-        "equals": { "value": function (positionA, positionB) {
-            return positionA.name   === positionB.name
-                && positionA.line   === positionB.line
-                && positionA.column === positionB.column;
-        }},
-
-        "compare": { "value": function (positionA, positionB) {
-            return positionA.name   < positionB.name   ? -1
-                 : positionA.name   > positionB.name   ? 1
-                 : positionA.line   < positionB.line   ? -1
-                 : positionA.line   > positionB.line   ? 1
-                 : positionA.column < positionB.column ? -1
-                 : positionA.column > positionB.column ? 1
-                                                       : 0;
-        }}
-    });
-
-    Object.defineProperties(SourcePos.prototype, {
-        "toString": { "value": function () {
-            return (this.name === "" ? "" : "\"" + this.name + "\" ")
-                + "(line " + this.line.toString() + ", column " + this.column.toString() + ")";
-        }},
-
-        "clone": { "value": function () {
-            return new SourcePos(this.name, this.line, this.column);
-        }},
-
-        "setName": { "value": function (name) {
-            return new SourcePos(name, this.line, this.column);
-        }},
-
-        "setLine": { "value": function (line) {
-            return new SourcePos(this.name, line, this.column);
-        }},
-
-        "setColumn": { "value": function (column) {
-            return new SourcePos(this.name, this.line, column);
-        }},
-
-        "addChar": { "value": function (char) {
-            var copy = this.clone();
-            switch (char) {
-                case "\n":
-                    copy.line ++;
-                    copy.column = 1;
-                    break;
-                case "\t":
-                    copy.column += 8 - (copy.column - 1) % 8;
-                    break;
-                default:
-                    copy.column ++;
-            }
-            return copy;
-        }},
-
-        "addString": { "value": function (str) {
-            var copy = this.clone();
-            for (var i = 0; i < str.length; i ++) {
-                switch (str[i]) {
-                    case "\n":
-                        copy.line ++;
-                        copy.column = 1;
-                        break;
-                    case "\t":
-                        copy.column += 8 - (copy.column - 1) % 8;
-                        break;
-                    default:
-                        copy.column ++;
-                }
-            }
-            return copy;
-        }}
-    });
-
-
-    end();
-
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-    /*
-     * Loquat / prim.js
-     * copyright (c) 2014 Susisu
-     *
-     * primitive parser combinators
-     */
-
-    "use strict";
-
-    function end () {
-        module.exports = Object.freeze({
-            /* constructors */
-            "State"     : State,
-            "Result"    : Result,
-            "Parser"    : Parser,
-            "LazyParser": LazyParser,
-
-            /* utility functions */
-            "parse": parse,
-
-            /* functor */
-            "fmap": fmap,
-
-            /* applicative functor */
-            "pure" : pure,
-            "ap"   : ap,
-            "left" : left,
-            "right": right,
-
-            /* monad */
-            "bind": bind,
-            "then": then,
-            "fail": fail,
-
-            /* monad plus */
-            "mzero": mzero,
-            "mplus": mplus,
-
-            "label"     : label,
-            "labels"    : labels,
-            "unexpected": unexpected,
-            "try"       : attempt,
-            "attempt"   : attempt,
-            "lookAhead" : lookAhead,
-            "manyAccum" : manyAccum,
-            "many"      : many,
-            "skipMany"  : skipMany,
-            "tokens"    : tokens,
-            "token"     : token,
-            "tokenPrim" : tokenPrim,
-
-            /* state manipulation */
-            "getState"    : getState,
-            "setState"    : setState,
-            "updateState" : updateState,
-            "getInput"    : getInput,
-            "setInput"    : setInput,
-            "getPosition" : getPosition,
-            "setPosition" : setPosition,
-            "getUserState": getUserState,
-            "setUserState": setUserState
-        });
-    }
-
-    var lq = Object.freeze({
-        "error": __webpack_require__(3),
-        "pos"  : __webpack_require__(6),
-        "util" : __webpack_require__(10)
-    });
-
-
-    function State (input, position, userState) {
-        this.input     = input;
-        this.position  = position;
-        this.userState = userState;
-    }
-
-    Object.defineProperties(State, {
-        "equals": { "value": function (stateA, stateB, inputEquals, userStateEquals) {
-            return (inputEquals === undefined
-                    ? stateA.input === stateB.input
-                    : inputEquals(stateA.input, stateB.input))
-                && lq.pos.SourcePos.equals(stateA.position, stateB.position)
-                && (userStateEquals === undefined
-                    ? stateA.userState === stateB.userState
-                    : userStateEquals(stateA.userState, stateB.userState));
-        }}
-    });
-
-    Object.defineProperties(State.prototype, {
-        "setInput": { "value": function (input) {
-            return new State(input, this.position, this.userState);
-        }},
-
-        "setPosition": { "value": function (position) {
-            return new State(this.input, position, this.userState);
-        }},
-
-        "setUserState": { "value": function (userState) {
-            return new State(this.input, this.position, userState);
-        }}
-    });
-
-    function Result (consumed, succeeded, value, state, error) {
-        this.consumed  = consumed;
-        this.succeeded = succeeded;
-        this.value     = value;
-        this.state     = state;
-        this.error     = error;
-    }
-
-    Object.defineProperties(Result, {
-        "equals": { "value": function (resultA, resultB, valueEquals, inputEquals, userStateEquals) {
-            return resultA.consumed === resultB.consumed
-                && resultA.succeeded === resultB.succeeded
-                && (valueEquals === undefined
-                    ? resultA.value === resultB.value
-                    : valueEquals(resultA.value, resultB.value))
-                && (resultA.state === undefined || resultB.state === undefined
-                    ? resultA.state === resultB.state
-                    : State.equals(resultA.state, resultB.state, inputEquals, userStateEquals))
-                && lq.error.ParseError.equals(resultA.error, resultB.error);
-        }}
-    });
-
-    function Parser (parserFunc) {
-        this.parserFunc = parserFunc;
-    }
-
-    Object.defineProperties(Parser.prototype, {
-        "run": { "value": function (state, consumedSucceeded, consumedError, emptySucceeded, emptyError) {
-            return this.parserFunc(state, consumedSucceeded, consumedError, emptySucceeded, emptyError);
-        }},
-
-        "parse": { "value": function (state) {
-            return this.run(state, consumedSucceeded, consumedError, emptySucceeded, emptyError);
-
-            function consumedSucceeded (value, state, error) {
-                return new Result(true, true, value, state, error);
-            }
-
-            function consumedError (error) {
-                return new Result(true, false, undefined, undefined, error);
-            }
-
-            function emptySucceeded (value, state, error) {
-                return new Result(false, true, value, state, error);
-            }
-
-            function emptyError (error) {
-                return new Result(false, false, undefined, undefined, error);
-            }
-        }}
-    });
-
-
-    function LazyParser (generator) {
-        this.generator = generator;
-        this.parser    = undefined;
-    }
-
-    Object.defineProperties(LazyParser.prototype, {
-        "init": { "value": function () {
-            if (this.parser === undefined) {
-                this.parser = this.generator();
-            }
-        }},
-
-        "run": { "value": function (state, consumedSucceeded, consumedError, emptySucceeded, emptyError) {
-            this.init();
-            return this.parser.run(state, consumedSucceeded, consumedError, emptySucceeded, emptyError);
-        }},
-
-        "parse": { "value": function (state) {
-            this.init();
-            return this.parser.parse(state);
-        }}
-    });
-
-
-    function parse (parser, name, input, userState) {
-        var result = parser.parse(new State(input, lq.pos.SourcePos.init(name), userState));
-        return result.succeeded
-            ? { "succeeded": true, "value": result.value }
-            : { "succeeded": false, "error": result.error };
-    }
-
-
-    function fmap (func) {
-        return function (parser) {
-            return new Parser(function (state, csuc, cerr, esuc, eerr) {
-                return parser.run(
-                    state,
-                    function (value, state, error) {
-                        return csuc(func(value), state, error);
-                    },
-                    cerr,
-                    function (value, state, error) {
-                        return esuc(func(value), state, error);
-                    },
-                    eerr
-                );
-            });
-        };
-    }
-
-    function pure (value) {
-        return new Parser(function (state, csuc, cerr, esuc, eerr) {
-            return esuc(value, state, lq.error.ParseError.unknown(state.position));
-        });
-    }
-
-    function ap (parserA, parserB) {
-        return bind(
-            parserA,
-            function (valueA) {
-                return bind(
-                    parserB,
-                    function (valueB) {
-                        return pure(valueA(valueB));
-                    }
-                );
-            }
-        );
-    }
-
-    function left (parserA, parserB) {
-        return ap(fmap(former)(parserA), parserB);
-
-        function former (x) {
-            return function (y) {
-                return x;
-            };
-        }
-    }
-
-    function right (parserA, parserB) {
-        return ap(fmap(latter)(parserA), parserB);
-
-        function latter (x) {
-            return function (y) {
-                return y;
-            };
-        }
-    }
-
-    function bind (parserA, func) {
-        return new Parser(function (state, csuc, cerr, esuc, eerr) {
-            var valueA;
-            var stateA;
-            var errorA;
-            var cont = false;
-            var consumed = false;
-            var resultA = parserA.run(
-                state,
-                function (value, state, error) {
-                    cont = true;
-                    consumed = true;
-                    valueA = value;
-                    stateA = state;
-                    errorA = error;
-                },
-                cerr,
-                function (value, state, error) {
-                    cont = true;
-                    valueA = value;
-                    stateA = state;
-                    errorA = error;
-                },
-                eerr
-            );
-            if (cont) {
-                if (consumed) {
-                    return func(valueA).run(
-                        stateA,
-                        csuc,
-                        cerr,
-                        function (value, state, error) {
-                            return csuc(value, state, lq.error.ParseError.merge(errorA, error));
-                        },
-                        function (error) {
-                            return cerr(lq.error.ParseError.merge(errorA, error));
-                        }
-                    );
-                }
-                else {
-                    return func(valueA).run(
-                        stateA,
-                        csuc,
-                        cerr,
-                        function (value, state, error) {
-                            return esuc(value, state, lq.error.ParseError.merge(errorA, error));
-                        },
-                        function (error) {
-                            return eerr(lq.error.ParseError.merge(errorA, error));
-                        }
-                    );
-                }
-            }
-            else {
-                return resultA;
-            }
-        });
-    }
-
-    function then (parserA, parserB) {
-        return bind(parserA, function (any) { return parserB; });
-    }
-
-    function fail (message) {
-        return new Parser(function (state, csuc, cerr, esuc, eerr) {
-            return eerr(
-                new lq.error.ParseError(
-                    state.position,
-                    [new lq.error.ErrorMessage(lq.error.ErrorMessageType.MESSAGE, message)]
-                )
-            );
-        });
-    }
-
-    var mzero = new Parser(function (state, csuc, cerr, esuc, eerr) {
-        return eerr(lq.error.ParseError.unknown(state.position));
-    });
-
-    function mplus (parserA, parserB) {
-        return new Parser(function (state, csuc, cerr, esuc, eerr) {
-            var errorA;
-            var cont = false;
-            var resultA = parserA.run(
-                state,
-                csuc,
-                cerr,
-                esuc,
-                function (error) {
-                    cont = true;
-                    errorA = error;
-                }
-            );
-            if (cont) {
-                return parserB.run(
-                    state,
-                    csuc,
-                    cerr,
-                    function (value, state, error) {
-                        return esuc(value, state, lq.error.ParseError.merge(errorA, error));
-                    },
-                    function (error) {
-                        return eerr(lq.error.ParseError.merge(errorA, error));
-                    }
-                );
-            }
-            else {
-                return resultA;
-            }
-        });
-    }
-
-    function label (parser, message) {
-        return labels(parser, [message]);
-    }
-
-    function labels (parser, messages) {
-        return new Parser(function (state, csuc, cerr, esuc, eerr) {
-            return parser.run(
-                state,
-                csuc,
-                cerr,
-                function (value, state, error) {
-                    return esuc(value, state, error.isUnknown() ? error : setExpectMessages(error, messages));
-                },
-                function (error) {
-                    return eerr(setExpectMessages(error, messages));
-                }
-            );
-        });
-
-        function setExpectMessages(error, messages) {
-            return messages.length === 0
-                 ? error.setSpecificTypeMessages(lq.error.ErrorMessageType.EXPECT, [""])
-                 : error.setSpecificTypeMessages(lq.error.ErrorMessageType.EXPECT, messages);
-        }
-    }
-
-    function unexpected (message) {
-        return new Parser(function (state, csuc, cerr, esuc, eerr) {
-            return eerr(
-                new lq.error.ParseError(
-                    state.position,
-                    [new lq.error.ErrorMessage(lq.error.ErrorMessageType.UNEXPECT, message)]
-                )
-            );
-        });
-    }
-
-    function attempt (parser) {
-        return new Parser(function (state, csuc, cerr, esuc, eerr) {
-            return parser.run(state, csuc, eerr, esuc, eerr);
-        });
-    }
-
-    function lookAhead (parser) {
-        return new Parser(function (state, csuc, cerr, esuc, eerr) {
-            return parser.run(state, esuc_, cerr, esuc_, eerr);
-
-            function esuc_ (value, state_, error_) {
-                return esuc(value, state, lq.error.ParseError.unknown(state.position));
-            }
-        });
-    }
-
-    function manyAccum (accumulate, parser) {
-        return new Parser(function (state, csuc, cerr, esuc, eerr) {
-            var accum = [];
-            var consumed = false;
-            var stop = false;
-            var currentState = state;
-            var result;
-            while (!stop) {
-                result = parser.run(currentState, csuc_, cerr_, esuc_, eerr_);
-            }
-            return result;
-
-            function csuc_ (value, state, error) {
-                consumed = true;
-                accum = accumulate(value, accum);
-                currentState = state;
-            }
-
-            function cerr_ (error) {
-                consumed = true;
-                stop = true;
-                return cerr(error);
-            }
-
-            function esuc_ (value, state, error) {
-                throw new Error("'many' is applied to a parser that accepts an empty string");
-            }
-
-            function eerr_ (error) {
-                stop = true;
-                if (consumed) {
-                    return csuc(accum, currentState, error);
-                }
-                else {
-                    return esuc(accum, currentState, error);
-                }
-            }
-        });
-    }
-
-    function many (parser) {
-        return new Parser(function (state, csuc, cerr, esuc, eerr) {
-            var accum = [];
-            return manyAccum(
-                function (value, accum_) {
-                    accum.push(value);
-                    return accum_;
-                },
-                parser
-            ).run(
-                state,
-                function (value, state, error) {
-                    return csuc(accum, state, error);
-                },
-                cerr,
-                function (value, state, error) {
-                    return esuc(accum, state, error);
-                },
-                eerr
-            );
-        });
-    }
-
-    function skipMany (parser) {
-        return then(
-            manyAccum(
-                function (value, accum) {
-                    return [];
-                },
-                parser
-            ),
-            pure(undefined)
-        );
-    }
-
-    function tokens (tokensToString, calcNextPos, expectedTokens, tokenEquals) {
-        return new Parser(function (state, csuc, cerr, esuc, eerr) {
-            var restInput = state.input;
-            for (var index = 0; index < expectedTokens.length; index ++) {
-                var unconsed = lq.util.uncons(restInput);
-                if (unconsed.length === 0) {
-                    if (index === 0) {
-                        return eerr(eofError());
-                    }
-                    else {
-                        return cerr(eofError());
-                    }
-                }
-                else {
-                    if (equals(expectedTokens[index], unconsed[0])) {
-                        restInput = unconsed[1];
-                    }
-                    else {
-                        if (index === 0) {
-                            return eerr(expectError(unconsed[0]));
-                        }
-                        else {
-                            return cerr(expectError(unconsed[0]));
-                        }
-                    }
-                }
-            }
-            if (index === 0) {
-                return esuc([], state, lq.error.ParseError.unknown(state.position));
-            }
-            else {
-                var newPosition = calcNextPos(state.position, expectedTokens);
-                return csuc(
-                    expectedTokens,
-                    new State(restInput, newPosition, state.userState),
-                    lq.error.ParseError.unknown(newPosition)
-                );
-            }
-
-            function equals (tokenA, tokenB) {
-                if (tokenEquals === undefined) {
-                    return tokenA === tokenB;
-                }
-                else {
-                    return tokenEquals(tokenA, tokenB);
-                }
-            }
-
-            function eofError () {
-                return new lq.error.ParseError(
-                    state.position,
-                    [
-                        new lq.error.ErrorMessage(
-                            lq.error.ErrorMessageType.SYSTEM_UNEXPECT,
-                            ""
-                        ),
-                        new lq.error.ErrorMessage(
-                            lq.error.ErrorMessageType.EXPECT,
-                            tokensToString(expectedTokens)
-                        )
-                    ]
-                );
-            }
-
-            function expectError (token) {
-                return new lq.error.ParseError(
-                    state.position,
-                    [
-                        new lq.error.ErrorMessage(
-                            lq.error.ErrorMessageType.SYSTEM_UNEXPECT,
-                            tokensToString([token])
-                        ),
-                        new lq.error.ErrorMessage(
-                            lq.error.ErrorMessageType.EXPECT,
-                            tokensToString(expectedTokens)
-                        )
-                    ]
-                );
-            }
-        });
-    }
-
-    function token (tokenToString, calcValue, calcPos) {
-        return tokenPrim(tokenToString, calcValue, calcNextPos);
-
-        function calcNextPos (position, token, rest) {
-            var unconsed = lq.util.uncons(rest);
-            if (unconsed.length === 0) {
-                return calcPos(token);
-            }
-            else {
-                return calcPos(unconsed[0]);
-            }
-        }
-    }
-
-    function tokenPrim (tokenToString, calcValue, calcNextPos, calcNextUserState) {
-        return new Parser(function (state, csuc, cerr, esuc, eerr) {
-            var unconsed = lq.util.uncons(state.input);
-            if (unconsed.length === 0) {
-                return eerr(systemUnexpected(state.position, ""));
-            }
-            else {
-                var token = unconsed[0];
-                var rest = unconsed[1];
-                var result = calcValue(token);
-                if (result.length === 0) {
-                    return eerr(systemUnexpected(state.position, tokenToString(token)));
-                }
-                else {
-                    var newPosition = calcNextPos(state.position, token, rest);
-                    var newUserState = calcNextUserState === undefined
-                        ? state.userState
-                        : calcNextUserState(state.userState, state.position, token, rest);
-                    return csuc(
-                        result[0],
-                        new State(rest, newPosition, newUserState),
-                        lq.error.ParseError.unknown(newPosition)
-                    );
-                }
-            }
-        });
-
-        function systemUnexpected (position, message) {
-            return new lq.error.ParseError(
-                position,
-                [new lq.error.ErrorMessage(lq.error.ErrorMessageType.SYSTEM_UNEXPECT, message)]
-            );
-        }
-    }
-
-    var getState = new Parser (function (state, csuc, cerr, esuc, eerr) {
-        return esuc(state, state, lq.error.ParseError.unknown(state.position));
-    });
-
-    function setState (state) {
-        return updateState(function(any) { return state; });
-    }
-
-    function updateState (func) {
-        return new Parser (function (state, csuc, cerr, esuc, eerr) {
-            var newState = func(state);
-            return esuc(newState, newState, lq.error.ParseError.unknown(newState.position));
-        });
-    }
-
-    var getInput = bind(getState, function (state) { return pure(state.input); });
-
-    function setInput (input) {
-        return then(
-            updateState(function (state) { return state.setInput(input); }),
-            pure(undefined)
-        );
-    }
-
-    var getPosition = bind(getState, function (state) { return pure(state.position); });
-
-
-    function setPosition (position) {
-        return then(
-            updateState(function (state) { return state.setPosition(position); }),
-            pure(undefined)
-        );
-    }
-
-    var getUserState = bind(getState, function (state) { return pure(state.userState); });
-
-    function setUserState (userState) {
-        return then(
-            updateState(function (state) { return state.setUserState(userState); }),
-            pure(undefined)
-        );
-    }
-
-
-    end();
-
-
-/***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
     /*
@@ -2751,9 +2943,9 @@ var loquat =
 
     var lq = Object.freeze({
         "char"      : __webpack_require__(1),
-        "combinator": __webpack_require__(2),
-        "monad"     : __webpack_require__(5),
-        "prim"      : __webpack_require__(7)
+        "combinator": __webpack_require__(6),
+        "monad"     : __webpack_require__(7),
+        "prim"      : __webpack_require__(2)
     });
 
 
@@ -2920,7 +3112,7 @@ var loquat =
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
     /*
@@ -2942,10 +3134,10 @@ var loquat =
 
     var lq = Object.freeze({
         "char"      : __webpack_require__(1),
-        "combinator": __webpack_require__(2),
+        "combinator": __webpack_require__(6),
         "error"     : __webpack_require__(3),
-        "prim"      : __webpack_require__(7),
-        "util"      : __webpack_require__(10)
+        "prim"      : __webpack_require__(2),
+        "util"      : __webpack_require__(5)
     });
 
 
@@ -3607,168 +3799,5 @@ var loquat =
     end();
 
 
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-    /*
-     * Loquat / util.js
-     * copyright (c) 2014 Susisu
-     *
-     * utility functions
-     */
-
-    "use strict";
-
-    function end () {
-        module.exports = Object.freeze({
-            "ArrayUtil" : ArrayUtil,
-            "CharUtil"  : CharUtil,
-            "show"      : show,
-            "escapeChar": escapeChar,
-            "uncons"    : uncons
-        });
-    }
-
-
-    var ArrayUtil = Object.freeze({
-        "equals": function (arrayA, arrayB, elementEquals) {
-            if (arrayA.length !== arrayB.length) {
-                return false;
-            }
-            else {
-                if (elementEquals === undefined) {
-                    return ArrayUtil.zipWith(function (x, y) { return x === y; }, arrayA, arrayB)
-                        .every(function (x) { return x; });
-                }
-                else {
-                    return ArrayUtil.zipWith(elementEquals, arrayA, arrayB).every(function (x) { return x; });
-                }
-            }
-        },
-
-        "nub": function (array) {
-            return array.filter(function (element, index, array) { return array.indexOf(element) === index; });
-        },
-
-        "replicate": function (n, element) {
-            var array = [];
-            for (var i = 0; i < n; i ++) {
-                array.push(element);
-            }
-            return array;
-        },
-
-        "zipWith": function (func, arrayA, arrayB) {
-            var array = [];
-            var length = Math.min(arrayA.length, arrayB.length);
-            for (var i = 0; i < length; i ++) {
-                array.push(func(arrayA[i], arrayB[i]));
-            }
-            return array;
-        }
-    });
-
-    var CharUtil = Object.freeze({
-        "isSpace": function (char) {
-            return char.length === 1
-                && " \t\n\r\f\v".indexOf(char) >= 0;
-        },
-
-        "isUpper": function (char) {
-            return char.length === 1
-                && "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(char) >= 0;
-        },
-
-        "isLower": function (char) {
-            return char.length === 1
-                && "abcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
-        },
-
-        "isAlphaNum": function (char) {
-            return char.length === 1
-                && "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
-        },
-
-        "isAlpha": function (char) {
-            return char.length === 1
-                && "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
-        },
-
-        "isDigit": function (char) {
-            return char.length === 1
-                && "0123456789".indexOf(char) >= 0;
-        },
-
-        "isHexDigit": function (char) {
-            return char.length === 1
-                && "0123456789ABCDEFabcdef".indexOf(char) >= 0;
-        },
-
-        "isOctDigit": function (char) {
-            return char.length === 1
-                && "01234567".indexOf(char) >= 0;
-        }
-    });
-
-    function show (value) {
-        if (typeof value === "string" || value instanceof String) {
-            if (value.length === 1) {
-                return "\"" + escapeChar(value) + "\"";
-            }
-            else {
-                return "\"" + value.split("").map(escapeChar).join("") + "\"";
-            }
-        }
-        else if (value instanceof Array) {
-            return "[" + value.map(show).join(", ") + "]";
-        }
-        else {
-            return String(value);
-        }
-    }
-
-    function escapeChar (char) {
-        switch (char) {
-            case "\\": return "\\\\";
-            case "\"": return "\\\"";
-            case "\b": return "\\b";
-            case "\t": return "\\t";
-            case "\n": return "\\n";
-            case "\r": return "\\r";
-            case "\f": return "\\f";
-            case "\v": return "\\v";
-            default  : return char;
-        }
-    }
-
-    function uncons (value) {
-        if (typeof value === "string" || value instanceof String) {
-            if (value.length === 0) {
-                return [];
-            }
-            else {
-                return [value[0], value.substr(1)];
-            }
-        }
-        else if (value instanceof Array) {
-            if (value.length === 0) {
-                return [];
-            }
-            else {
-                return [value[0], value.slice(1)];
-            }
-        }
-        else {
-            if (typeof value.uncons === "function") {
-                return value.uncons();
-            }
-        }
-    }
-
-
-    end();
-
-
 /***/ }
-/******/ ])
+/******/ ]);

@@ -66,19 +66,19 @@ describe("combinator", function () {
                 "bar",
                 alwaysCSuc(
                     "foo",
-                    new State("def", new SourcePos("test", 1, 2), "none"),
+                    new State("def", new SourcePos("test", 1, 2), 8, "none"),
                     new ParseError(
                         new SourcePos("test", 1, 2),
                         [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                     )
                 )
             ).run(
-                new State("abc", SourcePos.init("test"), "some"),
+                new State("abc", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("foo");
                     expect(State.equals(
                         state,
-                        new State("def", new SourcePos("test", 1, 2), "none")
+                        new State("def", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -102,7 +102,7 @@ describe("combinator", function () {
                     )
                 )
             ).run(
-                new State("abc", SourcePos.init("test"), "some"),
+                new State("abc", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -121,21 +121,21 @@ describe("combinator", function () {
                 "bar",
                 alwaysESuc(
                     "foo",
-                    new State("def", new SourcePos("test", 1, 2), "none"),
+                    new State("def", new SourcePos("test", 1, 2), 8, "none"),
                     new ParseError(
                         new SourcePos("test", 1, 2),
                         [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
                     )
                 )
             ).run(
-                new State("abc", SourcePos.init("test"), "some"),
+                new State("abc", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal("foo");
                     expect(State.equals(
                         state,
-                        new State("def", new SourcePos("test", 1, 2), "none")
+                        new State("def", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -159,14 +159,14 @@ describe("combinator", function () {
                     )
                 )
             ).run(
-                new State("abc", SourcePos.init("test"), "some"),
+                new State("abc", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal("bar");
                     expect(State.equals(
                         state,
-                        new State("abc", SourcePos.init("test"), "some")
+                        new State("abc", SourcePos.init("test"), 8, "some")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -186,19 +186,19 @@ describe("combinator", function () {
             lq.combinator.optionMaybe(
                 alwaysCSuc(
                     "foo",
-                    new State("def", new SourcePos("test", 1, 2), "none"),
+                    new State("def", new SourcePos("test", 1, 2), 8, "none"),
                     new ParseError(
                         new SourcePos("test", 1, 2),
                         [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                     )
                 )
             ).run(
-                new State("abc", SourcePos.init("test"), "some"),
+                new State("abc", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["foo"]);
                     expect(State.equals(
                         state,
-                        new State("def", new SourcePos("test", 1, 2), "none")
+                        new State("def", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -221,7 +221,7 @@ describe("combinator", function () {
                     )
                 )
             ).run(
-                new State("abc", SourcePos.init("test"), "some"),
+                new State("abc", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -239,21 +239,21 @@ describe("combinator", function () {
             lq.combinator.optionMaybe(
                 alwaysESuc(
                     "foo",
-                    new State("def", new SourcePos("test", 1, 2), "none"),
+                    new State("def", new SourcePos("test", 1, 2), 8, "none"),
                     new ParseError(
                         new SourcePos("test", 1, 2),
                         [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
                     )
                 )
             ).run(
-                new State("abc", SourcePos.init("test"), "some"),
+                new State("abc", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal(["foo"]);
                     expect(State.equals(
                         state,
-                        new State("def", new SourcePos("test", 1, 2), "none")
+                        new State("def", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -276,14 +276,14 @@ describe("combinator", function () {
                     )
                 )
             ).run(
-                new State("abc", SourcePos.init("test"), "some"),
+                new State("abc", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal([]);
                     expect(State.equals(
                         state,
-                        new State("abc", SourcePos.init("test"), "some")
+                        new State("abc", SourcePos.init("test"), 8, "some")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -303,19 +303,19 @@ describe("combinator", function () {
             lq.combinator.optional(
                 alwaysCSuc(
                     "foo",
-                    new State("def", new SourcePos("test", 1, 2), "none"),
+                    new State("def", new SourcePos("test", 1, 2), 8, "none"),
                     new ParseError(
                         new SourcePos("test", 1, 2),
                         [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
                     )
                 )
             ).run(
-                new State("abc", SourcePos.init("test"), "some"),
+                new State("abc", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal(undefined);
                     expect(State.equals(
                         state,
-                        new State("def", new SourcePos("test", 1, 2), "none")
+                        new State("def", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -333,21 +333,21 @@ describe("combinator", function () {
             lq.combinator.optional(
                 alwaysESuc(
                     "foo",
-                    new State("def", new SourcePos("test", 1, 2), "none"),
+                    new State("def", new SourcePos("test", 1, 2), 8, "none"),
                     new ParseError(
                         new SourcePos("test", 1, 2),
                         [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
                     )
                 )
             ).run(
-                new State("abc", SourcePos.init("test"), "some"),
+                new State("abc", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal(undefined);
                     expect(State.equals(
                         state,
-                        new State("def", new SourcePos("test", 1, 2), "none")
+                        new State("def", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -368,14 +368,14 @@ describe("combinator", function () {
                     )
                 )
             ).run(
-                new State("abc", SourcePos.init("test"), "some"),
+                new State("abc", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal(undefined);
                     expect(State.equals(
                         state,
-                        new State("abc", SourcePos.init("test"), "some")
+                        new State("abc", SourcePos.init("test"), 8, "some")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -398,7 +398,7 @@ describe("combinator", function () {
                     )
                 )
             ).run(
-                new State("abc", SourcePos.init("test"), "some"),
+                new State("abc", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -419,7 +419,7 @@ describe("combinator", function () {
         it("should parse something that 'parser' accepts between 'open' and 'close'", function () {
             var open_acsuc = alwaysCSuc(
                 "(",
-                new State("def", new SourcePos("test", 1, 2), "none"),
+                new State("def", new SourcePos("test", 1, 2), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 1, 2),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "open_csuc")]
@@ -435,7 +435,7 @@ describe("combinator", function () {
 
             var open_aesuc = alwaysESuc(
                 "(",
-                new State("def", new SourcePos("test", 1, 2), "none"),
+                new State("def", new SourcePos("test", 1, 2), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 1, 2),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "open_esuc")]
@@ -451,7 +451,7 @@ describe("combinator", function () {
 
             var content_acsuc = alwaysCSuc(
                 "foo",
-                new State("ghi", new SourcePos("test", 3, 4), "none"),
+                new State("ghi", new SourcePos("test", 3, 4), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 3, 4),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "content_csuc")]
@@ -467,7 +467,7 @@ describe("combinator", function () {
 
             var content_aesuc = alwaysESuc(
                 "bar",
-                new State("ghi", new SourcePos("test", 3, 4), "none"),
+                new State("ghi", new SourcePos("test", 3, 4), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 3, 4),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "content_esuc")]
@@ -483,7 +483,7 @@ describe("combinator", function () {
 
             var close_acsuc = alwaysCSuc(
                 ")",
-                new State("jkl", new SourcePos("test", 5, 6), "none"),
+                new State("jkl", new SourcePos("test", 5, 6), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 5, 6),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "close_csuc")]
@@ -499,7 +499,7 @@ describe("combinator", function () {
 
             var close_aesuc = alwaysESuc(
                 ")",
-                new State("jkl", new SourcePos("test", 5, 6), "none"),
+                new State("jkl", new SourcePos("test", 5, 6), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 5, 6),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "close_esuc")]
@@ -513,7 +513,7 @@ describe("combinator", function () {
                 )
             );
 
-            var initState = new State("abc", SourcePos.init("test"), "some");
+            var initState = new State("abc", SourcePos.init("test"), 8, "some");
 
             lq.combinator.between(open_acsuc, close_acsuc, content_acsuc).run(
                 initState,
@@ -521,7 +521,7 @@ describe("combinator", function () {
                     expect(value).to.equal("foo");
                     expect(State.equals(
                         state,
-                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                        new State("jkl", new SourcePos("test", 5, 6), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -558,7 +558,7 @@ describe("combinator", function () {
                     expect(value).to.equal("foo");
                     expect(State.equals(
                         state,
-                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                        new State("jkl", new SourcePos("test", 5, 6), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -595,7 +595,7 @@ describe("combinator", function () {
                     expect(value).to.equal("bar");
                     expect(State.equals(
                         state,
-                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                        new State("jkl", new SourcePos("test", 5, 6), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -632,7 +632,7 @@ describe("combinator", function () {
                     expect(value).to.equal("bar");
                     expect(State.equals(
                         state,
-                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                        new State("jkl", new SourcePos("test", 5, 6), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -669,7 +669,7 @@ describe("combinator", function () {
                     expect(value).to.equal("foo");
                     expect(State.equals(
                         state,
-                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                        new State("jkl", new SourcePos("test", 5, 6), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -706,7 +706,7 @@ describe("combinator", function () {
                     expect(value).to.equal("foo");
                     expect(State.equals(
                         state,
-                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                        new State("jkl", new SourcePos("test", 5, 6), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -743,7 +743,7 @@ describe("combinator", function () {
                     expect(value).to.equal("bar");
                     expect(State.equals(
                         state,
-                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                        new State("jkl", new SourcePos("test", 5, 6), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -782,7 +782,7 @@ describe("combinator", function () {
                     expect(value).to.equal("bar");
                     expect(State.equals(
                         state,
-                        new State("jkl", new SourcePos("test", 5, 6), "none")
+                        new State("jkl", new SourcePos("test", 5, 6), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -922,6 +922,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -940,6 +941,7 @@ describe("combinator", function () {
                             new State(
                                 state.input,
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -957,7 +959,7 @@ describe("combinator", function () {
             });
             
             lq.combinator.many1(p).run(
-                new State("aab", SourcePos.init("test"), "some"),
+                new State("aab", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -973,12 +975,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.many1(p).run(
-                new State("aad", SourcePos.init("test"), "some"),
+                new State("aad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -994,7 +996,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.many1(p).run(
-                new State("b", SourcePos.init("test"), "some"),
+                new State("b", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1010,7 +1012,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.many1(p).run(
-                new State("d", SourcePos.init("test"), "some"),
+                new State("d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 throwError,
@@ -1027,7 +1029,7 @@ describe("combinator", function () {
 
             expect(function () {
                 lq.combinator.many1(p).run(
-                    new State("acbd", SourcePos.init("test"), "some"),
+                    new State("acbd", SourcePos.init("test"), 8, "some"),
                     function () {},
                     function () {},
                     function () {},
@@ -1037,7 +1039,7 @@ describe("combinator", function () {
 
             expect(function () {
                 lq.combinator.many1(p).run(
-                    new State("cabd", SourcePos.init("test"), "some"),
+                    new State("cabd", SourcePos.init("test"), 8, "some"),
                     function () {},
                     function () {},
                     function () {},
@@ -1056,6 +1058,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -1074,6 +1077,7 @@ describe("combinator", function () {
                             new State(
                                 state.input,
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -1091,7 +1095,7 @@ describe("combinator", function () {
             });
             
             lq.combinator.skipMany1(p).run(
-                new State("aab", SourcePos.init("test"), "some"),
+                new State("aab", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1107,12 +1111,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.skipMany1(p).run(
-                new State("aad", SourcePos.init("test"), "some"),
+                new State("aad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal(undefined);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1128,7 +1132,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.skipMany1(p).run(
-                new State("b", SourcePos.init("test"), "some"),
+                new State("b", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1144,7 +1148,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.skipMany1(p).run(
-                new State("d", SourcePos.init("test"), "some"),
+                new State("d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 throwError,
@@ -1161,7 +1165,7 @@ describe("combinator", function () {
 
             expect(function () {
                 lq.combinator.skipMany1(p).run(
-                    new State("acbd", SourcePos.init("test"), "some"),
+                    new State("acbd", SourcePos.init("test"), 8, "some"),
                     function () {},
                     function () {},
                     function () {},
@@ -1171,7 +1175,7 @@ describe("combinator", function () {
 
             expect(function () {
                 lq.combinator.skipMany1(p).run(
-                    new State("cabd", SourcePos.init("test"), "some"),
+                    new State("cabd", SourcePos.init("test"), 8, "some"),
                     function () {},
                     function () {},
                     function () {},
@@ -1190,6 +1194,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -1208,6 +1213,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -1231,6 +1237,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -1249,6 +1256,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -1266,12 +1274,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.sepBy(p, sep).run(
-                new State("a,aabcd", SourcePos.init("test"), "some"),
+                new State("a,aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a3"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 4), "none")
+                        new State("abcd", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1287,7 +1295,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy(p, sep).run(
-                new State("a,babcd", SourcePos.init("test"), "some"),
+                new State("a,babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1303,12 +1311,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy(p, sep).run(
-                new State("a,cabcd", SourcePos.init("test"), "some"),
+                new State("a,cabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "c3"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 3), "none")
+                        new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1324,7 +1332,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy(p, sep).run(
-                new State("a,dabcd", SourcePos.init("test"), "some"),
+                new State("a,dabcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1343,7 +1351,7 @@ describe("combinator", function () {
             );
             
             lq.combinator.sepBy(p, sep).run(
-                new State("a.abcd", SourcePos.init("test"), "some"),
+                new State("a.abcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1359,12 +1367,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy(p, sep).run(
-                new State("a;aabcd", SourcePos.init("test"), "some"),
+                new State("a;aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 3), "none")
+                        new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1380,7 +1388,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy(p, sep).run(
-                new State("a;babcd", SourcePos.init("test"), "some"),
+                new State("a;babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1399,7 +1407,7 @@ describe("combinator", function () {
                 var caughtError;
                 try {
                     lq.combinator.sepBy(p, sep).run(
-                        new State("a;cabcd", SourcePos.init("test"), "some"),
+                        new State("a;cabcd", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,
@@ -1422,12 +1430,12 @@ describe("combinator", function () {
             })();
 
             lq.combinator.sepBy(p, sep).run(
-                new State("a;dabcd", SourcePos.init("test"), "some"),
+                new State("a;dabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1"]);
                     expect(State.equals(
                         state,
-                        new State(";dabcd", new SourcePos("test", 1, 2), "none")
+                        new State(";dabcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1447,12 +1455,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy(p, sep).run(
-                new State("a:abcd", SourcePos.init("test"), "some"),
+                new State("a:abcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1"]);
                     expect(State.equals(
                         state,
-                        new State(":abcd", new SourcePos("test", 1, 2), "none")
+                        new State(":abcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1472,7 +1480,7 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep) {
                 lq.combinator.sepBy(p, sep).run(
-                    new State("b" + sep + "abcd", SourcePos.init("test"), "some"),
+                    new State("b" + sep + "abcd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -1489,12 +1497,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.sepBy(p, sep).run(
-                new State("c,aabcd", SourcePos.init("test"), "some"),
+                new State("c,aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 3), "none")
+                        new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1510,7 +1518,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy(p, sep).run(
-                new State("c,babcd", SourcePos.init("test"), "some"),
+                new State("c,babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1526,12 +1534,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy(p, sep).run(
-                new State("c,cabcd", SourcePos.init("test"), "some"),
+                new State("c,cabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "c2"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 2), "none")
+                        new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1547,7 +1555,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy(p, sep).run(
-                new State("c,dabcd", SourcePos.init("test"), "some"),
+                new State("c,dabcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1566,7 +1574,7 @@ describe("combinator", function () {
             );
             
             lq.combinator.sepBy(p, sep).run(
-                new State("c.abcd", SourcePos.init("test"), "some"),
+                new State("c.abcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1582,12 +1590,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy(p, sep).run(
-                new State("c;aabcd", SourcePos.init("test"), "some"),
+                new State("c;aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a1"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 2), "none")
+                        new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1603,7 +1611,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy(p, sep).run(
-                new State("c;babcd", SourcePos.init("test"), "some"),
+                new State("c;babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1622,7 +1630,7 @@ describe("combinator", function () {
                 var caughtError;
                 try {
                     lq.combinator.sepBy(p, sep).run(
-                        new State("c;cabcd", SourcePos.init("test"), "some"),
+                        new State("c;cabcd", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,
@@ -1645,14 +1653,14 @@ describe("combinator", function () {
             })();
 
             lq.combinator.sepBy(p, sep).run(
-                new State("c;dabcd", SourcePos.init("test"), "some"),
+                new State("c;dabcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1"]);
                     expect(State.equals(
                         state,
-                        new State(";dabcd", new SourcePos("test", 1, 1), "none")
+                        new State(";dabcd", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1670,14 +1678,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy(p, sep).run(
-                new State("c:abcd", SourcePos.init("test"), "some"),
+                new State("c:abcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1"]);
                     expect(State.equals(
                         state,
-                        new State(":abcd", new SourcePos("test", 1, 1), "none")
+                        new State(":abcd", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1695,14 +1703,14 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep) {
                 lq.combinator.sepBy(p, sep).run(
-                    new State("d" + sep + "abcd", SourcePos.init("test"), "some"),
+                    new State("d" + sep + "abcd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.deep.equal([]);
                         expect(State.equals(
                             state,
-                            new State("d" + sep + "abcd", new SourcePos("test", 1, 1), "some")
+                            new State("d" + sep + "abcd", new SourcePos("test", 1, 1), 8, "some")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -1727,6 +1735,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -1745,6 +1754,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -1768,6 +1778,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -1786,6 +1797,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -1803,12 +1815,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("a,aabcd", SourcePos.init("test"), "some"),
+                new State("a,aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a3"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 4), "none")
+                        new State("abcd", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1824,7 +1836,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("a,babcd", SourcePos.init("test"), "some"),
+                new State("a,babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1840,12 +1852,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("a,cabcd", SourcePos.init("test"), "some"),
+                new State("a,cabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "c3"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 3), "none")
+                        new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1861,7 +1873,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("a,dabcd", SourcePos.init("test"), "some"),
+                new State("a,dabcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1880,7 +1892,7 @@ describe("combinator", function () {
             );
             
             lq.combinator.sepBy1(p, sep).run(
-                new State("a.abcd", SourcePos.init("test"), "some"),
+                new State("a.abcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1896,12 +1908,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("a;aabcd", SourcePos.init("test"), "some"),
+                new State("a;aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 3), "none")
+                        new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1917,7 +1929,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("a;babcd", SourcePos.init("test"), "some"),
+                new State("a;babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1936,7 +1948,7 @@ describe("combinator", function () {
                 var caughtError;
                 try {
                     lq.combinator.sepBy1(p, sep).run(
-                        new State("a;cabcd", SourcePos.init("test"), "some"),
+                        new State("a;cabcd", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,
@@ -1959,12 +1971,12 @@ describe("combinator", function () {
             })();
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("a;dabcd", SourcePos.init("test"), "some"),
+                new State("a;dabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1"]);
                     expect(State.equals(
                         state,
-                        new State(";dabcd", new SourcePos("test", 1, 2), "none")
+                        new State(";dabcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -1984,12 +1996,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("a:abcd", SourcePos.init("test"), "some"),
+                new State("a:abcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1"]);
                     expect(State.equals(
                         state,
-                        new State(":abcd", new SourcePos("test", 1, 2), "none")
+                        new State(":abcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2009,7 +2021,7 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep) {
                 lq.combinator.sepBy1(p, sep).run(
-                    new State("b" + sep + "abcd", SourcePos.init("test"), "some"),
+                    new State("b" + sep + "abcd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -2026,12 +2038,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("c,aabcd", SourcePos.init("test"), "some"),
+                new State("c,aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 3), "none")
+                        new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2047,7 +2059,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("c,babcd", SourcePos.init("test"), "some"),
+                new State("c,babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -2063,12 +2075,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("c,cabcd", SourcePos.init("test"), "some"),
+                new State("c,cabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "c2"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 2), "none")
+                        new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2084,7 +2096,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("c,dabcd", SourcePos.init("test"), "some"),
+                new State("c,dabcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -2103,7 +2115,7 @@ describe("combinator", function () {
             );
             
             lq.combinator.sepBy1(p, sep).run(
-                new State("c.abcd", SourcePos.init("test"), "some"),
+                new State("c.abcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -2119,12 +2131,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("c;aabcd", SourcePos.init("test"), "some"),
+                new State("c;aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a1"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 2), "none")
+                        new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2140,7 +2152,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("c;babcd", SourcePos.init("test"), "some"),
+                new State("c;babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -2159,7 +2171,7 @@ describe("combinator", function () {
                 var caughtError;
                 try {
                     lq.combinator.sepBy1(p, sep).run(
-                        new State("c;cabcd", SourcePos.init("test"), "some"),
+                        new State("c;cabcd", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,
@@ -2182,14 +2194,14 @@ describe("combinator", function () {
             })();
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("c;dabcd", SourcePos.init("test"), "some"),
+                new State("c;dabcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1"]);
                     expect(State.equals(
                         state,
-                        new State(";dabcd", new SourcePos("test", 1, 1), "none")
+                        new State(";dabcd", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2207,14 +2219,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepBy1(p, sep).run(
-                new State("c:abcd", SourcePos.init("test"), "some"),
+                new State("c:abcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1"]);
                     expect(State.equals(
                         state,
-                        new State(":abcd", new SourcePos("test", 1, 1), "none")
+                        new State(":abcd", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2232,7 +2244,7 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep) {
                 lq.combinator.sepBy1(p, sep).run(
-                    new State("d" + sep + "abcd", SourcePos.init("test"), "some"),
+                    new State("d" + sep + "abcd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     throwError,
@@ -2259,6 +2271,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -2277,6 +2290,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -2300,6 +2314,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -2318,6 +2333,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -2335,12 +2351,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("a,aabcd", SourcePos.init("test"), "some"),
+                new State("a,aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a3"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 4), "none")
+                        new State("abcd", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2359,7 +2375,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("a,babcd", SourcePos.init("test"), "some"),
+                new State("a,babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -2375,12 +2391,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("a,cabcd", SourcePos.init("test"), "some"),
+                new State("a,cabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "c3"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 3), "none")
+                        new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2400,12 +2416,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("a,dabcd", SourcePos.init("test"), "some"),
+                new State("a,dabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1"]);
                     expect(State.equals(
                         state,
-                        new State("dabcd", new SourcePos("test", 1, 3), "none")
+                        new State("dabcd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2424,7 +2440,7 @@ describe("combinator", function () {
             );
             
             lq.combinator.sepEndBy(p, sep).run(
-                new State("a.abcd", SourcePos.init("test"), "some"),
+                new State("a.abcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -2440,12 +2456,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("a;aabcd", SourcePos.init("test"), "some"),
+                new State("a;aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 3), "none")
+                        new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2464,7 +2480,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("a;babcd", SourcePos.init("test"), "some"),
+                new State("a;babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -2480,12 +2496,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("a;cabcd", SourcePos.init("test"), "some"),
+                new State("a;cabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "c2"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 2), "none")
+                        new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2506,12 +2522,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("a;dabcd", SourcePos.init("test"), "some"),
+                new State("a;dabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1"]);
                     expect(State.equals(
                         state,
-                        new State("dabcd", new SourcePos("test", 1, 2), "none")
+                        new State("dabcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2531,12 +2547,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("a:abcd", SourcePos.init("test"), "some"),
+                new State("a:abcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1"]);
                     expect(State.equals(
                         state,
-                        new State(":abcd", new SourcePos("test", 1, 2), "none")
+                        new State(":abcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2556,7 +2572,7 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep) {
                 lq.combinator.sepEndBy(p, sep).run(
-                    new State("b" + sep + "abcd", SourcePos.init("test"), "some"),
+                    new State("b" + sep + "abcd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -2573,12 +2589,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("c,aabcd", SourcePos.init("test"), "some"),
+                new State("c,aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 3), "none")
+                        new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2597,7 +2613,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("c,babcd", SourcePos.init("test"), "some"),
+                new State("c,babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -2613,12 +2629,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("c,cabcd", SourcePos.init("test"), "some"),
+                new State("c,cabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "c2"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 2), "none")
+                        new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2638,12 +2654,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("c,dabcd", SourcePos.init("test"), "some"),
+                new State("c,dabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1"]);
                     expect(State.equals(
                         state,
-                        new State("dabcd", new SourcePos("test", 1, 2), "none")
+                        new State("dabcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2662,7 +2678,7 @@ describe("combinator", function () {
             );
             
             lq.combinator.sepEndBy(p, sep).run(
-                new State("c.abcd", SourcePos.init("test"), "some"),
+                new State("c.abcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -2678,12 +2694,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("c;aabcd", SourcePos.init("test"), "some"),
+                new State("c;aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a1"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 2), "none")
+                        new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2702,7 +2718,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("c;babcd", SourcePos.init("test"), "some"),
+                new State("c;babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -2718,14 +2734,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("c;cabcd", SourcePos.init("test"), "some"),
+                new State("c;cabcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "c1"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 1), "none")
+                        new State("abcd", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2744,14 +2760,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("c;dabcd", SourcePos.init("test"), "some"),
+                new State("c;dabcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1"]);
                     expect(State.equals(
                         state,
-                        new State("dabcd", new SourcePos("test", 1, 1), "none")
+                        new State("dabcd", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2769,14 +2785,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy(p, sep).run(
-                new State("c:abcd", SourcePos.init("test"), "some"),
+                new State("c:abcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1"]);
                     expect(State.equals(
                         state,
-                        new State(":abcd", new SourcePos("test", 1, 1), "none")
+                        new State(":abcd", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2794,14 +2810,14 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep) {
                 lq.combinator.sepEndBy(p, sep).run(
-                    new State("d" + sep + "abcd", SourcePos.init("test"), "some"),
+                    new State("d" + sep + "abcd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.deep.equal([]);
                         expect(State.equals(
                             state,
-                            new State("d" + sep + "abcd", new SourcePos("test", 1, 1), "some")
+                            new State("d" + sep + "abcd", new SourcePos("test", 1, 1), 8, "some")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -2826,6 +2842,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -2844,6 +2861,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -2867,6 +2885,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -2885,6 +2904,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -2902,12 +2922,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("a,aabcd", SourcePos.init("test"), "some"),
+                new State("a,aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a3"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 4), "none")
+                        new State("abcd", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2926,7 +2946,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("a,babcd", SourcePos.init("test"), "some"),
+                new State("a,babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -2942,12 +2962,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("a,cabcd", SourcePos.init("test"), "some"),
+                new State("a,cabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "c3"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 3), "none")
+                        new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2967,12 +2987,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("a,dabcd", SourcePos.init("test"), "some"),
+                new State("a,dabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1"]);
                     expect(State.equals(
                         state,
-                        new State("dabcd", new SourcePos("test", 1, 3), "none")
+                        new State("dabcd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -2991,7 +3011,7 @@ describe("combinator", function () {
             );
             
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("a.abcd", SourcePos.init("test"), "some"),
+                new State("a.abcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -3007,12 +3027,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("a;aabcd", SourcePos.init("test"), "some"),
+                new State("a;aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 3), "none")
+                        new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3031,7 +3051,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("a;babcd", SourcePos.init("test"), "some"),
+                new State("a;babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -3047,12 +3067,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("a;cabcd", SourcePos.init("test"), "some"),
+                new State("a;cabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "c2"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 2), "none")
+                        new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3073,12 +3093,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("a;dabcd", SourcePos.init("test"), "some"),
+                new State("a;dabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1"]);
                     expect(State.equals(
                         state,
-                        new State("dabcd", new SourcePos("test", 1, 2), "none")
+                        new State("dabcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3098,12 +3118,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("a:abcd", SourcePos.init("test"), "some"),
+                new State("a:abcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1"]);
                     expect(State.equals(
                         state,
-                        new State(":abcd", new SourcePos("test", 1, 2), "none")
+                        new State(":abcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3123,7 +3143,7 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep) {
                 lq.combinator.sepEndBy1(p, sep).run(
-                    new State("b" + sep + "abcd", SourcePos.init("test"), "some"),
+                    new State("b" + sep + "abcd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -3140,12 +3160,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("c,aabcd", SourcePos.init("test"), "some"),
+                new State("c,aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 3), "none")
+                        new State("abcd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3164,7 +3184,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("c,babcd", SourcePos.init("test"), "some"),
+                new State("c,babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -3180,12 +3200,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("c,cabcd", SourcePos.init("test"), "some"),
+                new State("c,cabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "c2"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 2), "none")
+                        new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3205,12 +3225,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("c,dabcd", SourcePos.init("test"), "some"),
+                new State("c,dabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1"]);
                     expect(State.equals(
                         state,
-                        new State("dabcd", new SourcePos("test", 1, 2), "none")
+                        new State("dabcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3229,7 +3249,7 @@ describe("combinator", function () {
             );
             
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("c.abcd", SourcePos.init("test"), "some"),
+                new State("c.abcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -3245,12 +3265,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("c;aabcd", SourcePos.init("test"), "some"),
+                new State("c;aabcd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a1"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 2), "none")
+                        new State("abcd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3269,7 +3289,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("c;babcd", SourcePos.init("test"), "some"),
+                new State("c;babcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -3285,14 +3305,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("c;cabcd", SourcePos.init("test"), "some"),
+                new State("c;cabcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "c1"]);
                     expect(State.equals(
                         state,
-                        new State("abcd", new SourcePos("test", 1, 1), "none")
+                        new State("abcd", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3311,14 +3331,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("c;dabcd", SourcePos.init("test"), "some"),
+                new State("c;dabcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1"]);
                     expect(State.equals(
                         state,
-                        new State("dabcd", new SourcePos("test", 1, 1), "none")
+                        new State("dabcd", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3336,14 +3356,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.sepEndBy1(p, sep).run(
-                new State("c:abcd", SourcePos.init("test"), "some"),
+                new State("c:abcd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1"]);
                     expect(State.equals(
                         state,
-                        new State(":abcd", new SourcePos("test", 1, 1), "none")
+                        new State(":abcd", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3361,7 +3381,7 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep) {
                 lq.combinator.sepEndBy1(p, sep).run(
-                    new State("d" + sep + "abcd", SourcePos.init("test"), "some"),
+                    new State("d" + sep + "abcd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     throwError,
@@ -3388,6 +3408,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -3406,6 +3427,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -3429,6 +3451,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -3447,6 +3470,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -3464,12 +3488,12 @@ describe("combinator", function () {
             });
             
             lq.combinator.endBy(p, sep).run(
-                new State("a,a,d", SourcePos.init("test"), "some"),
+                new State("a,a,d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a3"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3485,7 +3509,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("a,a.d", SourcePos.init("test"), "some"),
+                new State("a,a.d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -3501,12 +3525,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("a,a;d", SourcePos.init("test"), "some"),
+                new State("a,a;d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a3"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3522,7 +3546,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("a,a:d", SourcePos.init("test"), "some"),
+                new State("a,a:d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -3541,12 +3565,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("a,c,d", SourcePos.init("test"), "some"),
+                new State("a,c,d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "c3"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3562,7 +3586,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("a,c.d", SourcePos.init("test"), "some"),
+                new State("a,c.d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -3581,7 +3605,7 @@ describe("combinator", function () {
                 var caughtError;
                 try {
                     lq.combinator.endBy(p, sep).run(
-                        new State("a,c;d", SourcePos.init("test"), "some"),
+                        new State("a,c;d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,
@@ -3604,12 +3628,12 @@ describe("combinator", function () {
             })();
 
             lq.combinator.endBy(p, sep).run(
-                new State("a,c:d", SourcePos.init("test"), "some"),
+                new State("a,c:d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1"]);
                     expect(State.equals(
                         state,
-                        new State("c:d", new SourcePos("test", 1, 3), "none")
+                        new State("c:d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3629,7 +3653,7 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep2) {
                 lq.combinator.endBy(p, sep).run(
-                    new State("a,b" + sep2 + "d", SourcePos.init("test"), "some"),
+                    new State("a,b" + sep2 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -3645,12 +3669,12 @@ describe("combinator", function () {
                 );
 
                 lq.combinator.endBy(p, sep).run(
-                    new State("a,d" + sep2 + "d", SourcePos.init("test"), "some"),
+                    new State("a,d" + sep2 + "d", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1"]);
                         expect(State.equals(
                             state,
-                            new State("d" + sep2 + "d", new SourcePos("test", 1, 3), "none")
+                            new State("d" + sep2 + "d", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3669,7 +3693,7 @@ describe("combinator", function () {
             [",", ".", ";", ":"].forEach(function (sep2) {
                 ["a", "b", "c", "d"].forEach(function (e2) {
                     lq.combinator.endBy(p, sep).run(
-                        new State("a." + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        new State("a." + e2 + sep2 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -3687,12 +3711,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.endBy(p, sep).run(
-                new State("a;a,d", SourcePos.init("test"), "some"),
+                new State("a;a,d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3708,7 +3732,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("a;a.d", SourcePos.init("test"), "some"),
+                new State("a;a.d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -3724,12 +3748,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("a;a;d", SourcePos.init("test"), "some"),
+                new State("a;a;d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3745,7 +3769,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("a;a:d", SourcePos.init("test"), "some"),
+                new State("a;a:d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -3764,12 +3788,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("a;c,d", SourcePos.init("test"), "some"),
+                new State("a;c,d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "c2"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3785,7 +3809,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("a;c.d", SourcePos.init("test"), "some"),
+                new State("a;c.d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -3804,7 +3828,7 @@ describe("combinator", function () {
                 var caughtError;
                 try {
                     lq.combinator.endBy(p, sep).run(
-                        new State("a;c;d", SourcePos.init("test"), "some"),
+                        new State("a;c;d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,
@@ -3827,12 +3851,12 @@ describe("combinator", function () {
             })();
 
             lq.combinator.endBy(p, sep).run(
-                new State("a;c:d", SourcePos.init("test"), "some"),
+                new State("a;c:d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1"]);
                     expect(State.equals(
                         state,
-                        new State("c:d", new SourcePos("test", 1, 2), "none")
+                        new State("c:d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3852,7 +3876,7 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep2) {
                 lq.combinator.endBy(p, sep).run(
-                    new State("a;b" + sep2 + "d", SourcePos.init("test"), "some"),
+                    new State("a;b" + sep2 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -3868,12 +3892,12 @@ describe("combinator", function () {
                 );
 
                 lq.combinator.endBy(p, sep).run(
-                    new State("a;d" + sep2 + "d", SourcePos.init("test"), "some"),
+                    new State("a;d" + sep2 + "d", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1"]);
                         expect(State.equals(
                             state,
-                            new State("d" + sep2 + "d", new SourcePos("test", 1, 2), "none")
+                            new State("d" + sep2 + "d", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -3892,7 +3916,7 @@ describe("combinator", function () {
             [",", ".", ";", ":"].forEach(function (sep2) {
                 ["a", "b", "c", "d"].forEach(function (e2) {
                     lq.combinator.endBy(p, sep).run(
-                        new State("a:" + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        new State("a:" + e2 + sep2 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -3913,12 +3937,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.endBy(p, sep).run(
-                new State("c,a,d", SourcePos.init("test"), "some"),
+                new State("c,a,d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3934,7 +3958,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("c,a.d", SourcePos.init("test"), "some"),
+                new State("c,a.d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -3950,12 +3974,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("c,a;d", SourcePos.init("test"), "some"),
+                new State("c,a;d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -3971,7 +3995,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("c,a:d", SourcePos.init("test"), "some"),
+                new State("c,a:d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -3990,12 +4014,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("c,c,d", SourcePos.init("test"), "some"),
+                new State("c,c,d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "c2"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -4011,7 +4035,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy(p, sep).run(
-                new State("c,c.d", SourcePos.init("test"), "some"),
+                new State("c,c.d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -4030,7 +4054,7 @@ describe("combinator", function () {
                 var caughtError;
                 try {
                     lq.combinator.endBy(p, sep).run(
-                        new State("c,c;d", SourcePos.init("test"), "some"),
+                        new State("c,c;d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,
@@ -4053,12 +4077,12 @@ describe("combinator", function () {
             })();
 
             lq.combinator.endBy(p, sep).run(
-                new State("c,c:d", SourcePos.init("test"), "some"),
+                new State("c,c:d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1"]);
                     expect(State.equals(
                         state,
-                        new State("c:d", new SourcePos("test", 1, 2), "none")
+                        new State("c:d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -4078,7 +4102,7 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep2) {
                 lq.combinator.endBy(p, sep).run(
-                    new State("c,b" + sep2 + "d", SourcePos.init("test"), "some"),
+                    new State("c,b" + sep2 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -4094,12 +4118,12 @@ describe("combinator", function () {
                 );
 
                 lq.combinator.endBy(p, sep).run(
-                    new State("c,d" + sep2 + "d", SourcePos.init("test"), "some"),
+                    new State("c,d" + sep2 + "d", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1"]);
                         expect(State.equals(
                             state,
-                            new State("d" + sep2 + "d", new SourcePos("test", 1, 2), "none")
+                            new State("d" + sep2 + "d", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4118,7 +4142,7 @@ describe("combinator", function () {
             [",", ".", ";", ":"].forEach(function (sep2) {
                 ["a", "b", "c", "d"].forEach(function (e2) {
                     lq.combinator.endBy(p, sep).run(
-                        new State("c." + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        new State("c." + e2 + sep2 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -4137,7 +4161,7 @@ describe("combinator", function () {
                         var caughtError;
                         try {
                             lq.combinator.endBy(p, sep).run(
-                                new State("c;" + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                                new State("c;" + e2 + sep2 + "d", SourcePos.init("test"), 8, "some"),
                                 throwError,
                                 throwError,
                                 throwError,
@@ -4160,14 +4184,14 @@ describe("combinator", function () {
                     })();
 
                     lq.combinator.endBy(p, sep).run(
-                        new State("c:" + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        new State("c:" + e2 + sep2 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         function (value, state, error) {
                             expect(value).to.deep.equal([]);
                             expect(State.equals(
                                 state,
-                                new State("c:" + e2 + sep2 + "d", new SourcePos("test", 1, 1), "some")
+                                new State("c:" + e2 + sep2 + "d", new SourcePos("test", 1, 1), 8, "some")
                             )).to.be.true;
                             expect(ParseError.equals(
                                 error,
@@ -4189,7 +4213,7 @@ describe("combinator", function () {
                 ["a", "b", "c", "d"].forEach(function (e2) {
                     [",", ".", ";", ":"].forEach(function (sep1) {
                         lq.combinator.endBy(p, sep).run(
-                            new State("b" + sep1 + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                            new State("b" + sep1 + e2 + sep2 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             function (error) {
                                 expect(ParseError.equals(
@@ -4205,14 +4229,14 @@ describe("combinator", function () {
                         );
 
                         lq.combinator.endBy(p, sep).run(
-                            new State("d" + sep1 + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                            new State("d" + sep1 + e2 + sep2 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             throwError,
                             function (value, state, error) {
                                 expect(value).to.deep.equal([]);
                                 expect(State.equals(
                                     state,
-                                    new State("d" + sep1 + e2 + sep2 + "d", new SourcePos("test", 1, 1), "some")
+                                    new State("d" + sep1 + e2 + sep2 + "d", new SourcePos("test", 1, 1), 8, "some")
                                 )).to.be.true;
                                 expect(ParseError.equals(
                                     error,
@@ -4239,6 +4263,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -4257,6 +4282,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -4280,6 +4306,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -4298,6 +4325,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -4315,12 +4343,12 @@ describe("combinator", function () {
             });
             
             lq.combinator.endBy1(p, sep).run(
-                new State("a,a,d", SourcePos.init("test"), "some"),
+                new State("a,a,d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a3"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -4336,7 +4364,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("a,a.d", SourcePos.init("test"), "some"),
+                new State("a,a.d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -4352,12 +4380,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("a,a;d", SourcePos.init("test"), "some"),
+                new State("a,a;d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a3"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -4373,7 +4401,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("a,a:d", SourcePos.init("test"), "some"),
+                new State("a,a:d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -4392,12 +4420,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("a,c,d", SourcePos.init("test"), "some"),
+                new State("a,c,d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "c3"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -4413,7 +4441,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("a,c.d", SourcePos.init("test"), "some"),
+                new State("a,c.d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -4432,7 +4460,7 @@ describe("combinator", function () {
                 var caughtError;
                 try {
                     lq.combinator.endBy1(p, sep).run(
-                        new State("a,c;d", SourcePos.init("test"), "some"),
+                        new State("a,c;d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,
@@ -4455,12 +4483,12 @@ describe("combinator", function () {
             })();
 
             lq.combinator.endBy1(p, sep).run(
-                new State("a,c:d", SourcePos.init("test"), "some"),
+                new State("a,c:d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1"]);
                     expect(State.equals(
                         state,
-                        new State("c:d", new SourcePos("test", 1, 3), "none")
+                        new State("c:d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -4481,7 +4509,7 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep2) {
                 lq.combinator.endBy1(p, sep).run(
-                    new State("a,b" + sep2 + "d", SourcePos.init("test"), "some"),
+                    new State("a,b" + sep2 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -4497,12 +4525,12 @@ describe("combinator", function () {
                 );
 
                 lq.combinator.endBy1(p, sep).run(
-                    new State("a,d" + sep2 + "d", SourcePos.init("test"), "some"),
+                    new State("a,d" + sep2 + "d", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1"]);
                         expect(State.equals(
                             state,
-                            new State("d" + sep2 + "d", new SourcePos("test", 1, 3), "none")
+                            new State("d" + sep2 + "d", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4524,7 +4552,7 @@ describe("combinator", function () {
             [",", ".", ";", ":"].forEach(function (sep2) {
                 ["a", "b", "c", "d"].forEach(function (e2) {
                     lq.combinator.endBy1(p, sep).run(
-                        new State("a." + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        new State("a." + e2 + sep2 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -4542,12 +4570,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.endBy1(p, sep).run(
-                new State("a;a,d", SourcePos.init("test"), "some"),
+                new State("a;a,d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -4563,7 +4591,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("a;a.d", SourcePos.init("test"), "some"),
+                new State("a;a.d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -4579,12 +4607,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("a;a;d", SourcePos.init("test"), "some"),
+                new State("a;a;d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -4600,7 +4628,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("a;a:d", SourcePos.init("test"), "some"),
+                new State("a;a:d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -4619,12 +4647,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("a;c,d", SourcePos.init("test"), "some"),
+                new State("a;c,d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "c2"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -4640,7 +4668,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("a;c.d", SourcePos.init("test"), "some"),
+                new State("a;c.d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -4659,7 +4687,7 @@ describe("combinator", function () {
                 var caughtError;
                 try {
                     lq.combinator.endBy1(p, sep).run(
-                        new State("a;c;d", SourcePos.init("test"), "some"),
+                        new State("a;c;d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,
@@ -4682,12 +4710,12 @@ describe("combinator", function () {
             })();
 
             lq.combinator.endBy1(p, sep).run(
-                new State("a;c:d", SourcePos.init("test"), "some"),
+                new State("a;c:d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1"]);
                     expect(State.equals(
                         state,
-                        new State("c:d", new SourcePos("test", 1, 2), "none")
+                        new State("c:d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -4709,7 +4737,7 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep2) {
                 lq.combinator.endBy1(p, sep).run(
-                    new State("a;b" + sep2 + "d", SourcePos.init("test"), "some"),
+                    new State("a;b" + sep2 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -4725,12 +4753,12 @@ describe("combinator", function () {
                 );
 
                 lq.combinator.endBy1(p, sep).run(
-                    new State("a;d" + sep2 + "d", SourcePos.init("test"), "some"),
+                    new State("a;d" + sep2 + "d", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["a1"]);
                         expect(State.equals(
                             state,
-                            new State("d" + sep2 + "d", new SourcePos("test", 1, 2), "none")
+                            new State("d" + sep2 + "d", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4753,7 +4781,7 @@ describe("combinator", function () {
             [",", ".", ";", ":"].forEach(function (sep2) {
                 ["a", "b", "c", "d"].forEach(function (e2) {
                     lq.combinator.endBy1(p, sep).run(
-                        new State("a:" + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        new State("a:" + e2 + sep2 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -4774,12 +4802,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.endBy1(p, sep).run(
-                new State("c,a,d", SourcePos.init("test"), "some"),
+                new State("c,a,d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -4795,7 +4823,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("c,a.d", SourcePos.init("test"), "some"),
+                new State("c,a.d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -4811,12 +4839,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("c,a;d", SourcePos.init("test"), "some"),
+                new State("c,a;d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -4832,7 +4860,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("c,a:d", SourcePos.init("test"), "some"),
+                new State("c,a:d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -4851,12 +4879,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("c,c,d", SourcePos.init("test"), "some"),
+                new State("c,c,d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "c2"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -4872,7 +4900,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("c,c.d", SourcePos.init("test"), "some"),
+                new State("c,c.d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -4891,7 +4919,7 @@ describe("combinator", function () {
                 var caughtError;
                 try {
                     lq.combinator.endBy1(p, sep).run(
-                        new State("c,c;d", SourcePos.init("test"), "some"),
+                        new State("c,c;d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,
@@ -4914,12 +4942,12 @@ describe("combinator", function () {
             })();
 
             lq.combinator.endBy1(p, sep).run(
-                new State("c,c:d", SourcePos.init("test"), "some"),
+                new State("c,c:d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1"]);
                     expect(State.equals(
                         state,
-                        new State("c:d", new SourcePos("test", 1, 2), "none")
+                        new State("c:d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -4940,7 +4968,7 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep2) {
                 lq.combinator.endBy1(p, sep).run(
-                    new State("c,b" + sep2 + "d", SourcePos.init("test"), "some"),
+                    new State("c,b" + sep2 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -4956,12 +4984,12 @@ describe("combinator", function () {
                 );
 
                 lq.combinator.endBy1(p, sep).run(
-                    new State("c,d" + sep2 + "d", SourcePos.init("test"), "some"),
+                    new State("c,d" + sep2 + "d", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1"]);
                         expect(State.equals(
                             state,
-                            new State("d" + sep2 + "d", new SourcePos("test", 1, 2), "none")
+                            new State("d" + sep2 + "d", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -4983,7 +5011,7 @@ describe("combinator", function () {
             [",", ".", ";", ":"].forEach(function (sep2) {
                 ["a", "b", "c", "d"].forEach(function (e2) {
                     lq.combinator.endBy1(p, sep).run(
-                        new State("c." + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        new State("c." + e2 + sep2 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -5001,12 +5029,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.endBy1(p, sep).run(
-                new State("c;a,d", SourcePos.init("test"), "some"),
+                new State("c;a,d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a1"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5022,7 +5050,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("c;a.d", SourcePos.init("test"), "some"),
+                new State("c;a.d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -5038,12 +5066,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("c;a;d", SourcePos.init("test"), "some"),
+                new State("c;a;d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a1"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5059,7 +5087,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("c;a:d", SourcePos.init("test"), "some"),
+                new State("c;a:d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -5078,12 +5106,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("c;c,d", SourcePos.init("test"), "some"),
+                new State("c;c,d", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "c1"]);
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5099,7 +5127,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.endBy1(p, sep).run(
-                new State("c;c.d", SourcePos.init("test"), "some"),
+                new State("c;c.d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -5118,7 +5146,7 @@ describe("combinator", function () {
                 var caughtError;
                 try {
                     lq.combinator.endBy1(p, sep).run(
-                        new State("c;c;d", SourcePos.init("test"), "some"),
+                        new State("c;c;d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,
@@ -5141,14 +5169,14 @@ describe("combinator", function () {
             })();
 
             lq.combinator.endBy1(p, sep).run(
-                new State("c;c:d", SourcePos.init("test"), "some"),
+                new State("c;c:d", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1"]);
                     expect(State.equals(
                         state,
-                        new State("c:d", new SourcePos("test", 1, 1), "none")
+                        new State("c:d", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5168,7 +5196,7 @@ describe("combinator", function () {
 
             [",", ".", ";", ":"].forEach(function (sep2) {
                 lq.combinator.endBy1(p, sep).run(
-                    new State("c;b" + sep2 + "d", SourcePos.init("test"), "some"),
+                    new State("c;b" + sep2 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5184,14 +5212,14 @@ describe("combinator", function () {
                 );
 
                 lq.combinator.endBy1(p, sep).run(
-                    new State("c;d" + sep2 + "d", SourcePos.init("test"), "some"),
+                    new State("c;d" + sep2 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.deep.equal(["c1"]);
                         expect(State.equals(
                             state,
-                            new State("d" + sep2 + "d", new SourcePos("test", 1, 1), "none")
+                            new State("d" + sep2 + "d", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5212,7 +5240,7 @@ describe("combinator", function () {
             [",", ".", ";", ":"].forEach(function (sep2) {
                 ["a", "b", "c", "d"].forEach(function (e2) {
                     lq.combinator.endBy1(p, sep).run(
-                        new State("c:" + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                        new State("c:" + e2 + sep2 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,
@@ -5236,7 +5264,7 @@ describe("combinator", function () {
                 ["a", "b", "c", "d"].forEach(function (e2) {
                     [",", ".", ";", ":"].forEach(function (sep1) {
                         lq.combinator.endBy1(p, sep).run(
-                            new State("b" + sep1 + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                            new State("b" + sep1 + e2 + sep2 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             function (error) {
                                 expect(ParseError.equals(
@@ -5252,7 +5280,7 @@ describe("combinator", function () {
                         );
 
                         lq.combinator.endBy1(p, sep).run(
-                            new State("d" + sep1 + e2 + sep2 + "d", SourcePos.init("test"), "some"),
+                            new State("d" + sep1 + e2 + sep2 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             throwError,
                             throwError,
@@ -5287,6 +5315,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -5305,6 +5334,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -5328,6 +5358,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -5346,6 +5377,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -5363,12 +5395,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(a(ad", SourcePos.init("test"), "some"),
+                new State("a(a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((a1a3)a5)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 6), "none")
+                        new State("d", new SourcePos("test", 1, 6), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5387,7 +5419,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(a(bd", SourcePos.init("test"), "some"),
+                new State("a(a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -5403,12 +5435,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(a(cd", SourcePos.init("test"), "some"),
+                new State("a(a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((a1a3)c5)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5428,7 +5460,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(a(dd", SourcePos.init("test"), "some"),
+                new State("a(a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -5448,7 +5480,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("a(a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a(a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5465,12 +5497,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(a[ad", SourcePos.init("test"), "some"),
+                new State("a(a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(a1a3)a4]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5489,7 +5521,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(a[bd", SourcePos.init("test"), "some"),
+                new State("a(a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -5505,12 +5537,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(a[cd", SourcePos.init("test"), "some"),
+                new State("a(a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(a1a3)c4]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5531,12 +5563,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(a[dd", SourcePos.init("test"), "some"),
+                new State("a(a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1a3)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 4), "none")
+                        new State("[dd", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5557,12 +5589,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("a(a<dd", SourcePos.init("test"), "some"),
+                    new State("a(a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(a1a3)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 4), "none")
+                            new State("<dd", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5584,7 +5616,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl(p, op, "x").run(
-                        new State("a(b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a(b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -5602,12 +5634,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(c(ad", SourcePos.init("test"), "some"),
+                new State("a(c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((a1c3)a4)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5626,7 +5658,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(c(bd", SourcePos.init("test"), "some"),
+                new State("a(c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -5642,12 +5674,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(c(cd", SourcePos.init("test"), "some"),
+                new State("a(c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((a1c3)c4)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5667,7 +5699,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(c(dd", SourcePos.init("test"), "some"),
+                new State("a(c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -5687,7 +5719,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("a(c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a(c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5704,12 +5736,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(c[ad", SourcePos.init("test"), "some"),
+                new State("a(c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(a1c3)a3]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5728,7 +5760,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(c[bd", SourcePos.init("test"), "some"),
+                new State("a(c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -5744,12 +5776,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(c[cd", SourcePos.init("test"), "some"),
+                new State("a(c[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(a1c3)c3]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5771,12 +5803,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a(c[dd", SourcePos.init("test"), "some"),
+                new State("a(c[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1c3)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                        new State("[dd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5798,12 +5830,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("a(c<dd", SourcePos.init("test"), "some"),
+                    new State("a(c<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(a1c3)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                            new State("<dd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -5826,7 +5858,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl(p, op, "x").run(
-                        new State("a(d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a(d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -5850,7 +5882,7 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainl(p, op, "x").run(
-                            new State("a{" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("a{" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             function (error) {
                                 expect(ParseError.equals(
@@ -5869,12 +5901,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[a(ad", SourcePos.init("test"), "some"),
+                new State("a[a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([a1a2]a4)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5893,7 +5925,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[a(bd", SourcePos.init("test"), "some"),
+                new State("a[a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -5909,12 +5941,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[a(cd", SourcePos.init("test"), "some"),
+                new State("a[a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([a1a2]c4)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5934,7 +5966,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[a(dd", SourcePos.init("test"), "some"),
+                new State("a[a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -5954,7 +5986,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("a[a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a[a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -5971,12 +6003,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[a[ad", SourcePos.init("test"), "some"),
+                new State("a[a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[[a1a2]a3]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -5995,7 +6027,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[a[bd", SourcePos.init("test"), "some"),
+                new State("a[a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -6011,12 +6043,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[a[cd", SourcePos.init("test"), "some"),
+                new State("a[a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[[a1a2]c3]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6037,12 +6069,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[a[dd", SourcePos.init("test"), "some"),
+                new State("a[a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1a2]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                        new State("[dd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6063,12 +6095,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("a[a<dd", SourcePos.init("test"), "some"),
+                    new State("a[a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("[a1a2]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                            new State("<dd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6090,7 +6122,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl(p, op, "x").run(
-                        new State("a[b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a[b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -6108,12 +6140,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[c(ad", SourcePos.init("test"), "some"),
+                new State("a[c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([a1c2]a3)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6132,7 +6164,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[c(bd", SourcePos.init("test"), "some"),
+                new State("a[c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -6148,12 +6180,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[c(cd", SourcePos.init("test"), "some"),
+                new State("a[c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([a1c2]c3)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6173,7 +6205,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[c(dd", SourcePos.init("test"), "some"),
+                new State("a[c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -6193,7 +6225,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("a[c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a[c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -6210,12 +6242,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[c[ad", SourcePos.init("test"), "some"),
+                new State("a[c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[[a1c2]a2]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6234,7 +6266,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[c[bd", SourcePos.init("test"), "some"),
+                new State("a[c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -6250,12 +6282,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[c[cd", SourcePos.init("test"), "some"),
+                new State("a[c[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[[a1c2]c2]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6278,12 +6310,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("a[c[dd", SourcePos.init("test"), "some"),
+                new State("a[c[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1c2]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                        new State("[dd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6306,12 +6338,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("a[c<dd", SourcePos.init("test"), "some"),
+                    new State("a[c<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("[a1c2]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                            new State("<dd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6335,12 +6367,12 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl(p, op, "x").run(
-                        new State("a[d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a[d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         function (value, state, error) {
                             expect(value).to.equal("a1");
                             expect(State.equals(
                                 state,
-                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 2), "none")
+                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 2), 8, "none")
                             )).to.be.true;
                             expect(ParseError.equals(
                                 error,
@@ -6365,12 +6397,12 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainl(p, op, "x").run(
-                            new State("a<" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("a<" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             function (value, state, error) {
                                 expect(value).to.equal("a1");
                                 expect(State.equals(
                                     state,
-                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 2), "none")
+                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 2), 8, "none")
                                 )).to.be.true;
                                 expect(ParseError.equals(
                                     error,
@@ -6396,7 +6428,7 @@ describe("combinator", function () {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         ["(", "{", "[", "<"].forEach(function (op1) {
                             lq.combinator.chainl(p, op, "x").run(
-                                new State("b" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                                new State("b" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                                 throwError,
                                 function (error) {
                                     expect(ParseError.equals(
@@ -6416,12 +6448,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(a(ad", SourcePos.init("test"), "some"),
+                new State("c(a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((c1a2)a4)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6440,7 +6472,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(a(bd", SourcePos.init("test"), "some"),
+                new State("c(a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -6456,12 +6488,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(a(cd", SourcePos.init("test"), "some"),
+                new State("c(a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((c1a2)c4)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6481,7 +6513,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(a(dd", SourcePos.init("test"), "some"),
+                new State("c(a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -6501,7 +6533,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("c(a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c(a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -6518,12 +6550,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(a[ad", SourcePos.init("test"), "some"),
+                new State("c(a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(c1a2)a3]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6542,7 +6574,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(a[bd", SourcePos.init("test"), "some"),
+                new State("c(a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -6558,12 +6590,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(a[cd", SourcePos.init("test"), "some"),
+                new State("c(a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(c1a2)c3]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6584,12 +6616,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(a[dd", SourcePos.init("test"), "some"),
+                new State("c(a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1a2)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                        new State("[dd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6610,12 +6642,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("c(a<dd", SourcePos.init("test"), "some"),
+                    new State("c(a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(c1a2)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                            new State("<dd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6637,7 +6669,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl(p, op, "x").run(
-                        new State("c(b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c(b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -6655,12 +6687,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(c(ad", SourcePos.init("test"), "some"),
+                new State("c(c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((c1c2)a3)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6679,7 +6711,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(c(bd", SourcePos.init("test"), "some"),
+                new State("c(c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -6695,12 +6727,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(c(cd", SourcePos.init("test"), "some"),
+                new State("c(c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((c1c2)c3)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6720,7 +6752,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(c(dd", SourcePos.init("test"), "some"),
+                new State("c(c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -6740,7 +6772,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("c(c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c(c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -6757,12 +6789,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(c[ad", SourcePos.init("test"), "some"),
+                new State("c(c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(c1c2)a2]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6781,7 +6813,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(c[bd", SourcePos.init("test"), "some"),
+                new State("c(c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -6797,12 +6829,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(c[cd", SourcePos.init("test"), "some"),
+                new State("c(c[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(c1c2)c2]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6824,12 +6856,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c(c[dd", SourcePos.init("test"), "some"),
+                new State("c(c[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1c2)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                        new State("[dd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6851,12 +6883,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("c(c<dd", SourcePos.init("test"), "some"),
+                    new State("c(c<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(c1c2)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                            new State("<dd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -6879,7 +6911,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl(p, op, "x").run(
-                        new State("c(d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c(d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -6903,7 +6935,7 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainl(p, op, "x").run(
-                            new State("c{" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("c{" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             function (error) {
                                 expect(ParseError.equals(
@@ -6922,12 +6954,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[a(ad", SourcePos.init("test"), "some"),
+                new State("c[a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([c1a1]a3)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6946,7 +6978,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[a(bd", SourcePos.init("test"), "some"),
+                new State("c[a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -6962,12 +6994,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[a(cd", SourcePos.init("test"), "some"),
+                new State("c[a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([c1a1]c3)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -6987,7 +7019,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[a(dd", SourcePos.init("test"), "some"),
+                new State("c[a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -7007,7 +7039,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("c[a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c[a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7024,12 +7056,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[a[ad", SourcePos.init("test"), "some"),
+                new State("c[a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[[c1a1]a2]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7048,7 +7080,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[a[bd", SourcePos.init("test"), "some"),
+                new State("c[a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -7064,12 +7096,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[a[cd", SourcePos.init("test"), "some"),
+                new State("c[a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[[c1a1]c2]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7090,12 +7122,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[a[dd", SourcePos.init("test"), "some"),
+                new State("c[a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1a1]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                        new State("[dd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7116,12 +7148,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("c[a<dd", SourcePos.init("test"), "some"),
+                    new State("c[a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("[c1a1]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                            new State("<dd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7143,7 +7175,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl(p, op, "x").run(
-                        new State("c[b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c[b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -7161,12 +7193,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[c(ad", SourcePos.init("test"), "some"),
+                new State("c[c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([c1c1]a2)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7185,7 +7217,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[c(bd", SourcePos.init("test"), "some"),
+                new State("c[c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -7201,12 +7233,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[c(cd", SourcePos.init("test"), "some"),
+                new State("c[c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([c1c1]c2)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7226,7 +7258,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[c(dd", SourcePos.init("test"), "some"),
+                new State("c[c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -7246,7 +7278,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("c[c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c[c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7263,12 +7295,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[c[ad", SourcePos.init("test"), "some"),
+                new State("c[c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[[c1c1]a1]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7287,7 +7319,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[c[bd", SourcePos.init("test"), "some"),
+                new State("c[c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -7303,14 +7335,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[c[cd", SourcePos.init("test"), "some"),
+                new State("c[c[cd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal("[[c1c1]c1]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 1), "none")
+                        new State("d", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7331,14 +7363,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl(p, op, "x").run(
-                new State("c[c[dd", SourcePos.init("test"), "some"),
+                new State("c[c[dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal("[c1c1]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 1), "none")
+                        new State("[dd", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7359,14 +7391,14 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl(p, op, "x").run(
-                    new State("c[c<dd", SourcePos.init("test"), "some"),
+                    new State("c[c<dd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.equal("[c1c1]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 1), "none")
+                            new State("<dd", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7388,14 +7420,14 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl(p, op, "x").run(
-                        new State("c[d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c[d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         function (value, state, error) {
                             expect(value).to.equal("c1");
                             expect(State.equals(
                                 state,
-                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 1), "none")
+                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 1), 8, "none")
                             )).to.be.true;
                             expect(ParseError.equals(
                                 error,
@@ -7418,14 +7450,14 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainl(p, op, "x").run(
-                            new State("c<" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("c<" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             throwError,
                             function (value, state, error) {
                                 expect(value).to.equal("c1");
                                 expect(State.equals(
                                     state,
-                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), "none")
+                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), 8, "none")
                                 )).to.be.true;
                                 expect(ParseError.equals(
                                     error,
@@ -7449,14 +7481,14 @@ describe("combinator", function () {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         ["(", "{", "[", "<"].forEach(function (op1) {
                             lq.combinator.chainl(p, op, "x").run(
-                                new State("d" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                                new State("d" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                                 throwError,
                                 throwError,
                                 function (value, state, error) {
                                     expect(value).to.equal("x");
                                     expect(State.equals(
                                         state,
-                                        new State("d" + op1 + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), "some")
+                                        new State("d" + op1 + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), 8, "some")
                                     )).to.be.true;
                                     expect(ParseError.equals(
                                         error,
@@ -7484,6 +7516,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -7502,6 +7535,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -7525,6 +7559,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -7543,6 +7578,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -7560,12 +7596,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(a(ad", SourcePos.init("test"), "some"),
+                new State("a(a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((a1a3)a5)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 6), "none")
+                        new State("d", new SourcePos("test", 1, 6), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7584,7 +7620,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(a(bd", SourcePos.init("test"), "some"),
+                new State("a(a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -7600,12 +7636,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(a(cd", SourcePos.init("test"), "some"),
+                new State("a(a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((a1a3)c5)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7625,7 +7661,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(a(dd", SourcePos.init("test"), "some"),
+                new State("a(a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -7645,7 +7681,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("a(a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a(a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7662,12 +7698,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(a[ad", SourcePos.init("test"), "some"),
+                new State("a(a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(a1a3)a4]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7686,7 +7722,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(a[bd", SourcePos.init("test"), "some"),
+                new State("a(a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -7702,12 +7738,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(a[cd", SourcePos.init("test"), "some"),
+                new State("a(a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(a1a3)c4]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7728,12 +7764,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(a[dd", SourcePos.init("test"), "some"),
+                new State("a(a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1a3)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 4), "none")
+                        new State("[dd", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7754,12 +7790,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("a(a<dd", SourcePos.init("test"), "some"),
+                    new State("a(a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(a1a3)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 4), "none")
+                            new State("<dd", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -7781,7 +7817,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl1(p, op).run(
-                        new State("a(b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a(b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -7799,12 +7835,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(c(ad", SourcePos.init("test"), "some"),
+                new State("a(c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((a1c3)a4)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7823,7 +7859,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(c(bd", SourcePos.init("test"), "some"),
+                new State("a(c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -7839,12 +7875,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(c(cd", SourcePos.init("test"), "some"),
+                new State("a(c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((a1c3)c4)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7864,7 +7900,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(c(dd", SourcePos.init("test"), "some"),
+                new State("a(c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -7884,7 +7920,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("a(c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a(c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -7901,12 +7937,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(c[ad", SourcePos.init("test"), "some"),
+                new State("a(c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(a1c3)a3]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7925,7 +7961,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(c[bd", SourcePos.init("test"), "some"),
+                new State("a(c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -7941,12 +7977,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(c[cd", SourcePos.init("test"), "some"),
+                new State("a(c[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(a1c3)c3]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7968,12 +8004,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a(c[dd", SourcePos.init("test"), "some"),
+                new State("a(c[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1c3)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                        new State("[dd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -7995,12 +8031,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("a(c<dd", SourcePos.init("test"), "some"),
+                    new State("a(c<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(a1c3)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                            new State("<dd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -8023,7 +8059,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl1(p, op).run(
-                        new State("a(d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a(d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -8047,7 +8083,7 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainl1(p, op).run(
-                            new State("a{" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("a{" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             function (error) {
                                 expect(ParseError.equals(
@@ -8066,12 +8102,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[a(ad", SourcePos.init("test"), "some"),
+                new State("a[a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([a1a2]a4)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8090,7 +8126,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[a(bd", SourcePos.init("test"), "some"),
+                new State("a[a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -8106,12 +8142,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[a(cd", SourcePos.init("test"), "some"),
+                new State("a[a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([a1a2]c4)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8131,7 +8167,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[a(dd", SourcePos.init("test"), "some"),
+                new State("a[a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -8151,7 +8187,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("a[a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a[a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -8168,12 +8204,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[a[ad", SourcePos.init("test"), "some"),
+                new State("a[a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[[a1a2]a3]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8192,7 +8228,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[a[bd", SourcePos.init("test"), "some"),
+                new State("a[a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -8208,12 +8244,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[a[cd", SourcePos.init("test"), "some"),
+                new State("a[a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[[a1a2]c3]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8234,12 +8270,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[a[dd", SourcePos.init("test"), "some"),
+                new State("a[a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1a2]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                        new State("[dd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8260,12 +8296,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("a[a<dd", SourcePos.init("test"), "some"),
+                    new State("a[a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("[a1a2]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                            new State("<dd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -8287,7 +8323,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl1(p, op).run(
-                        new State("a[b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a[b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -8305,12 +8341,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[c(ad", SourcePos.init("test"), "some"),
+                new State("a[c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([a1c2]a3)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8329,7 +8365,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[c(bd", SourcePos.init("test"), "some"),
+                new State("a[c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -8345,12 +8381,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[c(cd", SourcePos.init("test"), "some"),
+                new State("a[c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([a1c2]c3)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8370,7 +8406,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[c(dd", SourcePos.init("test"), "some"),
+                new State("a[c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -8390,7 +8426,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("a[c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a[c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -8407,12 +8443,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[c[ad", SourcePos.init("test"), "some"),
+                new State("a[c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[[a1c2]a2]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8431,7 +8467,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[c[bd", SourcePos.init("test"), "some"),
+                new State("a[c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -8447,12 +8483,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[c[cd", SourcePos.init("test"), "some"),
+                new State("a[c[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[[a1c2]c2]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8475,12 +8511,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("a[c[dd", SourcePos.init("test"), "some"),
+                new State("a[c[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1c2]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                        new State("[dd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8503,12 +8539,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("a[c<dd", SourcePos.init("test"), "some"),
+                    new State("a[c<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("[a1c2]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                            new State("<dd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -8532,12 +8568,12 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl1(p, op).run(
-                        new State("a[d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a[d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         function (value, state, error) {
                             expect(value).to.equal("a1");
                             expect(State.equals(
                                 state,
-                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 2), "none")
+                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 2), 8, "none")
                             )).to.be.true;
                             expect(ParseError.equals(
                                 error,
@@ -8562,12 +8598,12 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainl1(p, op).run(
-                            new State("a<" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("a<" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             function (value, state, error) {
                                 expect(value).to.equal("a1");
                                 expect(State.equals(
                                     state,
-                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 2), "none")
+                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 2), 8, "none")
                                 )).to.be.true;
                                 expect(ParseError.equals(
                                     error,
@@ -8593,7 +8629,7 @@ describe("combinator", function () {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         ["(", "{", "[", "<"].forEach(function (op1) {
                             lq.combinator.chainl1(p, op).run(
-                                new State("b" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                                new State("b" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                                 throwError,
                                 function (error) {
                                     expect(ParseError.equals(
@@ -8613,12 +8649,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(a(ad", SourcePos.init("test"), "some"),
+                new State("c(a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((c1a2)a4)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8637,7 +8673,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(a(bd", SourcePos.init("test"), "some"),
+                new State("c(a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -8653,12 +8689,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(a(cd", SourcePos.init("test"), "some"),
+                new State("c(a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((c1a2)c4)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8678,7 +8714,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(a(dd", SourcePos.init("test"), "some"),
+                new State("c(a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -8698,7 +8734,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("c(a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c(a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -8715,12 +8751,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(a[ad", SourcePos.init("test"), "some"),
+                new State("c(a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(c1a2)a3]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8739,7 +8775,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(a[bd", SourcePos.init("test"), "some"),
+                new State("c(a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -8755,12 +8791,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(a[cd", SourcePos.init("test"), "some"),
+                new State("c(a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(c1a2)c3]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8781,12 +8817,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(a[dd", SourcePos.init("test"), "some"),
+                new State("c(a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1a2)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                        new State("[dd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8807,12 +8843,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("c(a<dd", SourcePos.init("test"), "some"),
+                    new State("c(a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(c1a2)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                            new State("<dd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -8834,7 +8870,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl1(p, op).run(
-                        new State("c(b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c(b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -8852,12 +8888,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(c(ad", SourcePos.init("test"), "some"),
+                new State("c(c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((c1c2)a3)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8876,7 +8912,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(c(bd", SourcePos.init("test"), "some"),
+                new State("c(c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -8892,12 +8928,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(c(cd", SourcePos.init("test"), "some"),
+                new State("c(c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("((c1c2)c3)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8917,7 +8953,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(c(dd", SourcePos.init("test"), "some"),
+                new State("c(c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -8937,7 +8973,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("c(c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c(c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -8954,12 +8990,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(c[ad", SourcePos.init("test"), "some"),
+                new State("c(c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(c1c2)a2]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -8978,7 +9014,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(c[bd", SourcePos.init("test"), "some"),
+                new State("c(c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -8994,12 +9030,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(c[cd", SourcePos.init("test"), "some"),
+                new State("c(c[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[(c1c2)c2]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9021,12 +9057,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c(c[dd", SourcePos.init("test"), "some"),
+                new State("c(c[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1c2)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                        new State("[dd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9048,12 +9084,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("c(c<dd", SourcePos.init("test"), "some"),
+                    new State("c(c<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(c1c2)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                            new State("<dd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -9076,7 +9112,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl1(p, op).run(
-                        new State("c(d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c(d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -9100,7 +9136,7 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainl1(p, op).run(
-                            new State("c{" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("c{" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             function (error) {
                                 expect(ParseError.equals(
@@ -9119,12 +9155,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[a(ad", SourcePos.init("test"), "some"),
+                new State("c[a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([c1a1]a3)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9143,7 +9179,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[a(bd", SourcePos.init("test"), "some"),
+                new State("c[a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -9159,12 +9195,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[a(cd", SourcePos.init("test"), "some"),
+                new State("c[a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([c1a1]c3)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9184,7 +9220,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[a(dd", SourcePos.init("test"), "some"),
+                new State("c[a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -9204,7 +9240,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("c[a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c[a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -9221,12 +9257,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[a[ad", SourcePos.init("test"), "some"),
+                new State("c[a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[[c1a1]a2]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9245,7 +9281,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[a[bd", SourcePos.init("test"), "some"),
+                new State("c[a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -9261,12 +9297,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[a[cd", SourcePos.init("test"), "some"),
+                new State("c[a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[[c1a1]c2]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9287,12 +9323,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[a[dd", SourcePos.init("test"), "some"),
+                new State("c[a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1a1]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                        new State("[dd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9313,12 +9349,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("c[a<dd", SourcePos.init("test"), "some"),
+                    new State("c[a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("[c1a1]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                            new State("<dd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -9340,7 +9376,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl1(p, op).run(
-                        new State("c[b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c[b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -9358,12 +9394,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[c(ad", SourcePos.init("test"), "some"),
+                new State("c[c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([c1c1]a2)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9382,7 +9418,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[c(bd", SourcePos.init("test"), "some"),
+                new State("c[c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -9398,12 +9434,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[c(cd", SourcePos.init("test"), "some"),
+                new State("c[c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("([c1c1]c2)");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9423,7 +9459,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[c(dd", SourcePos.init("test"), "some"),
+                new State("c[c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -9443,7 +9479,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("c[c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c[c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -9460,12 +9496,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[c[ad", SourcePos.init("test"), "some"),
+                new State("c[c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[[c1c1]a1]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9484,7 +9520,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[c[bd", SourcePos.init("test"), "some"),
+                new State("c[c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -9500,14 +9536,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[c[cd", SourcePos.init("test"), "some"),
+                new State("c[c[cd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal("[[c1c1]c1]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 1), "none")
+                        new State("d", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9528,14 +9564,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainl1(p, op).run(
-                new State("c[c[dd", SourcePos.init("test"), "some"),
+                new State("c[c[dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal("[c1c1]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 1), "none")
+                        new State("[dd", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9556,14 +9592,14 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainl1(p, op).run(
-                    new State("c[c<dd", SourcePos.init("test"), "some"),
+                    new State("c[c<dd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.equal("[c1c1]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 1), "none")
+                            new State("<dd", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -9585,14 +9621,14 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainl1(p, op).run(
-                        new State("c[d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c[d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         function (value, state, error) {
                             expect(value).to.equal("c1");
                             expect(State.equals(
                                 state,
-                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 1), "none")
+                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 1), 8, "none")
                             )).to.be.true;
                             expect(ParseError.equals(
                                 error,
@@ -9615,14 +9651,14 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainl1(p, op).run(
-                            new State("c<" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("c<" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             throwError,
                             function (value, state, error) {
                                 expect(value).to.equal("c1");
                                 expect(State.equals(
                                     state,
-                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), "none")
+                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), 8, "none")
                                 )).to.be.true;
                                 expect(ParseError.equals(
                                     error,
@@ -9646,7 +9682,7 @@ describe("combinator", function () {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         ["(", "{", "[", "<"].forEach(function (op1) {
                             lq.combinator.chainl1(p, op).run(
-                                new State("d" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                                new State("d" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                                 throwError,
                                 throwError,
                                 throwError,
@@ -9676,6 +9712,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -9694,6 +9731,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -9717,6 +9755,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -9735,6 +9774,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -9752,12 +9792,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(a(ad", SourcePos.init("test"), "some"),
+                new State("a(a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1(a3a5))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 6), "none")
+                        new State("d", new SourcePos("test", 1, 6), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9776,7 +9816,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(a(bd", SourcePos.init("test"), "some"),
+                new State("a(a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -9792,12 +9832,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(a(cd", SourcePos.init("test"), "some"),
+                new State("a(a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1(a3c5))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9817,7 +9857,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(a(dd", SourcePos.init("test"), "some"),
+                new State("a(a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -9837,7 +9877,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("a(a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a(a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -9854,12 +9894,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(a[ad", SourcePos.init("test"), "some"),
+                new State("a(a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1[a3a4])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9878,7 +9918,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(a[bd", SourcePos.init("test"), "some"),
+                new State("a(a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -9894,12 +9934,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(a[cd", SourcePos.init("test"), "some"),
+                new State("a(a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1[a3c4])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9920,12 +9960,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(a[dd", SourcePos.init("test"), "some"),
+                new State("a(a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1a3)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 4), "none")
+                        new State("[dd", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -9946,12 +9986,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("a(a<dd", SourcePos.init("test"), "some"),
+                    new State("a(a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(a1a3)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 4), "none")
+                            new State("<dd", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -9973,7 +10013,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr(p, op, "x").run(
-                        new State("a(b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a(b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -9991,12 +10031,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(c(ad", SourcePos.init("test"), "some"),
+                new State("a(c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1(c3a4))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10015,7 +10055,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(c(bd", SourcePos.init("test"), "some"),
+                new State("a(c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -10031,12 +10071,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(c(cd", SourcePos.init("test"), "some"),
+                new State("a(c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1(c3c4))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10056,7 +10096,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(c(dd", SourcePos.init("test"), "some"),
+                new State("a(c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -10076,7 +10116,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("a(c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a(c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -10093,12 +10133,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(c[ad", SourcePos.init("test"), "some"),
+                new State("a(c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1[c3a3])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10117,7 +10157,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(c[bd", SourcePos.init("test"), "some"),
+                new State("a(c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -10133,12 +10173,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(c[cd", SourcePos.init("test"), "some"),
+                new State("a(c[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1[c3c3])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10160,12 +10200,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a(c[dd", SourcePos.init("test"), "some"),
+                new State("a(c[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1c3)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                        new State("[dd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10187,12 +10227,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("a(c<dd", SourcePos.init("test"), "some"),
+                    new State("a(c<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(a1c3)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                            new State("<dd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -10215,7 +10255,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr(p, op, "x").run(
-                        new State("a(d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a(d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -10239,7 +10279,7 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainr(p, op, "x").run(
-                            new State("a{" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("a{" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             function (error) {
                                 expect(ParseError.equals(
@@ -10258,12 +10298,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[a(ad", SourcePos.init("test"), "some"),
+                new State("a[a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1(a2a4)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10282,7 +10322,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[a(bd", SourcePos.init("test"), "some"),
+                new State("a[a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -10298,12 +10338,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[a(cd", SourcePos.init("test"), "some"),
+                new State("a[a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1(a2c4)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10323,7 +10363,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[a(dd", SourcePos.init("test"), "some"),
+                new State("a[a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -10343,7 +10383,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("a[a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a[a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -10360,12 +10400,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[a[ad", SourcePos.init("test"), "some"),
+                new State("a[a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1[a2a3]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10384,7 +10424,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[a[bd", SourcePos.init("test"), "some"),
+                new State("a[a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -10400,12 +10440,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[a[cd", SourcePos.init("test"), "some"),
+                new State("a[a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1[a2c3]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10426,12 +10466,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[a[dd", SourcePos.init("test"), "some"),
+                new State("a[a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1a2]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                        new State("[dd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10452,12 +10492,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("a[a<dd", SourcePos.init("test"), "some"),
+                    new State("a[a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("[a1a2]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                            new State("<dd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -10479,7 +10519,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr(p, op, "x").run(
-                        new State("a[b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a[b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -10497,12 +10537,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[c(ad", SourcePos.init("test"), "some"),
+                new State("a[c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1(c2a3)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10521,7 +10561,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[c(bd", SourcePos.init("test"), "some"),
+                new State("a[c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -10537,12 +10577,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[c(cd", SourcePos.init("test"), "some"),
+                new State("a[c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1(c2c3)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10562,7 +10602,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[c(dd", SourcePos.init("test"), "some"),
+                new State("a[c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -10582,7 +10622,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("a[c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a[c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -10599,12 +10639,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[c[ad", SourcePos.init("test"), "some"),
+                new State("a[c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1[c2a2]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10623,7 +10663,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[c[bd", SourcePos.init("test"), "some"),
+                new State("a[c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -10639,12 +10679,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[c[cd", SourcePos.init("test"), "some"),
+                new State("a[c[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1[c2c2]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10667,12 +10707,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("a[c[dd", SourcePos.init("test"), "some"),
+                new State("a[c[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1c2]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                        new State("[dd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10695,12 +10735,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("a[c<dd", SourcePos.init("test"), "some"),
+                    new State("a[c<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("[a1c2]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                            new State("<dd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -10724,12 +10764,12 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr(p, op, "x").run(
-                        new State("a[d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a[d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         function (value, state, error) {
                             expect(value).to.equal("a1");
                             expect(State.equals(
                                 state,
-                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 2), "none")
+                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 2), 8, "none")
                             )).to.be.true;
                             expect(ParseError.equals(
                                 error,
@@ -10754,12 +10794,12 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainr(p, op, "x").run(
-                            new State("a<" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("a<" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             function (value, state, error) {
                                 expect(value).to.equal("a1");
                                 expect(State.equals(
                                     state,
-                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 2), "none")
+                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 2), 8, "none")
                                 )).to.be.true;
                                 expect(ParseError.equals(
                                     error,
@@ -10785,7 +10825,7 @@ describe("combinator", function () {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         ["(", "{", "[", "<"].forEach(function (op1) {
                             lq.combinator.chainr(p, op, "x").run(
-                                new State("b" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                                new State("b" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                                 throwError,
                                 function (error) {
                                     expect(ParseError.equals(
@@ -10805,12 +10845,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(a(ad", SourcePos.init("test"), "some"),
+                new State("c(a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1(a2a4))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10829,7 +10869,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(a(bd", SourcePos.init("test"), "some"),
+                new State("c(a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -10845,12 +10885,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(a(cd", SourcePos.init("test"), "some"),
+                new State("c(a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1(a2c4))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10870,7 +10910,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(a(dd", SourcePos.init("test"), "some"),
+                new State("c(a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -10890,7 +10930,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("c(a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c(a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -10907,12 +10947,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(a[ad", SourcePos.init("test"), "some"),
+                new State("c(a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1[a2a3])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10931,7 +10971,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(a[bd", SourcePos.init("test"), "some"),
+                new State("c(a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -10947,12 +10987,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(a[cd", SourcePos.init("test"), "some"),
+                new State("c(a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1[a2c3])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10973,12 +11013,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(a[dd", SourcePos.init("test"), "some"),
+                new State("c(a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1a2)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                        new State("[dd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -10999,12 +11039,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("c(a<dd", SourcePos.init("test"), "some"),
+                    new State("c(a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(c1a2)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                            new State("<dd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -11026,7 +11066,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr(p, op, "x").run(
-                        new State("c(b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c(b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -11044,12 +11084,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(c(ad", SourcePos.init("test"), "some"),
+                new State("c(c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1(c2a3))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11068,7 +11108,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(c(bd", SourcePos.init("test"), "some"),
+                new State("c(c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -11084,12 +11124,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(c(cd", SourcePos.init("test"), "some"),
+                new State("c(c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1(c2c3))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11109,7 +11149,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(c(dd", SourcePos.init("test"), "some"),
+                new State("c(c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -11129,7 +11169,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("c(c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c(c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -11146,12 +11186,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(c[ad", SourcePos.init("test"), "some"),
+                new State("c(c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1[c2a2])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11170,7 +11210,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(c[bd", SourcePos.init("test"), "some"),
+                new State("c(c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -11186,12 +11226,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(c[cd", SourcePos.init("test"), "some"),
+                new State("c(c[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1[c2c2])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11213,12 +11253,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c(c[dd", SourcePos.init("test"), "some"),
+                new State("c(c[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1c2)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                        new State("[dd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11240,12 +11280,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("c(c<dd", SourcePos.init("test"), "some"),
+                    new State("c(c<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(c1c2)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                            new State("<dd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -11268,7 +11308,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr(p, op, "x").run(
-                        new State("c(d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c(d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -11292,7 +11332,7 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainr(p, op, "x").run(
-                            new State("c{" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("c{" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             function (error) {
                                 expect(ParseError.equals(
@@ -11311,12 +11351,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[a(ad", SourcePos.init("test"), "some"),
+                new State("c[a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1(a1a3)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11335,7 +11375,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[a(bd", SourcePos.init("test"), "some"),
+                new State("c[a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -11351,12 +11391,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[a(cd", SourcePos.init("test"), "some"),
+                new State("c[a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1(a1c3)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11376,7 +11416,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[a(dd", SourcePos.init("test"), "some"),
+                new State("c[a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -11396,7 +11436,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("c[a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c[a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -11413,12 +11453,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[a[ad", SourcePos.init("test"), "some"),
+                new State("c[a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1[a1a2]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11437,7 +11477,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[a[bd", SourcePos.init("test"), "some"),
+                new State("c[a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -11453,12 +11493,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[a[cd", SourcePos.init("test"), "some"),
+                new State("c[a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1[a1c2]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11479,12 +11519,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[a[dd", SourcePos.init("test"), "some"),
+                new State("c[a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1a1]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                        new State("[dd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11505,12 +11545,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("c[a<dd", SourcePos.init("test"), "some"),
+                    new State("c[a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("[c1a1]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                            new State("<dd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -11532,7 +11572,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr(p, op, "x").run(
-                        new State("c[b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c[b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -11550,12 +11590,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[c(ad", SourcePos.init("test"), "some"),
+                new State("c[c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1(c1a2)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11574,7 +11614,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[c(bd", SourcePos.init("test"), "some"),
+                new State("c[c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -11590,12 +11630,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[c(cd", SourcePos.init("test"), "some"),
+                new State("c[c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1(c1c2)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11615,7 +11655,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[c(dd", SourcePos.init("test"), "some"),
+                new State("c[c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -11635,7 +11675,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("c[c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c[c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -11652,12 +11692,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[c[ad", SourcePos.init("test"), "some"),
+                new State("c[c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1[c1a1]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11676,7 +11716,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[c[bd", SourcePos.init("test"), "some"),
+                new State("c[c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -11692,14 +11732,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[c[cd", SourcePos.init("test"), "some"),
+                new State("c[c[cd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal("[c1[c1c1]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 1), "none")
+                        new State("d", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11720,14 +11760,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr(p, op, "x").run(
-                new State("c[c[dd", SourcePos.init("test"), "some"),
+                new State("c[c[dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal("[c1c1]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 1), "none")
+                        new State("[dd", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11748,14 +11788,14 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr(p, op, "x").run(
-                    new State("c[c<dd", SourcePos.init("test"), "some"),
+                    new State("c[c<dd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.equal("[c1c1]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 1), "none")
+                            new State("<dd", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -11777,14 +11817,14 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr(p, op, "x").run(
-                        new State("c[d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c[d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         function (value, state, error) {
                             expect(value).to.equal("c1");
                             expect(State.equals(
                                 state,
-                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 1), "none")
+                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 1), 8, "none")
                             )).to.be.true;
                             expect(ParseError.equals(
                                 error,
@@ -11807,14 +11847,14 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainr(p, op, "x").run(
-                            new State("c<" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("c<" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             throwError,
                             function (value, state, error) {
                                 expect(value).to.equal("c1");
                                 expect(State.equals(
                                     state,
-                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), "none")
+                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), 8, "none")
                                 )).to.be.true;
                                 expect(ParseError.equals(
                                     error,
@@ -11838,14 +11878,14 @@ describe("combinator", function () {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         ["(", "{", "[", "<"].forEach(function (op1) {
                             lq.combinator.chainr(p, op, "x").run(
-                                new State("d" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                                new State("d" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                                 throwError,
                                 throwError,
                                 function (value, state, error) {
                                     expect(value).to.equal("x");
                                     expect(State.equals(
                                         state,
-                                        new State("d" + op1 + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), "some")
+                                        new State("d" + op1 + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), 8, "some")
                                     )).to.be.true;
                                     expect(ParseError.equals(
                                         error,
@@ -11873,6 +11913,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -11891,6 +11932,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -11914,6 +11956,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -11932,6 +11975,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -11949,12 +11993,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(a(ad", SourcePos.init("test"), "some"),
+                new State("a(a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1(a3a5))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 6), "none")
+                        new State("d", new SourcePos("test", 1, 6), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -11973,7 +12017,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(a(bd", SourcePos.init("test"), "some"),
+                new State("a(a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -11989,12 +12033,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(a(cd", SourcePos.init("test"), "some"),
+                new State("a(a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1(a3c5))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12014,7 +12058,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(a(dd", SourcePos.init("test"), "some"),
+                new State("a(a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -12034,7 +12078,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("a(a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a(a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -12051,12 +12095,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(a[ad", SourcePos.init("test"), "some"),
+                new State("a(a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1[a3a4])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12075,7 +12119,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(a[bd", SourcePos.init("test"), "some"),
+                new State("a(a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -12091,12 +12135,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(a[cd", SourcePos.init("test"), "some"),
+                new State("a(a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1[a3c4])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12117,12 +12161,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(a[dd", SourcePos.init("test"), "some"),
+                new State("a(a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1a3)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 4), "none")
+                        new State("[dd", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12143,12 +12187,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("a(a<dd", SourcePos.init("test"), "some"),
+                    new State("a(a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(a1a3)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 4), "none")
+                            new State("<dd", new SourcePos("test", 1, 4), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -12170,7 +12214,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr1(p, op).run(
-                        new State("a(b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a(b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -12188,12 +12232,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(c(ad", SourcePos.init("test"), "some"),
+                new State("a(c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1(c3a4))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12212,7 +12256,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(c(bd", SourcePos.init("test"), "some"),
+                new State("a(c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -12228,12 +12272,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(c(cd", SourcePos.init("test"), "some"),
+                new State("a(c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1(c3c4))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12253,7 +12297,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(c(dd", SourcePos.init("test"), "some"),
+                new State("a(c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -12273,7 +12317,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("a(c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a(c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -12290,12 +12334,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(c[ad", SourcePos.init("test"), "some"),
+                new State("a(c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1[c3a3])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12314,7 +12358,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(c[bd", SourcePos.init("test"), "some"),
+                new State("a(c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -12330,12 +12374,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(c[cd", SourcePos.init("test"), "some"),
+                new State("a(c[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1[c3c3])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12357,12 +12401,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a(c[dd", SourcePos.init("test"), "some"),
+                new State("a(c[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(a1c3)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                        new State("[dd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12384,12 +12428,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("a(c<dd", SourcePos.init("test"), "some"),
+                    new State("a(c<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(a1c3)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                            new State("<dd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -12412,7 +12456,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr1(p, op).run(
-                        new State("a(d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a(d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -12436,7 +12480,7 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainr1(p, op).run(
-                            new State("a{" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("a{" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             function (error) {
                                 expect(ParseError.equals(
@@ -12455,12 +12499,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[a(ad", SourcePos.init("test"), "some"),
+                new State("a[a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1(a2a4)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12479,7 +12523,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[a(bd", SourcePos.init("test"), "some"),
+                new State("a[a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -12495,12 +12539,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[a(cd", SourcePos.init("test"), "some"),
+                new State("a[a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1(a2c4)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12520,7 +12564,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[a(dd", SourcePos.init("test"), "some"),
+                new State("a[a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -12540,7 +12584,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("a[a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a[a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -12557,12 +12601,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[a[ad", SourcePos.init("test"), "some"),
+                new State("a[a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1[a2a3]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12581,7 +12625,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[a[bd", SourcePos.init("test"), "some"),
+                new State("a[a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -12597,12 +12641,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[a[cd", SourcePos.init("test"), "some"),
+                new State("a[a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1[a2c3]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12623,12 +12667,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[a[dd", SourcePos.init("test"), "some"),
+                new State("a[a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1a2]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                        new State("[dd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12649,12 +12693,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("a[a<dd", SourcePos.init("test"), "some"),
+                    new State("a[a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("[a1a2]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                            new State("<dd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -12676,7 +12720,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr1(p, op).run(
-                        new State("a[b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a[b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -12694,12 +12738,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[c(ad", SourcePos.init("test"), "some"),
+                new State("a[c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1(c2a3)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12718,7 +12762,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[c(bd", SourcePos.init("test"), "some"),
+                new State("a[c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -12734,12 +12778,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[c(cd", SourcePos.init("test"), "some"),
+                new State("a[c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1(c2c3)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12759,7 +12803,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[c(dd", SourcePos.init("test"), "some"),
+                new State("a[c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -12779,7 +12823,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("a[c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("a[c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -12796,12 +12840,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[c[ad", SourcePos.init("test"), "some"),
+                new State("a[c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1[c2a2]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12820,7 +12864,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[c[bd", SourcePos.init("test"), "some"),
+                new State("a[c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -12836,12 +12880,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[c[cd", SourcePos.init("test"), "some"),
+                new State("a[c[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1[c2c2]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12864,12 +12908,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("a[c[dd", SourcePos.init("test"), "some"),
+                new State("a[c[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[a1c2]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                        new State("[dd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -12892,12 +12936,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("a[c<dd", SourcePos.init("test"), "some"),
+                    new State("a[c<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("[a1c2]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                            new State("<dd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -12921,12 +12965,12 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr1(p, op).run(
-                        new State("a[d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("a[d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         function (value, state, error) {
                             expect(value).to.equal("a1");
                             expect(State.equals(
                                 state,
-                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 2), "none")
+                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 2), 8, "none")
                             )).to.be.true;
                             expect(ParseError.equals(
                                 error,
@@ -12951,12 +12995,12 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainr1(p, op).run(
-                            new State("a<" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("a<" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             function (value, state, error) {
                                 expect(value).to.equal("a1");
                                 expect(State.equals(
                                     state,
-                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 2), "none")
+                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 2), 8, "none")
                                 )).to.be.true;
                                 expect(ParseError.equals(
                                     error,
@@ -12982,7 +13026,7 @@ describe("combinator", function () {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         ["(", "{", "[", "<"].forEach(function (op1) {
                             lq.combinator.chainr1(p, op).run(
-                                new State("b" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                                new State("b" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                                 throwError,
                                 function (error) {
                                     expect(ParseError.equals(
@@ -13002,12 +13046,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(a(ad", SourcePos.init("test"), "some"),
+                new State("c(a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1(a2a4))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 5), "none")
+                        new State("d", new SourcePos("test", 1, 5), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13026,7 +13070,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(a(bd", SourcePos.init("test"), "some"),
+                new State("c(a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -13042,12 +13086,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(a(cd", SourcePos.init("test"), "some"),
+                new State("c(a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1(a2c4))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13067,7 +13111,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(a(dd", SourcePos.init("test"), "some"),
+                new State("c(a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -13087,7 +13131,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("c(a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c(a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -13104,12 +13148,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(a[ad", SourcePos.init("test"), "some"),
+                new State("c(a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1[a2a3])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13128,7 +13172,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(a[bd", SourcePos.init("test"), "some"),
+                new State("c(a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -13144,12 +13188,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(a[cd", SourcePos.init("test"), "some"),
+                new State("c(a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1[a2c3])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13170,12 +13214,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(a[dd", SourcePos.init("test"), "some"),
+                new State("c(a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1a2)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 3), "none")
+                        new State("[dd", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13196,12 +13240,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("c(a<dd", SourcePos.init("test"), "some"),
+                    new State("c(a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(c1a2)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 3), "none")
+                            new State("<dd", new SourcePos("test", 1, 3), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -13223,7 +13267,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr1(p, op).run(
-                        new State("c(b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c(b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -13241,12 +13285,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(c(ad", SourcePos.init("test"), "some"),
+                new State("c(c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1(c2a3))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13265,7 +13309,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(c(bd", SourcePos.init("test"), "some"),
+                new State("c(c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -13281,12 +13325,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(c(cd", SourcePos.init("test"), "some"),
+                new State("c(c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1(c2c3))");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13306,7 +13350,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(c(dd", SourcePos.init("test"), "some"),
+                new State("c(c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -13326,7 +13370,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("c(c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c(c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -13343,12 +13387,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(c[ad", SourcePos.init("test"), "some"),
+                new State("c(c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1[c2a2])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13367,7 +13411,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(c[bd", SourcePos.init("test"), "some"),
+                new State("c(c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -13383,12 +13427,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(c[cd", SourcePos.init("test"), "some"),
+                new State("c(c[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1[c2c2])");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13410,12 +13454,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c(c[dd", SourcePos.init("test"), "some"),
+                new State("c(c[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("(c1c2)");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                        new State("[dd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13437,12 +13481,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("c(c<dd", SourcePos.init("test"), "some"),
+                    new State("c(c<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("(c1c2)");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                            new State("<dd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -13465,7 +13509,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr1(p, op).run(
-                        new State("c(d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c(d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -13489,7 +13533,7 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainr1(p, op).run(
-                            new State("c{" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("c{" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             function (error) {
                                 expect(ParseError.equals(
@@ -13508,12 +13552,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[a(ad", SourcePos.init("test"), "some"),
+                new State("c[a(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1(a1a3)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 4), "none")
+                        new State("d", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13532,7 +13576,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[a(bd", SourcePos.init("test"), "some"),
+                new State("c[a(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -13548,12 +13592,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[a(cd", SourcePos.init("test"), "some"),
+                new State("c[a(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1(a1c3)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13573,7 +13617,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[a(dd", SourcePos.init("test"), "some"),
+                new State("c[a(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -13593,7 +13637,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("c[a{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c[a{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -13610,12 +13654,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[a[ad", SourcePos.init("test"), "some"),
+                new State("c[a[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1[a1a2]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13634,7 +13678,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[a[bd", SourcePos.init("test"), "some"),
+                new State("c[a[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -13650,12 +13694,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[a[cd", SourcePos.init("test"), "some"),
+                new State("c[a[cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1[a1c2]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13676,12 +13720,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[a[dd", SourcePos.init("test"), "some"),
+                new State("c[a[dd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1a1]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 2), "none")
+                        new State("[dd", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13702,12 +13746,12 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("c[a<dd", SourcePos.init("test"), "some"),
+                    new State("c[a<dd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("[c1a1]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 2), "none")
+                            new State("<dd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -13729,7 +13773,7 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr1(p, op).run(
-                        new State("c[b" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c[b" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -13747,12 +13791,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[c(ad", SourcePos.init("test"), "some"),
+                new State("c[c(ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1(c1a2)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 3), "none")
+                        new State("d", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13771,7 +13815,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[c(bd", SourcePos.init("test"), "some"),
+                new State("c[c(bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -13787,12 +13831,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[c(cd", SourcePos.init("test"), "some"),
+                new State("c[c(cd", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1(c1c2)]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13812,7 +13856,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[c(dd", SourcePos.init("test"), "some"),
+                new State("c[c(dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -13832,7 +13876,7 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("c[c{" + e3 + "d", SourcePos.init("test"), "some"),
+                    new State("c[c{" + e3 + "d", SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -13849,12 +13893,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[c[ad", SourcePos.init("test"), "some"),
+                new State("c[c[ad", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.equal("[c1[c1a1]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 2), "none")
+                        new State("d", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13873,7 +13917,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[c[bd", SourcePos.init("test"), "some"),
+                new State("c[c[bd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -13889,14 +13933,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[c[cd", SourcePos.init("test"), "some"),
+                new State("c[c[cd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal("[c1[c1c1]]");
                     expect(State.equals(
                         state,
-                        new State("d", new SourcePos("test", 1, 1), "none")
+                        new State("d", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13917,14 +13961,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.chainr1(p, op).run(
-                new State("c[c[dd", SourcePos.init("test"), "some"),
+                new State("c[c[dd", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal("[c1c1]");
                     expect(State.equals(
                         state,
-                        new State("[dd", new SourcePos("test", 1, 1), "none")
+                        new State("[dd", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -13945,14 +13989,14 @@ describe("combinator", function () {
 
             ["a", "b", "c", "d"].forEach(function (e3) {
                 lq.combinator.chainr1(p, op).run(
-                    new State("c[c<dd", SourcePos.init("test"), "some"),
+                    new State("c[c<dd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.equal("[c1c1]");
                         expect(State.equals(
                             state,
-                            new State("<dd", new SourcePos("test", 1, 1), "none")
+                            new State("<dd", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -13974,14 +14018,14 @@ describe("combinator", function () {
             ["a", "b", "c", "d"].forEach(function (e3) {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     lq.combinator.chainr1(p, op).run(
-                        new State("c[d" + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                        new State("c[d" + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         function (value, state, error) {
                             expect(value).to.equal("c1");
                             expect(State.equals(
                                 state,
-                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 1), "none")
+                                new State("[d" + op2 + e3 + "d", new SourcePos("test", 1, 1), 8, "none")
                             )).to.be.true;
                             expect(ParseError.equals(
                                 error,
@@ -14004,14 +14048,14 @@ describe("combinator", function () {
                 ["(", "{", "[", "<"].forEach(function (op2) {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         lq.combinator.chainr1(p, op).run(
-                            new State("c<" + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                            new State("c<" + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                             throwError,
                             throwError,
                             function (value, state, error) {
                                 expect(value).to.equal("c1");
                                 expect(State.equals(
                                     state,
-                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), "none")
+                                    new State("<" + e2 + op2 + e3 + "d", new SourcePos("test", 1, 1), 8, "none")
                                 )).to.be.true;
                                 expect(ParseError.equals(
                                     error,
@@ -14035,7 +14079,7 @@ describe("combinator", function () {
                     ["a", "b", "c", "d"].forEach(function (e2) {
                         ["(", "{", "[", "<"].forEach(function (op1) {
                             lq.combinator.chainr1(p, op).run(
-                                new State("d" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), "some"),
+                                new State("d" + op1 + e2 + op2 + e3 + "d", SourcePos.init("test"), 8, "some"),
                                 throwError,
                                 throwError,
                                 throwError,
@@ -14059,12 +14103,12 @@ describe("combinator", function () {
     describe("anyToken", function () {
         it("should parse any token in stream without updating the position", function () {
             lq.combinator.anyToken.run(
-                new State("abc", SourcePos.init("test"), "none"),
+                new State("abc", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.equal("a");
                     expect(State.equals(
                         state,
-                        new State("bc", new SourcePos("test", 1, 1), "none")
+                        new State("bc", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -14077,12 +14121,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.anyToken.run(
-                new State(["abc", "def", "ghi"], SourcePos.init("test"), "none"),
+                new State(["abc", "def", "ghi"], SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.equal("abc");
                     expect(State.equals(
                         state,
-                        new State(["def", "ghi"], new SourcePos("test", 1, 1), "none"),
+                        new State(["def", "ghi"], new SourcePos("test", 1, 1), 8, "none"),
                         lq.util.ArrayUtil.equals
                     )).to.be.true;
                     expect(ParseError.equals(
@@ -14096,7 +14140,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.anyToken.run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -14112,7 +14156,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.anyToken.run(
-                new State([], SourcePos.init("test"), "none"),
+                new State([], SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -14132,14 +14176,14 @@ describe("combinator", function () {
     describe("eof", function () {
         it("should accept the end of the input and return 'undefined'", function () {
             lq.combinator.eof.run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal(undefined);
                     expect(State.equals(
                         state,
-                        new State("", SourcePos.init("test"), "none")
+                        new State("", SourcePos.init("test"), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -14156,14 +14200,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.eof.run(
-                new State([], SourcePos.init("test"), "none"),
+                new State([], SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.equal(undefined);
                     expect(State.equals(
                         state,
-                        new State([], SourcePos.init("test"), "none"),
+                        new State([], SourcePos.init("test"), 8, "none"),
                         lq.util.ArrayUtil.equals
                     )).to.be.true;
                     expect(ParseError.equals(
@@ -14181,7 +14225,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.eof.run(
-                new State("abc", SourcePos.init("test"), "none"),
+                new State("abc", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -14200,7 +14244,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.eof.run(
-                new State(["abc", "def", "ghi"], SourcePos.init("test"), "none"),
+                new State(["abc", "def", "ghi"], SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -14224,7 +14268,7 @@ describe("combinator", function () {
         it("should succeed without consumption only when the parser failed", function () {
             var acsuc = alwaysCSuc(
                 "foo",
-                new State("def", new SourcePos("test", 1, 2), "none"),
+                new State("def", new SourcePos("test", 1, 2), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 1, 2),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
@@ -14240,7 +14284,7 @@ describe("combinator", function () {
 
             var aesuc = alwaysESuc(
                 "bar",
-                new State("def", new SourcePos("test", 1, 2), "none"),
+                new State("def", new SourcePos("test", 1, 2), 8, "none"),
                 new ParseError(
                     new SourcePos("test", 1, 2),
                     [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
@@ -14254,7 +14298,7 @@ describe("combinator", function () {
                 )
             );
 
-            var initState = new State("abc", SourcePos.init("test"), "some");
+            var initState = new State("abc", SourcePos.init("test"), 8, "some");
 
             lq.combinator.notFollowedBy(acsuc).run(
                 initState,
@@ -14341,6 +14385,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -14359,6 +14404,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -14382,6 +14428,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position.setColumn(state.position.column + 1),
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -14400,6 +14447,7 @@ describe("combinator", function () {
                             new State(
                                 state.input.substr(1),
                                 state.position,
+                                state.tabWidth,
                                 "none"
                             ),
                             new ParseError(
@@ -14417,7 +14465,7 @@ describe("combinator", function () {
             });
 
             lq.combinator.manyTill(p, end).run(
-                new State("", SourcePos.init("test"), "some"),
+                new State("", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 throwError,
@@ -14436,7 +14484,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("aa", SourcePos.init("test"), "some"),
+                new State("aa", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -14456,7 +14504,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("cc", SourcePos.init("test"), "some"),
+                new State("cc", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 throwError,
@@ -14479,12 +14527,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("aa.", SourcePos.init("test"), "some"),
+                new State("aa.", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("", new SourcePos("test", 1, 4), "none")
+                        new State("", new SourcePos("test", 1, 4), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -14500,7 +14548,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("aa,", SourcePos.init("test"), "some"),
+                new State("aa,", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -14516,12 +14564,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("aa:", SourcePos.init("test"), "some"),
+                new State("aa:", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "a2"]);
                     expect(State.equals(
                         state,
-                        new State("", new SourcePos("test", 1, 3), "none")
+                        new State("", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -14540,7 +14588,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("aa;", SourcePos.init("test"), "some"),
+                new State("aa;", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -14561,7 +14609,7 @@ describe("combinator", function () {
 
             [".", ",", ":", ";"].forEach(function (endChar) {
                 lq.combinator.manyTill(p, end).run(
-                    new State("ab" + endChar, SourcePos.init("test"), "some"),
+                    new State("ab" + endChar, SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -14578,12 +14626,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.manyTill(p, end).run(
-                new State("ac.", SourcePos.init("test"), "some"),
+                new State("ac.", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "c2"]);
                     expect(State.equals(
                         state,
-                        new State("", new SourcePos("test", 1, 3), "none")
+                        new State("", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -14599,7 +14647,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("ac,", SourcePos.init("test"), "some"),
+                new State("ac,", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -14615,12 +14663,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("ac:", SourcePos.init("test"), "some"),
+                new State("ac:", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["a1", "c2"]);
                     expect(State.equals(
                         state,
-                        new State("", new SourcePos("test", 1, 2), "none")
+                        new State("", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -14641,7 +14689,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("ac;", SourcePos.init("test"), "some"),
+                new State("ac;", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -14664,7 +14712,7 @@ describe("combinator", function () {
 
             [".", ",", ":", ";"].forEach(function (endChar) {
                 lq.combinator.manyTill(p, end).run(
-                    new State("ad" + endChar, SourcePos.init("test"), "some"),
+                    new State("ad" + endChar, SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -14687,7 +14735,7 @@ describe("combinator", function () {
             [".", ",", ":", ";"].forEach(function (endChar) {
                 ["a", "b", "c", "d"].forEach(function (e2) {
                     lq.combinator.manyTill(p, end).run(
-                        new State("b" + e2 + endChar, SourcePos.init("test"), "some"),
+                        new State("b" + e2 + endChar, SourcePos.init("test"), 8, "some"),
                         throwError,
                         function (error) {
                             expect(ParseError.equals(
@@ -14705,12 +14753,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.manyTill(p, end).run(
-                new State("ca.", SourcePos.init("test"), "some"),
+                new State("ca.", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a1"]);
                     expect(State.equals(
                         state,
-                        new State("", new SourcePos("test", 1, 3), "none")
+                        new State("", new SourcePos("test", 1, 3), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -14726,7 +14774,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("ca,", SourcePos.init("test"), "some"),
+                new State("ca,", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -14742,12 +14790,12 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("ca:", SourcePos.init("test"), "some"),
+                new State("ca:", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "a1"]);
                     expect(State.equals(
                         state,
-                        new State("", new SourcePos("test", 1, 2), "none")
+                        new State("", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -14766,7 +14814,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("ca;", SourcePos.init("test"), "some"),
+                new State("ca;", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -14787,7 +14835,7 @@ describe("combinator", function () {
 
             [".", ",", ":", ";"].forEach(function (endChar) {
                 lq.combinator.manyTill(p, end).run(
-                    new State("cb" + endChar, SourcePos.init("test"), "some"),
+                    new State("cb" + endChar, SourcePos.init("test"), 8, "some"),
                     throwError,
                     function (error) {
                         expect(ParseError.equals(
@@ -14804,12 +14852,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.manyTill(p, end).run(
-                new State("cc.", SourcePos.init("test"), "some"),
+                new State("cc.", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "c1"]);
                     expect(State.equals(
                         state,
-                        new State("", new SourcePos("test", 1, 2), "none")
+                        new State("", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -14825,7 +14873,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("cc,", SourcePos.init("test"), "some"),
+                new State("cc,", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -14841,14 +14889,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("cc:", SourcePos.init("test"), "some"),
+                new State("cc:", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal(["c1", "c1"]);
                     expect(State.equals(
                         state,
-                        new State("", new SourcePos("test", 1, 1), "none")
+                        new State("", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -14868,7 +14916,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State("cc;", SourcePos.init("test"), "some"),
+                new State("cc;", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 throwError,
@@ -14892,7 +14940,7 @@ describe("combinator", function () {
 
             [".", ",", ":", ";"].forEach(function (endChar) {
                 lq.combinator.manyTill(p, end).run(
-                    new State("cd" + endChar, SourcePos.init("test"), "some"),
+                    new State("cd" + endChar, SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     throwError,
@@ -14916,7 +14964,7 @@ describe("combinator", function () {
             [".", ",", ":", ";"].forEach(function (endChar) {
                 ["a", "b", "c", "d"].forEach(function (e2) {
                     lq.combinator.manyTill(p, end).run(
-                        new State("d" + e2 + endChar, SourcePos.init("test"), "some"),
+                        new State("d" + e2 + endChar, SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,
@@ -14937,12 +14985,12 @@ describe("combinator", function () {
             });
 
             lq.combinator.manyTill(p, end).run(
-                new State(".", SourcePos.init("test"), "some"),
+                new State(".", SourcePos.init("test"), 8, "some"),
                 function (value, state, error) {
                     expect(value).to.deep.equal([]);
                     expect(State.equals(
                         state,
-                        new State("", new SourcePos("test", 1, 2), "none")
+                        new State("", new SourcePos("test", 1, 2), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -14958,7 +15006,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State(",", SourcePos.init("test"), "some"),
+                new State(",", SourcePos.init("test"), 8, "some"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -14974,14 +15022,14 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State(":", SourcePos.init("test"), "some"),
+                new State(":", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                     expect(value).to.deep.equal([]);
                     expect(State.equals(
                         state,
-                        new State("", new SourcePos("test", 1, 1), "none")
+                        new State("", new SourcePos("test", 1, 1), 8, "none")
                     )).to.be.true;
                     expect(ParseError.equals(
                         error,
@@ -14995,7 +15043,7 @@ describe("combinator", function () {
             );
 
             lq.combinator.manyTill(p, end).run(
-                new State(";", SourcePos.init("test"), "some"),
+                new State(";", SourcePos.init("test"), 8, "some"),
                 throwError,
                 throwError,
                 throwError,

@@ -63,6 +63,7 @@ describe("sugar", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position.setColumn(state.position.column + 1),
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -81,6 +82,7 @@ describe("sugar", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position,
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -104,6 +106,7 @@ describe("sugar", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position.setColumn(state.position.column + 1),
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -122,6 +125,7 @@ describe("sugar", function () {
                                 new State(
                                     state.input.substr(1),
                                     state.position,
+                                    state.tabWidth,
                                     "none"
                                 ),
                                 new ParseError(
@@ -139,7 +143,7 @@ describe("sugar", function () {
                 });
 
                 p.notFollowedBy(end).run(
-                    new State("a.abcd", SourcePos.init("test"), "some"),
+                    new State("a.abcd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     throwError,
@@ -158,12 +162,12 @@ describe("sugar", function () {
                 );
 
                 p.notFollowedBy(end).run(
-                    new State("a,abcd", SourcePos.init("test"), "some"),
+                    new State("a,abcd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("a1");
                         expect(State.equals(
                             state,
-                            new State(",abcd", new SourcePos("test", 1, 2), "none")
+                            new State(",abcd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -179,7 +183,7 @@ describe("sugar", function () {
                 );
 
                 p.notFollowedBy(end).run(
-                    new State("a:abcd", SourcePos.init("test"), "some"),
+                    new State("a:abcd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     throwError,
@@ -199,12 +203,12 @@ describe("sugar", function () {
                 );
 
                 p.notFollowedBy(end).run(
-                    new State("a;abcd", SourcePos.init("test"), "some"),
+                    new State("a;abcd", SourcePos.init("test"), 8, "some"),
                     function (value, state, error) {
                         expect(value).to.equal("a1");
                         expect(State.equals(
                             state,
-                            new State(";abcd", new SourcePos("test", 1, 2), "none")
+                            new State(";abcd", new SourcePos("test", 1, 2), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -224,7 +228,7 @@ describe("sugar", function () {
 
                 [".", ",", ":", ";"].forEach(function (endChar) {
                     p.notFollowedBy(end).run(
-                        new State("b" + endChar + "abcd", SourcePos.init("test"), "some"),
+                        new State("b" + endChar + "abcd", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,
@@ -241,7 +245,7 @@ describe("sugar", function () {
                 });
 
                 p.notFollowedBy(end).run(
-                    new State("c.abcd", SourcePos.init("test"), "some"),
+                    new State("c.abcd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     throwError,
@@ -260,14 +264,14 @@ describe("sugar", function () {
                 );
 
                 p.notFollowedBy(end).run(
-                    new State("c,abcd", SourcePos.init("test"), "some"),
+                    new State("c,abcd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.equal("c1");
                         expect(State.equals(
                             state,
-                            new State(",abcd", new SourcePos("test", 1, 1), "none")
+                            new State(",abcd", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -281,7 +285,7 @@ describe("sugar", function () {
                 );
 
                 p.notFollowedBy(end).run(
-                    new State("c:abcd", SourcePos.init("test"), "some"),
+                    new State("c:abcd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     throwError,
@@ -301,14 +305,14 @@ describe("sugar", function () {
                 );
 
                 p.notFollowedBy(end).run(
-                    new State("c;abcd", SourcePos.init("test"), "some"),
+                    new State("c;abcd", SourcePos.init("test"), 8, "some"),
                     throwError,
                     throwError,
                     function (value, state, error) {
                         expect(value).to.equal("c1");
                         expect(State.equals(
                             state,
-                            new State(";abcd", new SourcePos("test", 1, 1), "none")
+                            new State(";abcd", new SourcePos("test", 1, 1), 8, "none")
                         )).to.be.true;
                         expect(ParseError.equals(
                             error,
@@ -326,7 +330,7 @@ describe("sugar", function () {
 
                 [".", ",", ":", ";"].forEach(function (endChar) {
                     p.notFollowedBy(end).run(
-                        new State("d" + endChar + "abcd", SourcePos.init("test"), "some"),
+                        new State("d" + endChar + "abcd", SourcePos.init("test"), 8, "some"),
                         throwError,
                         throwError,
                         throwError,

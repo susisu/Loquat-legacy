@@ -32,6 +32,7 @@ describe("char", function () {
                 new State(
                     "abcd",
                     SourcePos.init("test"),
+                    8,
                     "none"
                 ),
                 function (value, state, error) {
@@ -41,6 +42,7 @@ describe("char", function () {
                         new State(
                             "d",
                             new SourcePos("test", 1, 4),
+                            8,
                             "none"
                         )
                     )).to.be.true;
@@ -55,6 +57,7 @@ describe("char", function () {
                 new State(
                     "ab",
                     SourcePos.init("test"),
+                    8,
                     "none"
                 ),
                 throwError,
@@ -78,6 +81,7 @@ describe("char", function () {
                 new State(
                     "abd",
                     SourcePos.init("test"),
+                    8,
                     "none"
                 ),
                 throwError,
@@ -101,6 +105,7 @@ describe("char", function () {
                 new State(
                     "",
                     SourcePos.init("test"),
+                    8,
                     "none"
                 ),
                 throwError,
@@ -124,6 +129,7 @@ describe("char", function () {
                 new State(
                     "def",
                     SourcePos.init("test"),
+                    8,
                     "none"
                 ),
                 throwError,
@@ -147,6 +153,7 @@ describe("char", function () {
                 new State(
                     "abc",
                     SourcePos.init("test"),
+                    8,
                     "none"
                 ),
                 throwError,
@@ -158,11 +165,37 @@ describe("char", function () {
                         new State(
                             "abc",
                             new SourcePos("test", 1, 1),
+                            8,
                             "none"
                         )
                     )).to.be.true;
                     expect(ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 1)))).to.be.true;
                 },
+                throwError
+            );
+
+            lq.char.string("abc\tdef").run(
+                new State(
+                    "abc\tdefg",
+                    SourcePos.init("test"),
+                    8,
+                    "none"
+                ),
+                function (value, state, error) {
+                    expect(value).to.equal("abc\tdef");
+                    expect(State.equals(
+                        state,
+                        new State(
+                            "g",
+                            new SourcePos("test", 1, 12),
+                            8,
+                            "none"
+                        )
+                    )).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 12)))).to.be.true;
+                },
+                throwError,
+                throwError,
                 throwError
             );
         });
@@ -171,7 +204,7 @@ describe("char", function () {
     describe("satisfy(test)", function () {
         it("should return a parser that parses a character evaluated as true by 'test'", function () {
             lq.char.satisfy(function (char) { return char === "a"; }).run(
-                new State("abc", SourcePos.init("test"), "none"),
+                new State("abc", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.equal("a");
                     expect(State.equals(
@@ -179,6 +212,7 @@ describe("char", function () {
                         new State(
                             "bc",
                             new SourcePos("test", 1, 2),
+                            8,
                             "none"
                         )
                     )).to.be.true;
@@ -190,7 +224,7 @@ describe("char", function () {
             );
 
             lq.char.satisfy(function (char) { return char === "a"; }).run(
-                new State("bcd", SourcePos.init("test"), "none"),
+                new State("bcd", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -206,7 +240,7 @@ describe("char", function () {
             );
 
             lq.char.satisfy(function (char) { return char === "a"; }).run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -220,13 +254,33 @@ describe("char", function () {
                     )).to.be.true;
                 }
             );
+
+            lq.char.satisfy(function (char) { return char === "\t"; }).run(
+                new State("\tabc", SourcePos.init("test"), 8, "none"),
+                function (value, state, error) {
+                    expect(value).to.equal("\t");
+                    expect(State.equals(
+                        state,
+                        new State(
+                            "abc",
+                            new SourcePos("test", 1, 9),
+                            8,
+                            "none"
+                        )
+                    )).to.be.true;
+                    expect(ParseError.equals(error, ParseError.unknown(new SourcePos("test", 1, 9)))).to.be.true;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
         });
     });
 
     describe("oneOf(str)", function () {
         it("should return a parser that parses one character of 'str'", function () {
             lq.char.oneOf("xyz").run(
-                new State("xabc", SourcePos.init("test"), "none"),
+                new State("xabc", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.equal("x");
                     expect(State.equals(
@@ -234,6 +288,7 @@ describe("char", function () {
                         new State(
                             "abc",
                             new SourcePos("test", 1, 2),
+                            8,
                             "none"
                         )
                     )).to.be.true;
@@ -245,7 +300,7 @@ describe("char", function () {
             );
 
             lq.char.oneOf("xyz").run(
-                new State("yabc", SourcePos.init("test"), "none"),
+                new State("yabc", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.equal("y");
                     expect(State.equals(
@@ -253,6 +308,7 @@ describe("char", function () {
                         new State(
                             "abc",
                             new SourcePos("test", 1, 2),
+                            8,
                             "none"
                         )
                     )).to.be.true;
@@ -264,7 +320,7 @@ describe("char", function () {
             );
 
             lq.char.oneOf("xyz").run(
-                new State("zabc", SourcePos.init("test"), "none"),
+                new State("zabc", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.equal("z");
                     expect(State.equals(
@@ -272,6 +328,7 @@ describe("char", function () {
                         new State(
                             "abc",
                             new SourcePos("test", 1, 2),
+                            8,
                             "none"
                         )
                     )).to.be.true;
@@ -283,7 +340,7 @@ describe("char", function () {
             );
 
             lq.char.oneOf("xyz").run(
-                new State("abc", SourcePos.init("test"), "none"),
+                new State("abc", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -299,7 +356,7 @@ describe("char", function () {
             );
 
             lq.char.oneOf("xyz").run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -315,7 +372,7 @@ describe("char", function () {
             );
 
             lq.char.oneOf("").run(
-                new State("abc", SourcePos.init("test"), "none"),
+                new State("abc", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -335,7 +392,7 @@ describe("char", function () {
     describe("noneOf(str)", function () {
         it("should return a parser that parses one character except characters in 'str'", function () {
             lq.char.noneOf("xyz").run(
-                new State("abc", SourcePos.init("test"), "none"),
+                new State("abc", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.equal("a");
                     expect(State.equals(
@@ -343,6 +400,7 @@ describe("char", function () {
                         new State(
                             "bc",
                             new SourcePos("test", 1, 2),
+                            8,
                             "none"
                         )
                     )).to.be.true;
@@ -354,7 +412,7 @@ describe("char", function () {
             );
 
             lq.char.noneOf("xyz").run(
-                new State("xabc", SourcePos.init("test"), "none"),
+                new State("xabc", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -370,7 +428,7 @@ describe("char", function () {
             );
 
             lq.char.noneOf("xyz").run(
-                new State("yabc", SourcePos.init("test"), "none"),
+                new State("yabc", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -386,7 +444,7 @@ describe("char", function () {
             );
 
             lq.char.noneOf("xyz").run(
-                new State("zabc", SourcePos.init("test"), "none"),
+                new State("zabc", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -402,7 +460,7 @@ describe("char", function () {
             );
 
             lq.char.noneOf("xyz").run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -418,7 +476,7 @@ describe("char", function () {
             );
 
             lq.char.noneOf("").run(
-                new State("abc", SourcePos.init("test"), "none"),
+                new State("abc", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.equal("a");
                     expect(State.equals(
@@ -426,6 +484,7 @@ describe("char", function () {
                         new State(
                             "bc",
                             new SourcePos("test", 1, 2),
+                            8,
                             "none"
                         )
                     )).to.be.true;
@@ -442,7 +501,7 @@ describe("char", function () {
         it("should parse one of space characters", function () {
             " \t\n\r\f\v".split("").forEach(function (spaceChar) {
                 lq.char.space.run(
-                    new State(spaceChar + "abc", SourcePos.init("test"), "none"),
+                    new State(spaceChar + "abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(spaceChar);
                         expect(State.equals(
@@ -450,6 +509,7 @@ describe("char", function () {
                             new State(
                                 "abc",
                                 SourcePos.init("test").addChar(spaceChar),
+                                8,
                                 "none"
                             )
                         )).to.be.true;
@@ -466,7 +526,7 @@ describe("char", function () {
 
             "0Aa!".split("").forEach(function (nonSpaceChar) {
                 lq.char.space.run(
-                    new State(nonSpaceChar + "abc", SourcePos.init("test"), "none"),
+                    new State(nonSpaceChar + "abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -486,7 +546,7 @@ describe("char", function () {
             });
 
             lq.char.space.run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -509,7 +569,7 @@ describe("char", function () {
     describe("spaces", function () {
         it("should skip many space characters", function () {
             lq.char.spaces.run(
-                new State(" \t\n\r\f\vabc", SourcePos.init("test"), "none"),
+                new State(" \t\n\r\f\vabc", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.be.undefined;
                     expect(State.equals(
@@ -517,6 +577,7 @@ describe("char", function () {
                         new State(
                             "abc",
                             SourcePos.init("test").addString(" \t\n\r\f\v"),
+                            8,
                             "none"
                         )
                     )).to.be.true;
@@ -537,7 +598,7 @@ describe("char", function () {
             );
 
             lq.char.spaces.run(
-                new State("abc", SourcePos.init("test"), "none"),
+                new State("abc", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
@@ -547,6 +608,7 @@ describe("char", function () {
                         new State(
                             "abc",
                             SourcePos.init("test"),
+                            8,
                             "none"
                         )
                     )).to.be.true;
@@ -569,7 +631,7 @@ describe("char", function () {
     describe("newline", function () {
         it("should parse a new line character (\\n)", function () {
             lq.char.newline.run(
-                new State("\nabc", SourcePos.init("test"), "none"),
+                new State("\nabc", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.equal("\n");
                     expect(State.equals(
@@ -577,6 +639,7 @@ describe("char", function () {
                         new State(
                             "abc",
                             new SourcePos("test", 2, 1),
+                            8,
                             "none"
                         )
                     )).to.be.true;
@@ -592,7 +655,7 @@ describe("char", function () {
 
             " 0Aa!".split("").forEach(function (dummyChar) {
                 lq.char.newline.run(
-                    new State(dummyChar + "abc", SourcePos.init("test"), "none"),
+                    new State(dummyChar + "abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -612,7 +675,7 @@ describe("char", function () {
             });
 
             lq.char.newline.run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -635,7 +698,7 @@ describe("char", function () {
     describe("tab", function () {
         it("should parse a tab character (\\t)", function () {
             lq.char.tab.run(
-                new State("\tabc", SourcePos.init("test"), "none"),
+                new State("\tabc", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.equal("\t");
                     expect(State.equals(
@@ -643,6 +706,7 @@ describe("char", function () {
                         new State(
                             "abc",
                             new SourcePos("test", 1, 9),
+                            8,
                             "none"
                         )
                     )).to.be.true;
@@ -658,7 +722,7 @@ describe("char", function () {
 
             " 0Aa!".split("").forEach(function (dummyChar) {
                 lq.char.tab.run(
-                    new State(dummyChar + "abc", SourcePos.init("test"), "none"),
+                    new State(dummyChar + "abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -678,7 +742,7 @@ describe("char", function () {
             });
 
             lq.char.tab.run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -702,7 +766,7 @@ describe("char", function () {
         it("should parse an uppercase character (A-Z)", function () {
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(function (uppercaseChar) {
                 lq.char.upper.run(
-                    new State(uppercaseChar + "abc", SourcePos.init("test"), "none"),
+                    new State(uppercaseChar + "abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(uppercaseChar);
                         expect(State.equals(
@@ -710,6 +774,7 @@ describe("char", function () {
                             new State(
                                 "abc",
                                 new SourcePos("test", 1, 2),
+                                8,
                                 "none"
                             )
                         )).to.be.true;
@@ -726,7 +791,7 @@ describe("char", function () {
 
             " 0a!".split("").forEach(function (nonUppercaseChar) {
                 lq.char.upper.run(
-                    new State(nonUppercaseChar + "abc", SourcePos.init("test"), "none"),
+                    new State(nonUppercaseChar + "abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -746,7 +811,7 @@ describe("char", function () {
             });
 
             lq.char.upper.run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -770,7 +835,7 @@ describe("char", function () {
         it("should parse a lowercase character (a-z)", function () {
             "abcdefghijklmnopqrstuvwxyz".split("").forEach(function (lowercaseChar) {
                 lq.char.lower.run(
-                    new State(lowercaseChar + "abc", SourcePos.init("test"), "none"),
+                    new State(lowercaseChar + "abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(lowercaseChar);
                         expect(State.equals(
@@ -778,6 +843,7 @@ describe("char", function () {
                             new State(
                                 "abc",
                                 new SourcePos("test", 1, 2),
+                                8,
                                 "none"
                             )
                         )).to.be.true;
@@ -794,7 +860,7 @@ describe("char", function () {
 
             " 0A!".split("").forEach(function (nonLowercaseChar) {
                 lq.char.lower.run(
-                    new State(nonLowercaseChar + "abc", SourcePos.init("test"), "none"),
+                    new State(nonLowercaseChar + "abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -814,7 +880,7 @@ describe("char", function () {
             });
 
             lq.char.lower.run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -838,7 +904,7 @@ describe("char", function () {
         it("should parse an alphabet or a digit (A-Z, a-z or 0-9)", function () {
             "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split("").forEach(function (alphaNumChar) {
                 lq.char.alphaNum.run(
-                    new State(alphaNumChar + "abc", SourcePos.init("test"), "none"),
+                    new State(alphaNumChar + "abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(alphaNumChar);
                         expect(State.equals(
@@ -846,6 +912,7 @@ describe("char", function () {
                             new State(
                                 "abc",
                                 new SourcePos("test", 1, 2),
+                                8,
                                 "none"
                             )
                         )).to.be.true;
@@ -862,7 +929,7 @@ describe("char", function () {
 
             " !".split("").forEach(function (nonAlphaNumChar) {
                 lq.char.alphaNum.run(
-                    new State(nonAlphaNumChar + "abc", SourcePos.init("test"), "none"),
+                    new State(nonAlphaNumChar + "abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -882,7 +949,7 @@ describe("char", function () {
             });
 
             lq.char.alphaNum.run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -906,7 +973,7 @@ describe("char", function () {
         it("should parse an alphabet (A-Z or a-z)", function () {
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split("").forEach(function (letterChar) {
                 lq.char.letter.run(
-                    new State(letterChar + "abc", SourcePos.init("test"), "none"),
+                    new State(letterChar + "abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(letterChar);
                         expect(State.equals(
@@ -914,6 +981,7 @@ describe("char", function () {
                             new State(
                                 "abc",
                                 new SourcePos("test", 1, 2),
+                                8,
                                 "none"
                             )
                         )).to.be.true;
@@ -930,7 +998,7 @@ describe("char", function () {
 
             " 0!".split("").forEach(function (nonLetterChar) {
                 lq.char.letter.run(
-                    new State(nonLetterChar + "abc", SourcePos.init("test"), "none"),
+                    new State(nonLetterChar + "abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -950,7 +1018,7 @@ describe("char", function () {
             });
 
             lq.char.letter.run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -974,7 +1042,7 @@ describe("char", function () {
         it("should parse a digit (0-9)", function () {
             "0123456789".split("").forEach(function (digitChar) {
                 lq.char.digit.run(
-                    new State(digitChar + "abc", SourcePos.init("test"), "none"),
+                    new State(digitChar + "abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(digitChar);
                         expect(State.equals(
@@ -982,6 +1050,7 @@ describe("char", function () {
                             new State(
                                 "abc",
                                 new SourcePos("test", 1, 2),
+                                8,
                                 "none"
                             )
                         )).to.be.true;
@@ -998,7 +1067,7 @@ describe("char", function () {
 
             " Aa!".split("").forEach(function (nonDigitChar) {
                 lq.char.digit.run(
-                    new State(nonDigitChar + "abc", SourcePos.init("test"), "none"),
+                    new State(nonDigitChar + "abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -1018,7 +1087,7 @@ describe("char", function () {
             });
 
             lq.char.digit.run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -1042,7 +1111,7 @@ describe("char", function () {
         it("should parse a hexadecimal digit (0-9 or A-Z (a-z))", function () {
             "0123456789ABCDEFabcdef".split("").forEach(function (digitChar) {
                 lq.char.hexDigit.run(
-                    new State(digitChar + "abc", SourcePos.init("test"), "none"),
+                    new State(digitChar + "abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(digitChar);
                         expect(State.equals(
@@ -1050,6 +1119,7 @@ describe("char", function () {
                             new State(
                                 "abc",
                                 new SourcePos("test", 1, 2),
+                                8,
                                 "none"
                             )
                         )).to.be.true;
@@ -1066,7 +1136,7 @@ describe("char", function () {
 
             " Gg!".split("").forEach(function (nonDigitChar) {
                 lq.char.hexDigit.run(
-                    new State(nonDigitChar + "abc", SourcePos.init("test"), "none"),
+                    new State(nonDigitChar + "abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -1086,7 +1156,7 @@ describe("char", function () {
             });
 
             lq.char.hexDigit.run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -1110,7 +1180,7 @@ describe("char", function () {
         it("should parse a octal digit (0-7)", function () {
             "01234567".split("").forEach(function (digitChar) {
                 lq.char.octDigit.run(
-                    new State(digitChar + "abc", SourcePos.init("test"), "none"),
+                    new State(digitChar + "abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(digitChar);
                         expect(State.equals(
@@ -1118,6 +1188,7 @@ describe("char", function () {
                             new State(
                                 "abc",
                                 new SourcePos("test", 1, 2),
+                                8,
                                 "none"
                             )
                         )).to.be.true;
@@ -1134,7 +1205,7 @@ describe("char", function () {
 
             " 89Aa!".split("").forEach(function (nonDigitChar) {
                 lq.char.octDigit.run(
-                    new State(nonDigitChar + "abc", SourcePos.init("test"), "none"),
+                    new State(nonDigitChar + "abc", SourcePos.init("test"), 8, "none"),
                     throwError,
                     throwError,
                     throwError,
@@ -1154,7 +1225,7 @@ describe("char", function () {
             });
 
             lq.char.octDigit.run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -1177,7 +1248,7 @@ describe("char", function () {
     describe("char(expectedChar)", function () {
         it("should return a parser that parses specified character", function () {
             lq.char.char("a").run(
-                new State("abc", SourcePos.init("test"), "none"),
+                new State("abc", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.equal("a");
                     expect(State.equals(
@@ -1185,6 +1256,7 @@ describe("char", function () {
                         new State(
                             "bc",
                             new SourcePos("test", 1, 2),
+                            8,
                             "none"
                         )
                     )).to.be.true;
@@ -1199,7 +1271,7 @@ describe("char", function () {
             );
 
             lq.char.char("d").run(
-                new State("abc", SourcePos.init("test"), "none"),
+                new State("abc", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -1218,7 +1290,7 @@ describe("char", function () {
             );
 
             lq.char.char("a").run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -1242,7 +1314,7 @@ describe("char", function () {
         it("should parse any single character", function () {
             " 0Aa!".split("").forEach(function (char) {
                 lq.char.anyChar.run(
-                    new State(char + "abc", SourcePos.init("test"), "none"),
+                    new State(char + "abc", SourcePos.init("test"), 8, "none"),
                     function (value, state, error) {
                         expect(value).to.equal(char);
                         expect(State.equals(
@@ -1250,6 +1322,7 @@ describe("char", function () {
                             new State(
                                 "abc",
                                 SourcePos.init("test").addChar(char),
+                                8,
                                 "none"
                             )
                         )).to.be.true;
@@ -1265,7 +1338,7 @@ describe("char", function () {
             });
 
             lq.char.anyChar.run(
-                new State("", SourcePos.init("test"), "none"),
+                new State("", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -1285,10 +1358,10 @@ describe("char", function () {
     describe("manyChar(parser)", function () {
         it("should return a parser that parses zero or more occurrence of characters parsed by 'parser' and accumulates them in a string", function () {
             lq.char.manyChar(lq.char.char("a")).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.equal("aaa");
-                    expect(State.equals(state, new State("b", new SourcePos("test", 1, 4), "none"))).to.be.true;
+                    expect(State.equals(state, new State("b", new SourcePos("test", 1, 4), 8, "none"))).to.be.true;
                     expect(ParseError.equals(
                         error,
                          new ParseError(
@@ -1310,7 +1383,7 @@ describe("char", function () {
                     return lq.char.char("a").run(state, csuc, cerr, esuc, cerr);
                 })
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1333,7 +1406,7 @@ describe("char", function () {
                     return lq.char.char("c").run(state, csuc, cerr, esuc, cerr);
                 })
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1352,12 +1425,12 @@ describe("char", function () {
             );
 
             lq.char.manyChar(lq.char.char("c")).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 function (value, state, error) {
                    expect(value).to.equal("");
-                    expect(State.equals(state, new State("aaab", SourcePos.init("test"), "none"))).to.be.true;
+                    expect(State.equals(state, new State("aaab", SourcePos.init("test"), 8, "none"))).to.be.true;
                     expect(ParseError.equals(
                         error,
                         new ParseError(
@@ -1381,7 +1454,7 @@ describe("char", function () {
                         })
                     )
                 ).run(
-                    new State("aaab", SourcePos.init("test"), "none"),
+                    new State("aaab", SourcePos.init("test"), 8, "none"),
                     function () {},
                     function () {},
                     function () {},
@@ -1395,7 +1468,7 @@ describe("char", function () {
                         return lq.char.char("a").run(state, esuc, cerr, esuc, eerr);
                     })
                 ).run(
-                    new State("aaab", SourcePos.init("test"), "none"),
+                    new State("aaab", SourcePos.init("test"), 8, "none"),
                     function () {},
                     function () {},
                     function () {},
@@ -1408,10 +1481,10 @@ describe("char", function () {
     describe("manyChar1(parser)", function () {
         it("should return a parser that parses one or more occurrence of characters parsed by 'parser' and accumulates them in a string", function () {
             lq.char.manyChar1(lq.char.char("a")).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 function (value, state, error) {
                     expect(value).to.equal("aaa");
-                    expect(State.equals(state, new State("b", new SourcePos("test", 1, 4), "none"))).to.be.true;
+                    expect(State.equals(state, new State("b", new SourcePos("test", 1, 4), 8, "none"))).to.be.true;
                     expect(ParseError.equals(
                         error,
                          new ParseError(
@@ -1433,7 +1506,7 @@ describe("char", function () {
                     return lq.char.char("a").run(state, csuc, cerr, esuc, cerr);
                 })
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1456,7 +1529,7 @@ describe("char", function () {
                     return lq.char.char("c").run(state, csuc, cerr, esuc, cerr);
                 })
             ).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 function (error) {
                     expect(ParseError.equals(
@@ -1475,7 +1548,7 @@ describe("char", function () {
             );
 
             lq.char.manyChar1(lq.char.char("c")).run(
-                new State("aaab", SourcePos.init("test"), "none"),
+                new State("aaab", SourcePos.init("test"), 8, "none"),
                 throwError,
                 throwError,
                 throwError,
@@ -1502,7 +1575,7 @@ describe("char", function () {
                         })
                     )
                 ).run(
-                    new State("aaab", SourcePos.init("test"), "none"),
+                    new State("aaab", SourcePos.init("test"), 8, "none"),
                     function () {},
                     function () {},
                     function () {},
@@ -1516,7 +1589,7 @@ describe("char", function () {
                         return lq.char.char("a").run(state, esuc, cerr, esuc, eerr);
                     })
                 ).run(
-                    new State("aaab", SourcePos.init("test"), "none"),
+                    new State("aaab", SourcePos.init("test"), 8, "none"),
                     function () {},
                     function () {},
                     function () {},
