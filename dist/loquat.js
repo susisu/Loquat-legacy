@@ -1,5 +1,5 @@
 /*!
- * Loquat 1.2.2
+ * Loquat 1.3.0
  * copyright (c) 2014-2015 Susisu | MIT License
  * https://github.com/susisu/Loquat
  */
@@ -62,7 +62,6 @@ var loquat =
     function end () {
         module.exports = Object.freeze(mergeObjects([
             {},
-            lq.array,
             lq.char,
             lq.combinator,
             lq.error,
@@ -70,7 +69,6 @@ var loquat =
             lq.monad,
             lq.pos,
             lq.prim,
-            lq.string,
             lq.sugar,
             lq.token,
             lq.util
