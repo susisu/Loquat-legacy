@@ -1,5 +1,5 @@
 /*!
- * Loquat 1.3.0
+ * Loquat 1.3.1
  * copyright (c) 2014-2015 Susisu | MIT License
  * https://github.com/susisu/Loquat
  */
@@ -78,14 +78,14 @@ var loquat =
     var lq = Object.freeze({
         "char"      : __webpack_require__(1),
         "combinator": __webpack_require__(6),
-        "error"     : __webpack_require__(3),
+        "error"     : __webpack_require__(2),
         "expr"      : __webpack_require__(8),
         "monad"     : __webpack_require__(7),
-        "pos"       : __webpack_require__(4),
-        "prim"      : __webpack_require__(2),
+        "pos"       : __webpack_require__(3),
+        "prim"      : __webpack_require__(5),
         "sugar"     : __webpack_require__(9),
         "token"     : __webpack_require__(10),
-        "util"      : __webpack_require__(5)
+        "util"      : __webpack_require__(4)
     });
 
 
@@ -145,33 +145,117 @@ var loquat =
     }
 
     var lq = Object.freeze({
-        "prim": __webpack_require__(2),
-        "util": __webpack_require__(5)
+        "error": __webpack_require__(2),
+        "prim" : __webpack_require__(5),
+        "util" : __webpack_require__(4)
     });
 
 
     function string (str) {
+        // inlined from lq.prim.tokens
         return new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
-            var tabWidth = state.tabWidth;
-            return lq.prim.fmap(function (chars) { return chars.join(""); })(
-                lq.prim.tokens(
-                    function (chars) { return lq.util.show(chars.join("")); },
-                    function (position, chars) { return position.addString(chars.join(""), tabWidth); },
-                    str.split("")
-                )
-            ).run(state, csuc, cerr, esuc, eerr);
+            var restInput = state.input;
+            for (var index = 0; index < str.length; index ++) {
+                var unconsed = lq.util.uncons(restInput);
+                if (unconsed.length === 0) {
+                    if (index === 0) {
+                        return eerr(eofError());
+                    }
+                    else {
+                        return cerr(eofError());
+                    }
+                }
+                else {
+                    if (str[index] === unconsed[0]) {
+                        restInput = unconsed[1];
+                    }
+                    else {
+                        if (index === 0) {
+                            return eerr(expectError(unconsed[0]));
+                        }
+                        else {
+                            return cerr(expectError(unconsed[0]));
+                        }
+                    }
+                }
+            }
+            if (index === 0) {
+                return esuc("", state, lq.error.ParseError.unknown(state.position));
+            }
+            else {
+                var newPosition = state.position.addString(str, state.tabWidth);
+                return csuc(
+                    str,
+                    new lq.prim.State(restInput, newPosition, state.tabWidth, state.userState),
+                    lq.error.ParseError.unknown(newPosition)
+                );
+            }
+
+            function eofError () {
+                return new lq.error.ParseError(
+                    state.position,
+                    [
+                        new lq.error.ErrorMessage(
+                            lq.error.ErrorMessageType.SYSTEM_UNEXPECT,
+                            ""
+                        ),
+                        new lq.error.ErrorMessage(
+                            lq.error.ErrorMessageType.EXPECT,
+                            lq.util.show(str)
+                        )
+                    ]
+                );
+            }
+
+            function expectError (token) {
+                return new lq.error.ParseError(
+                    state.position,
+                    [
+                        new lq.error.ErrorMessage(
+                            lq.error.ErrorMessageType.SYSTEM_UNEXPECT,
+                            lq.util.show(token)
+                        ),
+                        new lq.error.ErrorMessage(
+                            lq.error.ErrorMessageType.EXPECT,
+                            lq.util.show(str)
+                        )
+                    ]
+                );
+            }
         });
     }
 
     function satisfy (test) {
+        // inlined from lq.prim.tokenPrim
         return new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
-            var tabWidth = state.tabWidth;
-            return lq.prim.tokenPrim(
-                lq.util.show,
-                function (char) { return test(char) ? [char] : [] ; },
-                function (position, char, rest) { return position.addChar(char, tabWidth); }
-            ).run(state, csuc, cerr, esuc, eerr);
+            var unconsed = lq.util.uncons(state.input);
+            if (unconsed.length === 0) {
+                return eerr(systemUnexpected(state.position, ""));
+            }
+            else {
+                var token = unconsed[0];
+                var rest = unconsed[1];
+                var result = test(token) ? [token] : [];
+                if (result.length === 0) {
+                    return eerr(systemUnexpected(state.position, lq.util.show(token)));
+                }
+                else {
+                    var newPosition = state.position.addChar(token, state.tabWidth);
+                    return csuc(
+                        result[0],
+                        new lq.prim.State(rest, newPosition, state.tabWidth, state.userState),
+                        lq.error.ParseError.unknown(newPosition)
+                    );
+                }
+            }
         });
+
+        function systemUnexpected (position, message) {
+            return new lq.error.ParseError(
+                position,
+                [new lq.error.ErrorMessage(lq.error.ErrorMessageType.SYSTEM_UNEXPECT, message)]
+            );
+        }
     }
 
     function oneOf (str) {
@@ -275,6 +359,454 @@ var loquat =
 /***/ function(module, exports, __webpack_require__) {
 
     /*
+     * Loquat / error.js
+     * copyright (c) 2014 Susisu
+     *
+     * parse errors
+     */
+
+    "use strict";
+
+    function end () {
+        module.exports = Object.freeze({
+            "ErrorMessage"    : ErrorMessage,
+            "ErrorMessageType": ErrorMessageType,
+            "ParseError"      : ParseError
+        });
+    }
+
+    var lq = Object.freeze({
+        "pos" : __webpack_require__(3),
+        "util": __webpack_require__(4)
+    });
+
+
+    function ErrorMessage (type, message) {
+        this.type    = type;
+        this.message = message;
+    }
+
+    Object.defineProperties(ErrorMessage, {
+        "equals": { "value": function (messageA, messageB) {
+            return messageA.type === messageB.type
+                && messageA.message === messageB.message;
+        }},
+
+        "messagesToString": { "value": function (messages) {
+            if (messages.length === 0) {
+                return "unknown parse error";
+            }
+            else {
+                var systemUnexpects = [];
+                var unexpects       = [];
+                var expects         = [];
+                var defaultMessages = [];
+                for (var i = 0; i < messages.length; i ++) {
+                    switch (messages[i].type) {
+                        case ErrorMessageType.SYSTEM_UNEXPECT:
+                            systemUnexpects.push(messages[i].message);
+                            break;
+                        case ErrorMessageType.UNEXPECT:
+                            unexpects.push(messages[i].message);
+                            break;
+                        case ErrorMessageType.EXPECT:
+                            expects.push(messages[i].message);
+                            break;
+                        case ErrorMessageType.MESSAGE:
+                            defaultMessages.push(messages[i].message);
+                            break;
+                    }
+                }
+                return clean([
+                    unexpects.length === 0 && systemUnexpects.length !== 0
+                        ? systemUnexpects[0] === ""
+                            ? "unexpected end of input"
+                            : "unexpected " + systemUnexpects[0]
+                        : "",
+                    toStringWithDescription("unexpected", clean(unexpects)),
+                    toStringWithDescription("expecting", clean(expects)),
+                    toStringWithDescription("", clean(defaultMessages))
+                ]).join("\n");
+            }
+
+            function clean (messages) {
+                return messages.filter(function (element, index, array) {
+                    return array.indexOf(element) === index
+                        && element                !== "";
+                });
+            }
+
+            function separateByCommasOr (messages) {
+                return messages.length <= 1
+                     ? messages.toString()
+                     : messages.slice(0, messages.length - 1).join(", ") + " or " + messages[messages.length - 1];
+            }
+
+            function toStringWithDescription (description, messages) {
+                return messages.length === 0
+                     ? ""
+                     : (description === "" ? "" : description + " ") + separateByCommasOr(messages);
+            }
+        }}
+    });
+
+
+    var ErrorMessageType = Object.freeze({
+        "SYSTEM_UNEXPECT": "systemUnexpect",
+        "UNEXPECT": "unexpect",
+        "EXPECT": "expect",
+        "MESSAGE": "message"
+    });
+
+
+    function ParseError (position, messages) {
+        this.position = position;
+        this.messages = messages;
+    }
+
+    Object.defineProperties(ParseError, {
+        "unknown": { "value": function (position) {
+            return new ParseError(position, []);
+        }},
+
+        "equals": { "value": function (errorA, errorB) {
+            return lq.pos.SourcePos.equals(errorA.position, errorB.position)
+                && lq.util.ArrayUtil.equals(errorA.messages, errorB.messages, ErrorMessage.equals);
+        }},
+
+        "merge": { "value": function (errorA, errorB) {
+            var result = lq.pos.SourcePos.compare(errorA.position, errorB.position);
+            return errorB.isUnknown() && !errorA.isUnknown() ? errorA
+                 : errorA.isUnknown() && !errorB.isUnknown() ? errorB
+                 : result > 0                                ? errorA
+                 : result < 0                                ? errorB
+                                                             : errorA.addMessages(errorB.messages);
+        }}
+    });
+
+    Object.defineProperties(ParseError.prototype, {
+        "toString": { "value": function () {
+            return this.position.toString() + ":\n" + ErrorMessage.messagesToString(this.messages);
+        }},
+
+        "isUnknown": { "value": function () {
+            return this.messages.length === 0;
+        }},
+
+        "clone": { "value": function () {
+            return new ParseError(this.position.clone(), this.messages.slice());
+        }},
+
+        "setPosition": { "value": function (position) {
+            return new ParseError(position, this.messages);
+        }},
+
+        "setMessages": { "value": function (messages) {
+            return new ParseError(this.position, messages);
+        }},
+
+        "setSpecificTypeMessages": { "value": function (type, messages) {
+            return new ParseError(
+                this.position,
+                this.messages.filter(function (message) { return message.type !== type; })
+                    .concat(messages.map(function (message) { return new ErrorMessage(type, message); }))
+            );
+        }},
+
+        "addMessages": { "value": function (messages) {
+            return new ParseError(this.position, this.messages.concat(messages));
+        }}
+    });
+
+
+    end();
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+    /*
+     * Loquat / pos.js
+     * copyright (c) 2014 Susisu
+     *
+     * source positions
+     */
+
+    "use strict";
+
+    function end () {
+        module.exports = Object.freeze({
+            "SourcePos": SourcePos
+        });
+    }
+
+
+    function SourcePos (name, line, column) {
+        this.name   = name;
+        this.line   = line;
+        this.column = column;
+    }
+
+    Object.defineProperties(SourcePos, {
+        "init": { "value": function (name) {
+            return new SourcePos(name, 1, 1);
+        }},
+
+        "equals": { "value": function (positionA, positionB) {
+            return positionA.name   === positionB.name
+                && positionA.line   === positionB.line
+                && positionA.column === positionB.column;
+        }},
+
+        "compare": { "value": function (positionA, positionB) {
+            return positionA.name   < positionB.name   ? -1
+                 : positionA.name   > positionB.name   ? 1
+                 : positionA.line   < positionB.line   ? -1
+                 : positionA.line   > positionB.line   ? 1
+                 : positionA.column < positionB.column ? -1
+                 : positionA.column > positionB.column ? 1
+                                                       : 0;
+        }}
+    });
+
+    Object.defineProperties(SourcePos.prototype, {
+        "toString": { "value": function () {
+            return (this.name === "" ? "" : "\"" + this.name + "\" ")
+                + "(line " + this.line.toString() + ", column " + this.column.toString() + ")";
+        }},
+
+        "clone": { "value": function () {
+            return new SourcePos(this.name, this.line, this.column);
+        }},
+
+        "setName": { "value": function (name) {
+            return new SourcePos(name, this.line, this.column);
+        }},
+
+        "setLine": { "value": function (line) {
+            return new SourcePos(this.name, line, this.column);
+        }},
+
+        "setColumn": { "value": function (column) {
+            return new SourcePos(this.name, this.line, column);
+        }},
+
+        "addChar": { "value": function (char, tabWidth) {
+            tabWidth = tabWidth | 0;
+            if (tabWidth <= 0) {
+                tabWidth = 8;
+            }
+            var copy = this.clone();
+            switch (char) {
+                case "\n":
+                    copy.line ++;
+                    copy.column = 1;
+                    break;
+                case "\t":
+                    copy.column += tabWidth - (copy.column - 1) % tabWidth;
+                    break;
+                default:
+                    copy.column ++;
+            }
+            return copy;
+        }},
+
+        "addString": { "value": function (str, tabWidth) {
+            tabWidth = tabWidth | 0;
+            if (tabWidth <= 0) {
+                tabWidth = 8;
+            }
+            var copy = this.clone();
+            for (var i = 0; i < str.length; i ++) {
+                switch (str[i]) {
+                    case "\n":
+                        copy.line ++;
+                        copy.column = 1;
+                        break;
+                    case "\t":
+                        copy.column += tabWidth - (copy.column - 1) % tabWidth;
+                        break;
+                    default:
+                        copy.column ++;
+                }
+            }
+            return copy;
+        }}
+    });
+
+
+    end();
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+    /*
+     * Loquat / util.js
+     * copyright (c) 2014 Susisu
+     *
+     * utility functions
+     */
+
+    "use strict";
+
+    function end () {
+        module.exports = Object.freeze({
+            "ArrayUtil" : ArrayUtil,
+            "CharUtil"  : CharUtil,
+            "show"      : show,
+            "escapeChar": escapeChar,
+            "uncons"    : uncons
+        });
+    }
+
+
+    var ArrayUtil = Object.freeze({
+        "equals": function (arrayA, arrayB, elementEquals) {
+            if (arrayA.length !== arrayB.length) {
+                return false;
+            }
+            else {
+                if (elementEquals === undefined) {
+                    return ArrayUtil.zipWith(function (x, y) { return x === y; }, arrayA, arrayB)
+                        .every(function (x) { return x; });
+                }
+                else {
+                    return ArrayUtil.zipWith(elementEquals, arrayA, arrayB).every(function (x) { return x; });
+                }
+            }
+        },
+
+        "nub": function (array) {
+            return array.filter(function (element, index, array) { return array.indexOf(element) === index; });
+        },
+
+        "replicate": function (n, element) {
+            var array = [];
+            for (var i = 0; i < n; i ++) {
+                array.push(element);
+            }
+            return array;
+        },
+
+        "zipWith": function (func, arrayA, arrayB) {
+            var array = [];
+            var length = Math.min(arrayA.length, arrayB.length);
+            for (var i = 0; i < length; i ++) {
+                array.push(func(arrayA[i], arrayB[i]));
+            }
+            return array;
+        }
+    });
+
+    var CharUtil = Object.freeze({
+        "isSpace": function (char) {
+            return char.length === 1
+                && " \t\n\r\f\v".indexOf(char) >= 0;
+        },
+
+        "isUpper": function (char) {
+            return char.length === 1
+                && "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(char) >= 0;
+        },
+
+        "isLower": function (char) {
+            return char.length === 1
+                && "abcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
+        },
+
+        "isAlphaNum": function (char) {
+            return char.length === 1
+                && "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
+        },
+
+        "isAlpha": function (char) {
+            return char.length === 1
+                && "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
+        },
+
+        "isDigit": function (char) {
+            return char.length === 1
+                && "0123456789".indexOf(char) >= 0;
+        },
+
+        "isHexDigit": function (char) {
+            return char.length === 1
+                && "0123456789ABCDEFabcdef".indexOf(char) >= 0;
+        },
+
+        "isOctDigit": function (char) {
+            return char.length === 1
+                && "01234567".indexOf(char) >= 0;
+        }
+    });
+
+    function show (value) {
+        if (typeof value === "string" || value instanceof String) {
+            if (value.length === 1) {
+                return "\"" + escapeChar(value) + "\"";
+            }
+            else {
+                return "\"" + value.split("").map(escapeChar).join("") + "\"";
+            }
+        }
+        else if (value instanceof Array) {
+            return "[" + value.map(show).join(", ") + "]";
+        }
+        else {
+            return String(value);
+        }
+    }
+
+    function escapeChar (char) {
+        switch (char) {
+            case "\\": return "\\\\";
+            case "\"": return "\\\"";
+            case "\b": return "\\b";
+            case "\t": return "\\t";
+            case "\n": return "\\n";
+            case "\r": return "\\r";
+            case "\f": return "\\f";
+            case "\v": return "\\v";
+            default  : return char;
+        }
+    }
+
+    function uncons (value) {
+        if (typeof value === "string" || value instanceof String) {
+            if (value.length === 0) {
+                return [];
+            }
+            else {
+                return [value[0], value.substr(1)];
+            }
+        }
+        else if (value instanceof Array) {
+            if (value.length === 0) {
+                return [];
+            }
+            else {
+                return [value[0], value.slice(1)];
+            }
+        }
+        else {
+            if (typeof value.uncons === "function") {
+                return value.uncons();
+            }
+        }
+    }
+
+
+    end();
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+    /*
      * Loquat / prim.js
      * copyright (c) 2014 Susisu
      *
@@ -341,9 +873,9 @@ var loquat =
     }
 
     var lq = Object.freeze({
-        "error": __webpack_require__(3),
-        "pos"  : __webpack_require__(4),
-        "util" : __webpack_require__(5)
+        "error": __webpack_require__(2),
+        "pos"  : __webpack_require__(3),
+        "util" : __webpack_require__(4)
     });
 
 
@@ -955,454 +1487,6 @@ var loquat =
 
 
 /***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-    /*
-     * Loquat / error.js
-     * copyright (c) 2014 Susisu
-     *
-     * parse errors
-     */
-
-    "use strict";
-
-    function end () {
-        module.exports = Object.freeze({
-            "ErrorMessage"    : ErrorMessage,
-            "ErrorMessageType": ErrorMessageType,
-            "ParseError"      : ParseError
-        });
-    }
-
-    var lq = Object.freeze({
-        "pos" : __webpack_require__(4),
-        "util": __webpack_require__(5)
-    });
-
-
-    function ErrorMessage (type, message) {
-        this.type    = type;
-        this.message = message;
-    }
-
-    Object.defineProperties(ErrorMessage, {
-        "equals": { "value": function (messageA, messageB) {
-            return messageA.type === messageB.type
-                && messageA.message === messageB.message;
-        }},
-
-        "messagesToString": { "value": function (messages) {
-            if (messages.length === 0) {
-                return "unknown parse error";
-            }
-            else {
-                var systemUnexpects = [];
-                var unexpects       = [];
-                var expects         = [];
-                var defaultMessages = [];
-                for (var i = 0; i < messages.length; i ++) {
-                    switch (messages[i].type) {
-                        case ErrorMessageType.SYSTEM_UNEXPECT:
-                            systemUnexpects.push(messages[i].message);
-                            break;
-                        case ErrorMessageType.UNEXPECT:
-                            unexpects.push(messages[i].message);
-                            break;
-                        case ErrorMessageType.EXPECT:
-                            expects.push(messages[i].message);
-                            break;
-                        case ErrorMessageType.MESSAGE:
-                            defaultMessages.push(messages[i].message);
-                            break;
-                    }
-                }
-                return clean([
-                    unexpects.length === 0 && systemUnexpects.length !== 0
-                        ? systemUnexpects[0] === ""
-                            ? "unexpected end of input"
-                            : "unexpected " + systemUnexpects[0]
-                        : "",
-                    toStringWithDescription("unexpected", clean(unexpects)),
-                    toStringWithDescription("expecting", clean(expects)),
-                    toStringWithDescription("", clean(defaultMessages))
-                ]).join("\n");
-            }
-
-            function clean (messages) {
-                return messages.filter(function (element, index, array) {
-                    return array.indexOf(element) === index
-                        && element                !== "";
-                });
-            }
-
-            function separateByCommasOr (messages) {
-                return messages.length <= 1
-                     ? messages.toString()
-                     : messages.slice(0, messages.length - 1).join(", ") + " or " + messages[messages.length - 1];
-            }
-
-            function toStringWithDescription (description, messages) {
-                return messages.length === 0
-                     ? ""
-                     : (description === "" ? "" : description + " ") + separateByCommasOr(messages);
-            }
-        }}
-    });
-
-
-    var ErrorMessageType = Object.freeze({
-        "SYSTEM_UNEXPECT": "systemUnexpect",
-        "UNEXPECT": "unexpect",
-        "EXPECT": "expect",
-        "MESSAGE": "message"
-    });
-
-
-    function ParseError (position, messages) {
-        this.position = position;
-        this.messages = messages;
-    }
-
-    Object.defineProperties(ParseError, {
-        "unknown": { "value": function (position) {
-            return new ParseError(position, []);
-        }},
-
-        "equals": { "value": function (errorA, errorB) {
-            return lq.pos.SourcePos.equals(errorA.position, errorB.position)
-                && lq.util.ArrayUtil.equals(errorA.messages, errorB.messages, ErrorMessage.equals);
-        }},
-
-        "merge": { "value": function (errorA, errorB) {
-            var result = lq.pos.SourcePos.compare(errorA.position, errorB.position);
-            return errorB.isUnknown() && !errorA.isUnknown() ? errorA
-                 : errorA.isUnknown() && !errorB.isUnknown() ? errorB
-                 : result > 0                                ? errorA
-                 : result < 0                                ? errorB
-                                                             : errorA.addMessages(errorB.messages);
-        }}
-    });
-
-    Object.defineProperties(ParseError.prototype, {
-        "toString": { "value": function () {
-            return this.position.toString() + ":\n" + ErrorMessage.messagesToString(this.messages);
-        }},
-
-        "isUnknown": { "value": function () {
-            return this.messages.length === 0;
-        }},
-
-        "clone": { "value": function () {
-            return new ParseError(this.position.clone(), this.messages.slice());
-        }},
-
-        "setPosition": { "value": function (position) {
-            return new ParseError(position, this.messages);
-        }},
-
-        "setMessages": { "value": function (messages) {
-            return new ParseError(this.position, messages);
-        }},
-
-        "setSpecificTypeMessages": { "value": function (type, messages) {
-            return new ParseError(
-                this.position,
-                this.messages.filter(function (message) { return message.type !== type; })
-                    .concat(messages.map(function (message) { return new ErrorMessage(type, message); }))
-            );
-        }},
-
-        "addMessages": { "value": function (messages) {
-            return new ParseError(this.position, this.messages.concat(messages));
-        }}
-    });
-
-
-    end();
-
-
-/***/ },
-/* 4 */
-/***/ function(module, exports) {
-
-    /*
-     * Loquat / pos.js
-     * copyright (c) 2014 Susisu
-     *
-     * source positions
-     */
-
-    "use strict";
-
-    function end () {
-        module.exports = Object.freeze({
-            "SourcePos": SourcePos
-        });
-    }
-
-
-    function SourcePos (name, line, column) {
-        this.name   = name;
-        this.line   = line;
-        this.column = column;
-    }
-
-    Object.defineProperties(SourcePos, {
-        "init": { "value": function (name) {
-            return new SourcePos(name, 1, 1);
-        }},
-
-        "equals": { "value": function (positionA, positionB) {
-            return positionA.name   === positionB.name
-                && positionA.line   === positionB.line
-                && positionA.column === positionB.column;
-        }},
-
-        "compare": { "value": function (positionA, positionB) {
-            return positionA.name   < positionB.name   ? -1
-                 : positionA.name   > positionB.name   ? 1
-                 : positionA.line   < positionB.line   ? -1
-                 : positionA.line   > positionB.line   ? 1
-                 : positionA.column < positionB.column ? -1
-                 : positionA.column > positionB.column ? 1
-                                                       : 0;
-        }}
-    });
-
-    Object.defineProperties(SourcePos.prototype, {
-        "toString": { "value": function () {
-            return (this.name === "" ? "" : "\"" + this.name + "\" ")
-                + "(line " + this.line.toString() + ", column " + this.column.toString() + ")";
-        }},
-
-        "clone": { "value": function () {
-            return new SourcePos(this.name, this.line, this.column);
-        }},
-
-        "setName": { "value": function (name) {
-            return new SourcePos(name, this.line, this.column);
-        }},
-
-        "setLine": { "value": function (line) {
-            return new SourcePos(this.name, line, this.column);
-        }},
-
-        "setColumn": { "value": function (column) {
-            return new SourcePos(this.name, this.line, column);
-        }},
-
-        "addChar": { "value": function (char, tabWidth) {
-            tabWidth = tabWidth | 0;
-            if (tabWidth <= 0) {
-                tabWidth = 8;
-            }
-            var copy = this.clone();
-            switch (char) {
-                case "\n":
-                    copy.line ++;
-                    copy.column = 1;
-                    break;
-                case "\t":
-                    copy.column += tabWidth - (copy.column - 1) % tabWidth;
-                    break;
-                default:
-                    copy.column ++;
-            }
-            return copy;
-        }},
-
-        "addString": { "value": function (str, tabWidth) {
-            tabWidth = tabWidth | 0;
-            if (tabWidth <= 0) {
-                tabWidth = 8;
-            }
-            var copy = this.clone();
-            for (var i = 0; i < str.length; i ++) {
-                switch (str[i]) {
-                    case "\n":
-                        copy.line ++;
-                        copy.column = 1;
-                        break;
-                    case "\t":
-                        copy.column += tabWidth - (copy.column - 1) % tabWidth;
-                        break;
-                    default:
-                        copy.column ++;
-                }
-            }
-            return copy;
-        }}
-    });
-
-
-    end();
-
-
-/***/ },
-/* 5 */
-/***/ function(module, exports) {
-
-    /*
-     * Loquat / util.js
-     * copyright (c) 2014 Susisu
-     *
-     * utility functions
-     */
-
-    "use strict";
-
-    function end () {
-        module.exports = Object.freeze({
-            "ArrayUtil" : ArrayUtil,
-            "CharUtil"  : CharUtil,
-            "show"      : show,
-            "escapeChar": escapeChar,
-            "uncons"    : uncons
-        });
-    }
-
-
-    var ArrayUtil = Object.freeze({
-        "equals": function (arrayA, arrayB, elementEquals) {
-            if (arrayA.length !== arrayB.length) {
-                return false;
-            }
-            else {
-                if (elementEquals === undefined) {
-                    return ArrayUtil.zipWith(function (x, y) { return x === y; }, arrayA, arrayB)
-                        .every(function (x) { return x; });
-                }
-                else {
-                    return ArrayUtil.zipWith(elementEquals, arrayA, arrayB).every(function (x) { return x; });
-                }
-            }
-        },
-
-        "nub": function (array) {
-            return array.filter(function (element, index, array) { return array.indexOf(element) === index; });
-        },
-
-        "replicate": function (n, element) {
-            var array = [];
-            for (var i = 0; i < n; i ++) {
-                array.push(element);
-            }
-            return array;
-        },
-
-        "zipWith": function (func, arrayA, arrayB) {
-            var array = [];
-            var length = Math.min(arrayA.length, arrayB.length);
-            for (var i = 0; i < length; i ++) {
-                array.push(func(arrayA[i], arrayB[i]));
-            }
-            return array;
-        }
-    });
-
-    var CharUtil = Object.freeze({
-        "isSpace": function (char) {
-            return char.length === 1
-                && " \t\n\r\f\v".indexOf(char) >= 0;
-        },
-
-        "isUpper": function (char) {
-            return char.length === 1
-                && "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(char) >= 0;
-        },
-
-        "isLower": function (char) {
-            return char.length === 1
-                && "abcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
-        },
-
-        "isAlphaNum": function (char) {
-            return char.length === 1
-                && "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
-        },
-
-        "isAlpha": function (char) {
-            return char.length === 1
-                && "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(char) >= 0;
-        },
-
-        "isDigit": function (char) {
-            return char.length === 1
-                && "0123456789".indexOf(char) >= 0;
-        },
-
-        "isHexDigit": function (char) {
-            return char.length === 1
-                && "0123456789ABCDEFabcdef".indexOf(char) >= 0;
-        },
-
-        "isOctDigit": function (char) {
-            return char.length === 1
-                && "01234567".indexOf(char) >= 0;
-        }
-    });
-
-    function show (value) {
-        if (typeof value === "string" || value instanceof String) {
-            if (value.length === 1) {
-                return "\"" + escapeChar(value) + "\"";
-            }
-            else {
-                return "\"" + value.split("").map(escapeChar).join("") + "\"";
-            }
-        }
-        else if (value instanceof Array) {
-            return "[" + value.map(show).join(", ") + "]";
-        }
-        else {
-            return String(value);
-        }
-    }
-
-    function escapeChar (char) {
-        switch (char) {
-            case "\\": return "\\\\";
-            case "\"": return "\\\"";
-            case "\b": return "\\b";
-            case "\t": return "\\t";
-            case "\n": return "\\n";
-            case "\r": return "\\r";
-            case "\f": return "\\f";
-            case "\v": return "\\v";
-            default  : return char;
-        }
-    }
-
-    function uncons (value) {
-        if (typeof value === "string" || value instanceof String) {
-            if (value.length === 0) {
-                return [];
-            }
-            else {
-                return [value[0], value.substr(1)];
-            }
-        }
-        else if (value instanceof Array) {
-            if (value.length === 0) {
-                return [];
-            }
-            else {
-                return [value[0], value.slice(1)];
-            }
-        }
-        else {
-            if (typeof value.uncons === "function") {
-                return value.uncons();
-            }
-        }
-    }
-
-
-    end();
-
-
-/***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -1443,10 +1527,10 @@ var loquat =
     }
 
     var lq = Object.freeze({
-        "error": __webpack_require__(3),
+        "error": __webpack_require__(2),
         "monad": __webpack_require__(7),
-        "prim" : __webpack_require__(2),
-        "util" : __webpack_require__(5)
+        "prim" : __webpack_require__(5),
+        "util" : __webpack_require__(4)
     });
 
 
@@ -2074,9 +2158,9 @@ var loquat =
     }
 
     var lq = Object.freeze({
-        "error": __webpack_require__(3),
-        "prim" : __webpack_require__(2),
-        "util" : __webpack_require__(5)
+        "error": __webpack_require__(2),
+        "prim" : __webpack_require__(5),
+        "util" : __webpack_require__(4)
     });
 
 
@@ -2487,8 +2571,8 @@ var loquat =
 
     var lq = Object.freeze({
         "combinator": __webpack_require__(6),
-        "error"     : __webpack_require__(3),
-        "prim"      : __webpack_require__(2),
+        "error"     : __webpack_require__(2),
+        "prim"      : __webpack_require__(5),
     });
 
 
@@ -2945,7 +3029,7 @@ var loquat =
         "char"      : __webpack_require__(1),
         "combinator": __webpack_require__(6),
         "monad"     : __webpack_require__(7),
-        "prim"      : __webpack_require__(2)
+        "prim"      : __webpack_require__(5)
     });
 
 
@@ -3135,9 +3219,9 @@ var loquat =
     var lq = Object.freeze({
         "char"      : __webpack_require__(1),
         "combinator": __webpack_require__(6),
-        "error"     : __webpack_require__(3),
-        "prim"      : __webpack_require__(2),
-        "util"      : __webpack_require__(5)
+        "error"     : __webpack_require__(2),
+        "prim"      : __webpack_require__(5),
+        "util"      : __webpack_require__(4)
     });
 
 

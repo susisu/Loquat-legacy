@@ -1,7 +1,7 @@
 {
   "name": "loquat",
   "main": "dist/loquat.min.js",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "homepage": "https://github.com/susisu/Loquat",
   "authors": [
     "Susisu <susisu2413@yahoo.co.jp>"
