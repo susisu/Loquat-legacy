@@ -348,4 +348,313 @@ describe("sugar", function () {
             });
         });
     });
+
+    describe("gen(generator)", function () {
+        var p = new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+            switch (state.input.charAt(0)) {
+                case "a": return csuc(
+                        "a" + state.position.column.toString(),
+                        new State(
+                            state.input.substr(1),
+                            state.position.setColumn(state.position.column + 1),
+                            state.tabWidth,
+                            "none"
+                        ),
+                        new ParseError(
+                            state.position.setColumn(state.position.column + 1),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        )
+                    );
+                case "b": return cerr(
+                        new ParseError(
+                            state.position.setColumn(state.position.column + 1),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    );
+                case "c": return esuc(
+                        "c" + state.position.column.toString(),
+                        new State(
+                            state.input.substr(1),
+                            state.position,
+                            state.tabWidth,
+                            "none"
+                        ),
+                        new ParseError(
+                            state.position,
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")]
+                        )
+                    );
+                default: return eerr(
+                        new ParseError(
+                            state.position,
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    );
+            }
+        });
+        it("should run sequentially parsers yielded by the generator and return the value when the generator is done", function () {
+            var parser = lq.sugar.gen(function * () {
+                var x = yield p;
+                var y = yield p;
+                return x + y;
+            });
+
+            parser.run(
+                new State("aaabcd", SourcePos.init("test"), 8, "some"),
+                function (value, state, error) {
+                    expect(value).to.equal("a1a2");
+                    expect(State.equals(
+                        state,
+                        new State("abcd", new SourcePos("test", 1, 3), 8, "none")
+                    )).to.be.true;
+                    expect(ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        )
+                    )).to.be.true;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            parser.run(
+                new State("ababcd", SourcePos.init("test"), 8, "some"),
+                throwError,
+                function (error) {
+                    expect(ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 3),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    )).to.be.true;
+                },
+                throwError,
+                throwError
+            );
+
+            parser.run(
+                new State("acabcd", SourcePos.init("test"), 8, "some"),
+                function (value, state, error) {
+                    expect(value).to.equal("a1c2");
+                    expect(State.equals(
+                        state,
+                        new State("abcd", new SourcePos("test", 1, 2), 8, "none")
+                    )).to.be.true;
+                    expect(ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
+                            ]
+                        )
+                    )).to.be.true;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            parser.run(
+                new State("adabcd", SourcePos.init("test"), 8, "some"),
+                throwError,
+                function (error) {
+                    expect(ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    )).to.be.true;
+                },
+                throwError,
+                throwError
+            );
+
+            parser.run(
+                new State("baabcd", SourcePos.init("test"), 8, "some"),
+                throwError,
+                function (error) {
+                    expect(ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    )).to.be.true;
+                },
+                throwError,
+                throwError
+            );
+
+            parser.run(
+                new State("caabcd", SourcePos.init("test"), 8, "some"),
+                function (value, state, error) {
+                    expect(value).to.equal("c1a1");
+                    expect(State.equals(
+                        state,
+                        new State("abcd", new SourcePos("test", 1, 2), 8, "none")
+                    )).to.be.true;
+                    expect(ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "csuc")]
+                        )
+                    )).to.be.true;
+                },
+                throwError,
+                throwError,
+                throwError
+            );
+
+            parser.run(
+                new State("cbabcd", SourcePos.init("test"), 8, "some"),
+                throwError,
+                function (error) {
+                    expect(ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "cerr")]
+                        )
+                    )).to.be.true;
+                },
+                throwError,
+                throwError
+            );
+
+            parser.run(
+                new State("ccabcd", SourcePos.init("test"), 8, "some"),
+                throwError,
+                throwError,
+                function (value, state, error) {
+                    expect(value).to.equal("c1c1");
+                    expect(State.equals(
+                        state,
+                        new State("abcd", new SourcePos("test", 1, 1), 8, "none")
+                    )).to.be.true;
+                    expect(ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc")
+                            ]
+                        )
+                    )).to.be.true;
+                },
+                throwError
+            );
+
+            parser.run(
+                new State("cdabcd", SourcePos.init("test"), 8, "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    expect(ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")
+                            ]
+                        )
+                    )).to.be.true;
+                }
+            );
+
+            parser.run(
+                new State("daabcd", SourcePos.init("test"), 8, "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    expect(ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "eerr")]
+                        )
+                    )).to.be.true;
+                }
+            );
+        });
+
+        it("should fail when a error message is thrown from the generator", function () {
+            var parserA = lq.sugar.gen(function * () {
+                yield p;
+                throw "test message";
+            });
+
+            parserA.run(
+                new State("aabcd", SourcePos.init("test"), 8, "some"),
+                throwError,
+                function (error) {
+                    expect(ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 2),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "csuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "test message")
+                            ]
+                        )
+                    )).to.be.true;
+                },
+                throwError,
+                throwError
+            );
+
+            parserA.run(
+                new State("cabcd", SourcePos.init("test"), 8, "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    expect(ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "esuc"),
+                                new ErrorMessage(ErrorMessageType.MESSAGE, "test message")
+                            ]
+                        )
+                    )).to.be.true;
+                }
+            );
+
+            var parserB = lq.sugar.gen(function * () {
+                throw "test message";
+            });
+
+            parserB.run(
+                new State("abcd", SourcePos.init("test"), 8, "some"),
+                throwError,
+                throwError,
+                throwError,
+                function (error) {
+                    expect(ParseError.equals(
+                        error,
+                        new ParseError(
+                            new SourcePos("test", 1, 1),
+                            [new ErrorMessage(ErrorMessageType.MESSAGE, "test message")]
+                        )
+                    )).to.be.true;
+                }
+            );
+        });
+    });
 });
