@@ -1,6 +1,6 @@
 /*!
- * Loquat 1.3.1
- * copyright (c) 2014-2015 Susisu | MIT License
+ * Loquat 1.3.2
+ * copyright (c) 2014-2016 Susisu | MIT License
  * https://github.com/susisu/Loquat
  */
 var loquat =
@@ -824,6 +824,7 @@ var loquat =
             "LazyParser": LazyParser,
 
             /* utility functions */
+            "lazy" : lazy,
             "parse": parse,
 
             /* functor */
@@ -993,6 +994,10 @@ var loquat =
         }}
     });
 
+
+    function lazy (generator) {
+        return new LazyParser(generator);
+    }
 
     function parse (parser, name, input, tabWidth, userState) {
         var result = parser.parse(new State(input, lq.pos.SourcePos.init(name), tabWidth, userState));
@@ -3022,12 +3027,15 @@ var loquat =
     "use strict";
 
     function end () {
-        module.exports = Object.freeze({});
+        module.exports = Object.freeze({
+            "gen": gen
+        });
     }
 
     var lq = Object.freeze({
         "char"      : __webpack_require__(1),
         "combinator": __webpack_require__(6),
+        "error"     : __webpack_require__(2),
         "monad"     : __webpack_require__(7),
         "prim"      : __webpack_require__(5)
     });
@@ -3190,6 +3198,93 @@ var loquat =
             }}
         });
     });
+
+    function gen(generator) {
+        return new lq.prim.Parser(function (state, csuc, cerr, esuc, eerr) {
+            var it = generator();
+            var currentState = state;
+            var currentError = lq.error.ParseError.unknown(state.position);
+            var yieldValue;
+            var consumed = false;
+            var stop = false;
+            var result;
+            try {
+                result = it.next();
+            }
+            catch (error) {
+                return eerr(
+                    new lq.error.ParseError(
+                        state.position,
+                        [new lq.error.ErrorMessage(lq.error.ErrorMessageType.MESSAGE, String(error))]
+                    )
+                );
+            }
+            while (!result.done) {
+                result.value.run(currentState, csuc_, cerr_, esuc_, eerr_);
+                if (stop) {
+                    if (consumed) {
+                        return cerr(currentError);
+                    }
+                    else {
+                        return eerr(currentError);
+                    }
+                }
+                try {
+                    result = it.next(yieldValue);
+                }
+                catch (error) {
+                    if (consumed) {
+                        return cerr(lq.error.ParseError.merge(
+                            currentError,
+                            new lq.error.ParseError(
+                                currentState.position,
+                                [new lq.error.ErrorMessage(lq.error.ErrorMessageType.MESSAGE, String(error))]
+                            )
+                        ));
+                    }
+                    else {
+                        return eerr(lq.error.ParseError.merge(
+                            currentError,
+                            new lq.error.ParseError(
+                                currentState.position,
+                                [new lq.error.ErrorMessage(lq.error.ErrorMessageType.MESSAGE, String(error))]
+                            )
+                        ));
+                    }
+                }
+            }
+            if (consumed) {
+                return csuc(result.value, currentState, currentError);
+            }
+            else {
+                return esuc(result.value, currentState, currentError);
+            }
+
+            function csuc_ (value, state, error) {
+                consumed = true;
+                yieldValue = value;
+                currentState = state;
+                currentError = error;
+            }
+
+            function cerr_ (error) {
+                consumed = true;
+                stop = true;
+                currentError = error;
+            }
+
+            function esuc_ (value, state, error) {
+                yieldValue = value;
+                currentState = state;
+                currentError = lq.error.ParseError.merge(currentError, error);
+            }
+
+            function eerr_ (error) {
+                stop = true;
+                currentError = lq.error.ParseError.merge(currentError, error);
+            }
+        });
+    }
 
 
     end();

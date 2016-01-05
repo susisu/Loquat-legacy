@@ -4,7 +4,7 @@ var gulp    = require("gulp"),
 
 var packageInfo = require("./package.json");
 var banner = "Loquat " + packageInfo.version +
-    "\ncopyright (c) 2014-2015 Susisu | MIT License\nhttps://github.com/susisu/Loquat";
+    "\ncopyright (c) 2014-2016 Susisu | MIT License\nhttps://github.com/susisu/Loquat";
 
 gulp.task("test", function () {
     return gulp.src("./test/loquat.js")
